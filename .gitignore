@@ -1,0 +1,25 @@
+# Ignore all hidden files and directories
+.*
+
+# But not this .gitignore file
+!.gitignore
+
+# Ignore specific directories
+/.config/private
+/.ssh
+
+# Ignore temporary files
+*~
+*.swp
+*.swo
+*.tmp
+*.bak
+
+# Ignore OS generated files
+.DS_Store
+Thumbs.db
+
+# Ignore files
+secrets.nix
+flake.lock
+dotfiles.code-workspace

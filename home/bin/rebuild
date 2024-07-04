@@ -1,0 +1,47 @@
+#!/usr/bin/env nix-shell
+#!nix-shell -i bash -p alejandra git
+
+# Set variables for directories
+REPO_DIR="$HOME/.dotfiles/"
+NIXOS_DIR="/etc/nixos"
+LOG_FILE="$HOME/.nixos-rebuild.log"
+
+# Navigate to the repository directory
+pushd "$REPO_DIR"
+
+# Pull the latest config from rc2nix
+nix run github:pjones/plasma-manager > ./home/plasma.nix
+
+# Find and format all files using Alejandra
+find . -type f -exec alejandra {} + &>/dev/null
+
+# Copy files to /etc/nixos
+echo "Copying files to /etc/nixos..."
+sudo cp -r "$REPO_DIR"/* "$NIXOS_DIR"
+
+# Reset ownership and permissions for /etc/nixos
+echo "Setting ownership and permissions for /etc/nixos..."
+sudo chown -R root:root "$NIXOS_DIR"
+sudo find "$NIXOS_DIR" -type d -exec chmod 755 {} +
+sudo find "$NIXOS_DIR" -type f -exec chmod 644 {} +
+
+echo "NixOS Upgrading..."
+sudo nix flake update
+
+# Rebuild NixOS with the new configuration
+echo "NixOS Rebuilding..."
+sudo nixos-rebuild switch --flake "$NIXOS_DIR" &>$LOG_FILE || (
+    (cat $LOG_FILE | grep -A 2 --color error) || (cat $LOG_FILE | grep -A 2 --color warning) && false
+)
+
+echo "Log file written to: $LOG_FILE"
+
+# Check if there were any errors during the rebuild
+if [ $? -eq 0 ]; then
+    # Commit changes to the repository
+    gen=$(nixos-rebuild list-generations | grep current)
+    git commit -am "$gen"
+fi
+
+# Navigate back to the previous directory
+popd

@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+echo "Cleaning up nix store..."
+sudo nix-collect-garbage -d | grep freed
+echo "Verifying nix store..."
+sudo nix-store --verify --repair --check-contents
+echo "Done."
