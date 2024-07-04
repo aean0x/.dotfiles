@@ -32,7 +32,8 @@ It was not made to:
 ### To get this working:
 - download and install NixOS from iso
 - boot
-- git clone this repo to ~/.dotfiles
+- create your own repo from this by clicking "Use this template" on Github
+- git clone your repo to ~/.dotfiles
 - go through it and delete/comment things you don't need/want
 - create secrets.nix in ~/.dotfiles/home in accordance with below template
 - run ~/.dotfiles/home/bin/rebuild bash script
