@@ -17,7 +17,7 @@ It was not made to:
 
 ### Highlights:
 
-- Plasma 6
+- Plasma 6 (install Qogir theme manually)
 - Home Manager
 - Plasma Manager
 - Flatpaks
@@ -37,7 +37,6 @@ It was not made to:
 - go through it and delete/comment things you don't need/want
 - create secrets.nix in ~/.dotfiles/home in accordance with below template
 - run ~/.dotfiles/home/bin/rebuild bash script
-
 - commands "rebuild" and "cleanup" should be in bash $PATH now
 
 secrets.nix template:
