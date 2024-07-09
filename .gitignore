@@ -21,5 +21,4 @@ Thumbs.db
 
 # Ignore files
 secrets.nix
-flake.lock
 dotfiles.code-workspace
