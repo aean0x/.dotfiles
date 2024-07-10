@@ -37,7 +37,7 @@ in {
     unzip
 
     #LLM
-    python311Full
+    # python312Full
     # python312Packages.bentoml
     # python312Packages.openllm
     # python312Packages.gradio
