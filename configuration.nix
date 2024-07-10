@@ -27,7 +27,6 @@ in {
     wget
     usbutils
     alejandra
-    neofetch
     ltunify
     ffmpeg
     kubectl
@@ -38,7 +37,7 @@ in {
     python3
 
     #LLM
-    # python312Full
+    python312Full
     # python312Packages.bentoml
     # python312Packages.openllm
     # python312Packages.gradio
