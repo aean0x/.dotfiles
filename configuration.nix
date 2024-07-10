@@ -59,7 +59,6 @@ in {
     epson-escpr # my printer
 
     # KDE
-    kdePackages.qtstyleplugin-kvantum
     kdeplasma-addons
     kdePackages.sddm-kcm
     kdePackages.yakuake
@@ -72,8 +71,6 @@ in {
     kdePackages.ksystemlog
     kdePackages.kolourpaint
     plasma-browser-integration
-    plasma-theme-switcher
-    freetype
 
     # Package derivation template
     (writeTextDir "share/sddm/themes/breeze/theme.conf.user" ''
