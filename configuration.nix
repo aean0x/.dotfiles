@@ -35,6 +35,7 @@ in {
     mono
     p7zip
     unzip
+    python3
 
     #LLM
     # python312Full
