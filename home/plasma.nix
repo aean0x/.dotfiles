@@ -272,6 +272,7 @@
       "kdeglobals"."General"."XftSubPixel" = "rgb";
       "kdeglobals"."KDE"."AnimationDurationFactor" = 0.7071067811865475;
       "kdeglobals"."KDE"."ShowDeleteCommand" = false;
+      "kdeglobals"."KDE"."widgetStyle" = "kvantum";
       "kdeglobals"."KFileDialog Settings"."Allow Expansion" = false;
       "kdeglobals"."KFileDialog Settings"."Automatically select filename extension" = true;
       "kdeglobals"."KFileDialog Settings"."Breadcrumb Navigation" = false;
@@ -283,7 +284,7 @@
       "kdeglobals"."KFileDialog Settings"."Show Inline Previews" = true;
       "kdeglobals"."KFileDialog Settings"."Show Preview" = false;
       "kdeglobals"."KFileDialog Settings"."Show Speedbar" = true;
-      "kdeglobals"."KFileDialog Settings"."Show hidden files" = true;
+      "kdeglobals"."KFileDialog Settings"."Show hidden files" = false;
       "kdeglobals"."KFileDialog Settings"."Sort by" = "Name";
       "kdeglobals"."KFileDialog Settings"."Sort directories first" = true;
       "kdeglobals"."KFileDialog Settings"."Sort hidden files last" = false;
@@ -292,12 +293,12 @@
       "kdeglobals"."KFileDialog Settings"."View Style" = "DetailTree";
       "kdeglobals"."KScreen"."ScreenScaleFactors" = "DP-4x3d1;";
       "kdeglobals"."PreviewSettings"."MaximumRemoteSize" = 0;
-      "kdeglobals"."WM"."activeBackground" = "227,229,231";
-      "kdeglobals"."WM"."activeBlend" = "227,229,231";
-      "kdeglobals"."WM"."activeForeground" = "35,38,41";
-      "kdeglobals"."WM"."inactiveBackground" = "239,240,241";
-      "kdeglobals"."WM"."inactiveBlend" = "239,240,241";
-      "kdeglobals"."WM"."inactiveForeground" = "112,125,138";
+      "kdeglobals"."WM"."activeBackground" = "40,42,51";
+      "kdeglobals"."WM"."activeBlend" = "40,42,51";
+      "kdeglobals"."WM"."activeForeground" = "177,178,183";
+      "kdeglobals"."WM"."inactiveBackground" = "40,42,51";
+      "kdeglobals"."WM"."inactiveBlend" = "47,52,63";
+      "kdeglobals"."WM"."inactiveForeground" = "102,106,115";
       "kglobalshortcutsrc"."ActivityManager"."_k_friendly_name" = "Activity Manager";
       "kglobalshortcutsrc"."KDE Keyboard Layout Switcher"."_k_friendly_name" = "Keyboard Layout Switcher";
       "kglobalshortcutsrc"."kaccess"."_k_friendly_name" = "Accessibility";
@@ -327,6 +328,7 @@
       "kservicemenurc"."Show"."slideshowfileitemaction" = true;
       "kservicemenurc"."Show"."tagsfileitemaction" = true;
       "kservicemenurc"."Show"."wallpaperfileitemaction" = true;
+      "ksplashrc"."KSplash"."Engine" = "none";
       "kwalletrc"."Wallet"."First Use" = false;
       "kwinrc"."Desktops"."Id_1" = "115e4f42-388a-45c7-b4e6-f4e0870452e4";
       "kwinrc"."Desktops"."Number" = 1;
@@ -371,6 +373,7 @@
       "plasma-localerc"."Formats"."LC_PAPER" = "de_DE.UTF-8";
       "plasma-localerc"."Formats"."LC_TELEPHONE" = "de_DE.UTF-8";
       "plasma-localerc"."Formats"."LC_TIME" = "de_DE.UTF-8";
+      "plasmarc"."Theme"."name" = "Qogir-dark";
       "plasmarc"."Wallpapers"."usersWallpapers" = "";
       "systemsettingsrc"."systemsettings_sidebar_mode"."HighlightNonDefaultSettings" = false;
     };

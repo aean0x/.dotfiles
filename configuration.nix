@@ -71,6 +71,7 @@ in {
     kdePackages.ksystemlog
     kdePackages.kolourpaint
     plasma-browser-integration
+    kdePackages.qtstyleplugin-kvantum
 
     # Package derivation template
     (writeTextDir "share/sddm/themes/breeze/theme.conf.user" ''
