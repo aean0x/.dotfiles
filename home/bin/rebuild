@@ -9,9 +9,6 @@ LOG_FILE="$HOME/.nixos-rebuild.log"
 # Navigate to the repository directory
 pushd "$REPO_DIR"
 
-# Pull the latest config from rc2nix
-nix run github:pjones/plasma-manager > ./home/plasma.nix
-
 # Find and format all files using Alejandra
 find . -type f -exec alejandra {} + &>/dev/null
 

@@ -10,17 +10,17 @@
       "kaccess"."Toggle Screen Reader On and Off" = "Meta+Alt+S";
       "kcm_touchpad"."Disable Touchpad" = "Touchpad Off";
       "kcm_touchpad"."Enable Touchpad" = "Touchpad On";
-      "kcm_touchpad"."Toggle Touchpad" = ["" "Touchpad Toggle" "Meta+Ctrl+Zenkaku Hankaku"];
+      "kcm_touchpad"."Toggle Touchpad" = ["Touchpad Toggle" "Meta+Ctrl+Zenkaku Hankaku"];
       "kmix"."decrease_microphone_volume" = "Microphone Volume Down";
       "kmix"."decrease_volume" = "Volume Down";
       "kmix"."decrease_volume_small" = "Shift+Volume Down";
       "kmix"."increase_microphone_volume" = "Microphone Volume Up";
       "kmix"."increase_volume" = "Volume Up";
       "kmix"."increase_volume_small" = "Shift+Volume Up";
-      "kmix"."mic_mute" = ["" "Microphone Mute" "Meta+Volume Mute"];
+      "kmix"."mic_mute" = ["Microphone Mute" "Meta+Volume Mute"];
       "kmix"."mute" = "Volume Mute";
       "ksmserver"."Halt Without Confirmation" = [];
-      "ksmserver"."Lock Session" = ["" "Meta+L" "Screensaver"];
+      "ksmserver"."Lock Session" = ["Meta+L" "Screensaver"];
       "ksmserver"."Log Out" = "Ctrl+Alt+Del";
       "ksmserver"."Log Out Without Confirmation" = [];
       "ksmserver"."LogOut" = [];
@@ -33,7 +33,7 @@
       "kwin"."Decrease Opacity" = [];
       "kwin"."Edit Tiles" = "Meta+T";
       "kwin"."Expose" = "Ctrl+F9";
-      "kwin"."ExposeAll" = ["" "Ctrl+F10" "Launch (C)"];
+      "kwin"."ExposeAll" = ["Ctrl+F10" "Launch (C)"];
       "kwin"."ExposeClass" = "Ctrl+F7";
       "kwin"."ExposeClassCurrentDesktop" = [];
       "kwin"."Grid View" = "Meta+G";
@@ -218,7 +218,7 @@
       "org_kde_powerdevil"."Sleep" = "Sleep";
       "org_kde_powerdevil"."Toggle Keyboard Backlight" = "Keyboard Light On/Off";
       "org_kde_powerdevil"."Turn Off Screen" = [];
-      "org_kde_powerdevil"."powerProfile" = ["" "Battery" "Meta+B"];
+      "org_kde_powerdevil"."powerProfile" = ["Battery" "Meta+B"];
       "plasmashell"."activate application launcher" = [];
       "plasmashell"."activate task manager entry 1" = "Meta+1";
       "plasmashell"."activate task manager entry 10" = [];
@@ -246,7 +246,7 @@
       "plasmashell"."switch to next activity" = [];
       "plasmashell"."switch to previous activity" = [];
       "plasmashell"."toggle do not disturb" = [];
-      "services/org.kde.plasma-systemmonitor.desktop"."_launch" = ["" "Meta+Esc" "Ctrl+Shift+Esc"];
+      "services/org.kde.plasma-systemmonitor.desktop"."_launch" = ["Meta+Esc" "Ctrl+Shift+Esc"];
       "services/org.kde.spectacle.desktop"."RecordRegion" = "Meta+Shift+R";
       "services/plasmashell.desktop"."_launch" = "Ctrl+Alt+Backspace";
       "yakuake"."toggle-window-state" = "Alt+`";
@@ -272,7 +272,6 @@
       "kdeglobals"."General"."XftSubPixel" = "rgb";
       "kdeglobals"."KDE"."AnimationDurationFactor" = 0.7071067811865475;
       "kdeglobals"."KDE"."ShowDeleteCommand" = false;
-      "kdeglobals"."KDE"."widgetStyle" = "kvantum";
       "kdeglobals"."KFileDialog Settings"."Allow Expansion" = false;
       "kdeglobals"."KFileDialog Settings"."Automatically select filename extension" = true;
       "kdeglobals"."KFileDialog Settings"."Breadcrumb Navigation" = false;
@@ -328,7 +327,6 @@
       "kservicemenurc"."Show"."slideshowfileitemaction" = true;
       "kservicemenurc"."Show"."tagsfileitemaction" = true;
       "kservicemenurc"."Show"."wallpaperfileitemaction" = true;
-      "ksplashrc"."KSplash"."Engine" = "none";
       "kwalletrc"."Wallet"."First Use" = false;
       "kwinrc"."Desktops"."Id_1" = "115e4f42-388a-45c7-b4e6-f4e0870452e4";
       "kwinrc"."Desktops"."Number" = 1;
@@ -348,7 +346,7 @@
       "kwinrc"."TabBox"."LayoutName" = "sidebar";
       "kwinrc"."Tiling"."padding" = 4;
       "kwinrc"."Tiling/808737f1-bdd1-5608-a7f0-6c0c5752e1e6"."tiles" = "{\"layoutDirection\":\"floating\",\"tiles\":x5b{\"height\":0.9490509259259265,\"width\":0.45213541666666657,\"x\":0.008071278825995867,\"y\":0.034025559105431376},{\"height\":0.9469212962962965,\"width\":0.3116796875000002,\"x\":0.46507936507936487,\"y\":0.033439829605964005},{\"height\":0.24999999999999964,\"width\":0.29999999999999993,\"x\":0.6483528002395926,\"y\":0.04084132055378061}x5d}";
-      "kwinrc"."Tiling/ae882fb2-e1d8-5738-8705-115fcd8e27a0"."tiles" = "{\"layoutDirection\":\"horizontal\",\"tiles\":\x5b{\"width\":0.25},{\"width\":0.5},{\"width\":0.25}\x5d}";
+      "kwinrc"."Tiling/ae882fb2-e1d8-5738-8705-115fcd8e27a0"."tiles" = "{\"layoutDirection\":\"horizontal\",\"tiles\":[{\"width\":0.25},{\"width\":0.5},{\"width\":0.25}]}";
       "kwinrc"."Tiling/d02c035d-eef0-5c68-aa2f-2e83d0ba08b1"."tiles" = "{\"layoutDirection\":\"horizontal\",\"tiles\":x5b{\"width\":0.25},{\"width\":0.5},{\"width\":0.25}x5d}";
       "kwinrc"."Tiling/f6b558c7-c5b5-5bd9-b544-7d03fd991f09"."tiles" = "{\"layoutDirection\":\"horizontal\",\"tiles\":x5b{\"layoutDirection\":\"floating\",\"tiles\":x5b{\"height\":0.9165208259377601,\"width\":0.43073557179357524,\"x\":0.0026954177897574125,\"y\":0.03088044314282333}x5d,\"width\":0.43343098958333265},{\"layoutDirection\":\"floating\",\"tiles\":x5b{\"height\":0.916041666666668,\"width\":0.33789713541666616,\"x\":0.43343098958333265,\"y\":0.0308306709265176}x5d,\"width\":0.33789713541666616},{\"layoutDirection\":\"vertical\",\"tiles\":x5b{\"height\":0.5564351851851851,\"layoutDirection\":\"floating\",\"tiles\":x5b{\"height\":0.5256045142586675,\"width\":0.22417773379005657,\"x\":0.7713281249999988,\"y\":0.030830670926517607}x5d},{\"height\":0.44356481481481425,\"layoutDirection\":\"floating\",\"tiles\":x5b{\"height\":0.3910347148266494,\"width\":0.22417773379005435,\"x\":0.7713281249999988,\"y\":0.5564351851851851}x5d}x5d,\"width\":0.2286718750000012}x5d}";
       "kwinrc"."Windows"."BorderSnapZone" = 15;
@@ -373,7 +371,6 @@
       "plasma-localerc"."Formats"."LC_PAPER" = "de_DE.UTF-8";
       "plasma-localerc"."Formats"."LC_TELEPHONE" = "de_DE.UTF-8";
       "plasma-localerc"."Formats"."LC_TIME" = "de_DE.UTF-8";
-      "plasmarc"."Theme"."name" = "Qogir-dark";
       "plasmarc"."Wallpapers"."usersWallpapers" = "";
       "systemsettingsrc"."systemsettings_sidebar_mode"."HighlightNonDefaultSettings" = false;
     };
