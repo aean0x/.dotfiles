@@ -6,13 +6,42 @@ REPO_DIR="$HOME/.dotfiles/"
 NIXOS_DIR="/etc/nixos"
 LOG_FILE="$HOME/.nixos-rebuild.log"
 
+# Set default values for options
+REBOOT=false
+SAVE_PLASMA=false
+
+# Parse optional arguments
+while getopts "rp" opt; do
+    case ${opt} in
+        r)
+            REBOOT=true
+            ;;
+        p)
+            SAVE_PLASMA=true
+            ;;
+        *)
+            echo "Usage: $0 [-r] [-p]"
+            exit 1
+            ;;
+    esac
+done
+
 # Navigate to the repository directory
 pushd "$REPO_DIR"
 
 # Pull the latest config from rc2nix
-read -p "Save plasma configuration? (y/n): " response
+if [ "$SAVE_PLASMA" = true ]; then
+    CONF_RESPONSE="y"
+else
+    read -p "Save plasma configuration? (y/n): " CONF_RESPONSE
+fi
 
-nix run github:pjones/plasma-manager > ./home/plasma.nix
+if [[ "$CONF_RESPONSE" == "y" || "$CONF_RESPONSE" == "Y" ]]; then
+    nix run github:pjones/plasma-manager > ./home/plasma.nix
+    echo "Plasma config saved to plasma.nix."
+else
+    echo "Skipping..."
+fi
 
 # Find and format all files using Alejandra
 find . -type f -exec alejandra {} + &>/dev/null
@@ -36,7 +65,6 @@ sudo nixos-rebuild switch --flake "$NIXOS_DIR" &>$LOG_FILE || (
     (cat $LOG_FILE | grep -A 2 --color error) || (cat $LOG_FILE | grep -A 2 --color warning) && false
 )
 
-
 echo "Log file written to: $LOG_FILE"
 
 # Check if there were any errors during the rebuild
@@ -49,10 +77,14 @@ fi
 # Navigate back to the previous directory
 popd
 
-read -p "Reboot system? (y/n): " response
+# Reboot?
+if [ "$REBOOT" = true ]; then
+    REBOOT_RESPONSE="y"
+else
+    read -p "Reboot system? (y/n): " REBOOT_RESPONSE
+fi
 
-# Check the user's response
-if [[ "$response" == "y" || "$response" == "Y" ]]; then
+if [[ "$REBOOT_RESPONSE" == "y" || "$REBOOT_RESPONSE" == "Y" ]]; then
     echo "Rebooting the system..."
     sudo reboot
 else
