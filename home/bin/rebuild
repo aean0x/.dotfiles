@@ -9,6 +9,11 @@ LOG_FILE="$HOME/.nixos-rebuild.log"
 # Navigate to the repository directory
 pushd "$REPO_DIR"
 
+# Pull the latest config from rc2nix
+read -p "Save plasma configuration? (y/n): " response
+
+nix run github:pjones/plasma-manager > ./home/plasma.nix
+
 # Find and format all files using Alejandra
 find . -type f -exec alejandra {} + &>/dev/null
 
@@ -31,6 +36,7 @@ sudo nixos-rebuild switch --flake "$NIXOS_DIR" &>$LOG_FILE || (
     (cat $LOG_FILE | grep -A 2 --color error) || (cat $LOG_FILE | grep -A 2 --color warning) && false
 )
 
+
 echo "Log file written to: $LOG_FILE"
 
 # Check if there were any errors during the rebuild
@@ -42,3 +48,13 @@ fi
 
 # Navigate back to the previous directory
 popd
+
+read -p "Reboot system? (y/n): " response
+
+# Check the user's response
+if [[ "$response" == "y" || "$response" == "Y" ]]; then
+    echo "Rebooting the system..."
+    sudo reboot
+else
+    echo "Finished rebuild."
+fi
