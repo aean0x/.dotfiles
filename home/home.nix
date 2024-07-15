@@ -39,6 +39,7 @@ in {
     # { appId = "com.brave.Browser"; origin = "flathub";  }
     "im.riot.Riot"
     "com.github.IsmaelMartinez.teams_for_linux"
+    "com.usebottles.bottles"
   ];
 
   # Flatpak settings

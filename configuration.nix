@@ -50,7 +50,6 @@ in {
     wineWowPackages.fonts
     wineWow64Packages.fonts
     winetricks
-    bottles
 
     # Hardware
     vulkan-tools
