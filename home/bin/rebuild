@@ -31,16 +31,10 @@ pushd "$REPO_DIR"
 
 # Pull the latest config from rc2nix
 if [ "$SAVE_PLASMA" = true ]; then
-    CONF_RESPONSE="y"
-else
-    read -p "Save plasma configuration? (y/n): " CONF_RESPONSE
-fi
-
-if [[ "$CONF_RESPONSE" == "y" || "$CONF_RESPONSE" == "Y" ]]; then
     nix run github:pjones/plasma-manager > ./home/plasma.nix
     echo "Plasma config saved to plasma.nix."
 else
-    echo "Skipping..."
+    echo "Skipping plasma configuration save..."
 fi
 
 # Find and format all files using Alejandra
@@ -77,14 +71,8 @@ fi
 # Navigate back to the previous directory
 popd
 
-# Reboot?
+# Reboot if the flag was set
 if [ "$REBOOT" = true ]; then
-    REBOOT_RESPONSE="y"
-else
-    read -p "Reboot system? (y/n): " REBOOT_RESPONSE
-fi
-
-if [[ "$REBOOT_RESPONSE" == "y" || "$REBOOT_RESPONSE" == "Y" ]]; then
     echo "Rebooting the system..."
     sudo reboot
 else
