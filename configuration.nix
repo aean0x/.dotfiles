@@ -38,7 +38,7 @@ in {
 
     #LLM
     python312Full
-    python312Packages.bentoml
+    # python312Packages.bentoml
     python312Packages.openllm
     python312Packages.gradio
 
