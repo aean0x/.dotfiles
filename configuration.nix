@@ -37,10 +37,10 @@ in {
     python3
 
     #LLM
-    python312Full
-    # python312Packages.bentoml
-    python312Packages.openllm
-    python312Packages.gradio
+    python311Full
+    python311Packages.bentoml
+    python311Packages.openllm
+    python311Packages.gradio
 
     # Wine
     wineWowPackages.unstableFull
