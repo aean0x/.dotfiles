@@ -38,9 +38,9 @@ in {
 
     #LLM
     python311Full
-    python311Packages.bentoml
-    python311Packages.openllm
-    python311Packages.gradio
+    # python311Packages.bentoml
+    # python311Packages.openllm
+    # python311Packages.gradio
 
     # Wine
     wineWowPackages.unstableFull
