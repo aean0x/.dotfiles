@@ -37,7 +37,7 @@ in {
     python3
 
     #LLM
-    python311Full
+    python312Full
     # python311Packages.bentoml
     # python311Packages.openllm
     # python311Packages.gradio
