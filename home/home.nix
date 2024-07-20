@@ -32,6 +32,7 @@ in {
     libreoffice
     qbittorrent
     xivlauncher
+    kuro
   ];
 
   # Flatpak packages
