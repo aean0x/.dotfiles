@@ -128,7 +128,7 @@ in {
   # Kernel Parameters
   boot.kernelParams = [
     "nvidia_drm.fbdev=1" # Fix phantom monitor issue (I have a 3060 Ti)
-    # "nvidia.NVreg_EnableGpuFirmware=0" # Disable GSP (GPU offloading) to fix Wayland performance
+    "nvidia.NVreg_EnableGpuFirmware=0" # Disable GSP (GPU offloading) to fix Wayland performance
     "mem_sleep_default=shallow" # Fix sleep issues
     # "acpi_osi=!"
     "acpi_osi=Linux"
