@@ -72,11 +72,13 @@ in {
     plasma-browser-integration
     kdePackages.qtstyleplugin-kvantum
 
-    # Package derivation template
-    # (writeTextDir "share/sddm/themes/breeze/theme.conf.user" ''
-    #   [General]
-    #   background=${pkgs.kdePackages.plasma-workspace-wallpapers}/share/wallpapers/MilkyWay/contents/images/5120x2880.png
-    # '')
+    Package
+    derivation
+    template
+    (writeTextDir "share/sddm/themes/breeze/theme.conf.user" ''
+      [General]
+      background=${pkgs.kdePackages.plasma-workspace-wallpapers}/share/wallpapers/Mountain/contents/images_dark/5120x2880.png
+    '')
   ];
 
   # Services settings
