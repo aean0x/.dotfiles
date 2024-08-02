@@ -127,7 +127,7 @@ in {
 
   # Kernel Parameters
   boot.kernelParams = [
-    "nvidia_drm.modeset=1"
+    "nvidia_drm.modeset=1" # Enable DRM kernel mode setting
     "nvidia_drm.fbdev=1" # Fix phantom monitor issue (I have a 3060 Ti)
     "nvidia.NVreg_EnableGpuFirmware=0" # Disable GSP (GPU offloading) to fix Wayland performance
     "mem_sleep_default=shallow" # Fix sleep issues
@@ -160,7 +160,7 @@ in {
     enable32Bit = true;
   };
   hardware.nvidia = {
-    # modesetting.enable = true;
+    modesetting.enable = true; # use kernel param instead
     open = false;
     nvidiaSettings = true;
     package = config.boot.kernelPackages.nvidiaPackages.beta;
