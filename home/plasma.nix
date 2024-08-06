@@ -293,8 +293,6 @@
       "kiorc"."Confirmations"."ConfirmEmptyTrash" = true;
       "kiorc"."Confirmations"."ConfirmTrash" = false;
       "kiorc"."Executable scripts"."behaviourOnLaunch" = "alwaysAsk";
-      "kscreenlockerrc"."Greeter/Wallpaper/org.kde.image/General"."Image" = "/nix/store/qnm2rafny3x6l9my73772v34c9la8jm4-plasma-workspace-wallpapers-6.0.5/share/wallpapers/MilkyWay/";
-      "kscreenlockerrc"."Greeter/Wallpaper/org.kde.image/General"."PreviewImage" = "/nix/store/qnm2rafny3x6l9my73772v34c9la8jm4-plasma-workspace-wallpapers-6.0.5/share/wallpapers/MilkyWay/";
       "kservicemenurc"."Show"."compressfileitemaction" = true;
       "kservicemenurc"."Show"."extractfileitemaction" = true;
       "kservicemenurc"."Show"."forgetfileitemaction" = true;
