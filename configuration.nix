@@ -35,6 +35,7 @@ in {
     p7zip
     unzip
     python3
+    lspci
 
     #LLM
     python312Full
@@ -165,10 +166,10 @@ in {
     open = false;
     nvidiaSettings = true;
     package = config.boot.kernelPackages.nvidiaPackages.beta;
-    prime.offload.enable = true;
+    #prime.offload.enable = true;
     powerManagement = {
       enable = true;
-      finegrained = true;
+      #finegrained = true;
     };
   };
   services.xserver.videoDrivers = ["nvidia"];
