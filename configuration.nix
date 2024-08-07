@@ -35,7 +35,7 @@ in {
     p7zip
     unzip
     python3
-    lspci
+    pciutils
 
     #LLM
     python312Full
@@ -172,6 +172,7 @@ in {
       #finegrained = true;
     };
   };
+  nvidia-container-toolkit.enable = true; # docker usage
   services.xserver.videoDrivers = ["nvidia"];
 
   # KDE
@@ -220,7 +221,6 @@ in {
   # Docker settings
   virtualisation.docker = {
     enable = true;
-    enableNvidia = true;
     rootless.enable = true;
     rootless.setSocketVariable = true;
     daemon.settings = {
