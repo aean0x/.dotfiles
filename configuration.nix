@@ -166,15 +166,20 @@ in {
     open = false;
     nvidiaSettings = true;
     package = config.boot.kernelPackages.nvidiaPackages.beta;
-    #prime.offload.enable = true;
+    prime = {
+      sync.enable = false;
+      offload.enable = true;
+      nvidiaBusId = "PCI:1:0:0";
+      amdgpuBusId = "PCI:d:0:0";
+    };
     powerManagement = {
       enable = true;
-      #finegrained = true;
+      finegrained = true;
     };
   };
   # hardware.nvidia-container-toolkit.enable = true; # docker usage
   # hardware.nvidia-container-toolkit.mount-nvidia-executables
-  services.xserver.videoDrivers = ["nvidia"];
+  services.xserver.videoDrivers = ["nvidia" "amdgpu"];
 
   # KDE
   services.desktopManager.plasma6.enable = true;
