@@ -222,6 +222,7 @@ in {
   # Docker settings
   virtualisation.docker = {
     enable = true;
+    enableNvidia = true;
     rootless.enable = true;
     rootless.setSocketVariable = true;
     daemon.settings = {
