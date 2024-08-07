@@ -130,9 +130,9 @@ in {
     "nvidia_drm.modeset=1" # Enable DRM kernel mode setting
     "nvidia_drm.fbdev=1" # Fix phantom monitor issue (I have a 3060 Ti)
     "nvidia.NVreg_EnableGpuFirmware=0" # Disable GSP (GPU offloading) to fix Wayland performance
-    "mem_sleep_default=shallow" # Fix sleep issues
+    # "mem_sleep_default=shallow" # Fix sleep issues
     # "acpi_osi=!"
-    "acpi_osi=Linux"
+    # "acpi_osi=Linux"
     # "acpi_sleep=s4_nohwsleep" # alternate sleep fix
     "quiet"
     "splash"
@@ -146,6 +146,7 @@ in {
   # udev rules
   services.udev.extraRules = ''
     ACTION=="add", ATTR{idVendor}=="046d", ATTR{idProduct}=="c548", TEST=="power/wakeup", ATTR{power/wakeup}="disabled"
+    ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{class}=="0x040300", ATTR{remove}="1"
   ''; # Disable USB mouse wake up because my fucking logitech mouse randomly wakes up computer
 
   # Hardware settings
@@ -164,9 +165,10 @@ in {
     open = false;
     nvidiaSettings = true;
     package = config.boot.kernelPackages.nvidiaPackages.beta;
+    prime.offload.enable = true;
     powerManagement = {
       enable = true;
-      finegrained = false;
+      finegrained = true;
     };
   };
   services.xserver.videoDrivers = ["nvidia"];
