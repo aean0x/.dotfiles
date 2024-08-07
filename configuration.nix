@@ -172,7 +172,8 @@ in {
       #finegrained = true;
     };
   };
-  hardware.nvidia-container-toolkit.enable = true; # docker usage
+  # hardware.nvidia-container-toolkit.enable = true; # docker usage
+  # hardware.nvidia-container-toolkit.mount-nvidia-executables
   services.xserver.videoDrivers = ["nvidia"];
 
   # KDE
