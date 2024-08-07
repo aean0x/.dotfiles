@@ -170,7 +170,7 @@ in {
       sync.enable = false;
       offload.enable = true;
       nvidiaBusId = "PCI:1:0:0";
-      amdgpuBusId = "PCI:d:0:0";
+      amdgpuBusId = "PCI:13:0:0";
     };
     powerManagement = {
       enable = true;
