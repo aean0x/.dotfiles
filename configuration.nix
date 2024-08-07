@@ -35,9 +35,6 @@ in {
     p7zip
     unzip
     python3
-    pciutils
-    glxinfo
-    lshw
 
     #LLM
     python312Full
@@ -59,6 +56,9 @@ in {
     vulkan-headers
     dxvk
     epson-escpr # my printer
+    pciutils
+    glxinfo
+    lshw
 
     # KDE
     kdeplasma-addons
