@@ -36,6 +36,8 @@ in {
     unzip
     python3
     pciutils
+    glxinfo
+    lshw
 
     #LLM
     python312Full
