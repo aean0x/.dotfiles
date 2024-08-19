@@ -35,6 +35,7 @@ in {
     p7zip
     unzip
     python3
+    unetbootin
 
     #LLM
     python312Full
