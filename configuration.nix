@@ -35,7 +35,7 @@ in {
     p7zip
     unzip
     python3
-    unetbootin
+    etcher
 
     #LLM
     python312Full
