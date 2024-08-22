@@ -35,7 +35,7 @@ in {
     p7zip
     unzip
     python3
-    etcher
+    ventoy
 
     #LLM
     python312Full
@@ -136,7 +136,7 @@ in {
     # "nvidia.NVreg_EnableGpuFirmware=0" # Disable GSP (GPU offloading) to fix Wayland performance
     # "mem_sleep_default=shallow" # Fix sleep issues
     # "acpi_osi=!"
-    # "acpi_osi=Linux"
+    "acpi_osi=Linux"
     # "acpi_sleep=s4_nohwsleep" # alternate sleep fix
     "quiet"
     "splash"
