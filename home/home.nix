@@ -25,7 +25,7 @@ in {
     brave
     discord
     vlc
-    betterbird
+    thunderbird
     onedrivegui
     franz
     signal-desktop
