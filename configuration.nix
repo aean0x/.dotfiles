@@ -73,6 +73,7 @@ in {
     kdePackages.kcalc
     kdePackages.ksystemlog
     kdePackages.kolourpaint
+    kdePackages.isoimagewriter
     plasma-browser-integration
     kdePackages.qtstyleplugin-kvantum
 
@@ -148,7 +149,8 @@ in {
   ];
 
   # udev rules
-  services.udev.extraRules = ''
+  services.ude
+  v.extraRules = ''
     ACTION=="add", ATTR{idVendor}=="046d", ATTR{idProduct}=="c548", TEST=="power/wakeup", ATTR{power/wakeup}="disabled"
     ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{class}=="0x040300", ATTR{remove}="1"
   ''; # Disable USB mouse wake up because my fucking logitech mouse randomly wakes up computer
