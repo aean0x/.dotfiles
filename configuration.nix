@@ -33,6 +33,7 @@ in {
     docker-compose
     mono
     p7zip
+    unrar
     unzip
     python3
     exfatprogs
