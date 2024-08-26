@@ -35,7 +35,7 @@ in {
     p7zip
     unzip
     python3
-    ventoy
+    kdePackages.partitionmanager
 
     #LLM
     python312Full
