@@ -41,6 +41,7 @@ in {
     "im.riot.Riot"
     "com.github.IsmaelMartinez.teams_for_linux"
     "com.usebottles.bottles"
+    "io.gitlab.adhami3310.Impression"
   ];
 
   # Flatpak settings
