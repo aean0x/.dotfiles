@@ -34,7 +34,7 @@ if [ "$SAVE_PLASMA" = true ]; then
     nix run github:pjones/plasma-manager > ./home/plasma.nix
     echo "Plasma config saved to plasma.nix."
 else
-    echo "Skipping plasma configuration save..."
+    echo "Skipping plasma configuration save. Use -p to save..."
 fi
 
 # Find and format all files using Alejandra
@@ -76,5 +76,6 @@ if [ "$REBOOT" = true ]; then
     echo "Rebooting the system..."
     sudo reboot
 else
+    echo "Skipping reboot. Use -r to reboot."
     echo "Finished rebuild."
 fi

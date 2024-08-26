@@ -35,7 +35,7 @@ in {
     p7zip
     unzip
     python3
-    kdePackages.partitionmanager
+    exfatprogs
 
     #LLM
     python312Full
@@ -76,6 +76,7 @@ in {
     kdePackages.isoimagewriter
     plasma-browser-integration
     kdePackages.qtstyleplugin-kvantum
+    kdePackages.partitionmanager
 
     # Package derivation template
     (writeTextDir "share/sddm/themes/breeze/theme.conf.user" ''
