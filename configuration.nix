@@ -18,6 +18,7 @@ in {
         proton-ge-bin
       ];
     };
+    virt-manager.enable = true;
   };
 
   # Packages https://search.nixos.org/packages
@@ -245,7 +246,8 @@ in {
     ];
   };
 
-  virtualisationvmware.host.enable = true;
+  # Virtualization settings
+  virtualisation.libvirtd.enable = true;
 
   # User settings
   users = {
