@@ -245,6 +245,8 @@ in {
     ];
   };
 
+  virtualisationvmware.host.enable = true;
+
   # User settings
   users = {
     mutableUsers = false; # Ensure users are managed declaratively
