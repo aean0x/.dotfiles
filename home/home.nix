@@ -29,9 +29,9 @@ in {
     pantheon.elementary-mail
     onedrivegui
     signal-desktop
-    # libreoffice
-    # qbittorrent
-    # xivlauncher
+    libreoffice
+    qbittorrent
+    xivlauncher
     # kuro
   ];
 
