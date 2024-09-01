@@ -26,6 +26,7 @@ in {
     discord
     vlc
     thunderbird
+    pantheon.elementary-mail
     onedrivegui
     franz
     signal-desktop
