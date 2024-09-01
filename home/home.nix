@@ -22,18 +22,17 @@ in {
 
   # Packages https://search.nixos.org/packages
   home.packages = with pkgs; [
-    # brave
-    # discord
-    # vlc
-    # thunderbird
-    # pantheon.elementary-mail
-    # onedrivegui
-    # franz
-    # signal-desktop
-    # libreoffice
-    # qbittorrent
-    # xivlauncher
-    # kuro
+    brave
+    discord
+    vlc
+    thunderbird
+    pantheon.elementary-mail
+    onedrivegui
+    signal-desktop
+    libreoffice
+    qbittorrent
+    xivlauncher
+    kuro
   ];
 
   # Flatpak packages
