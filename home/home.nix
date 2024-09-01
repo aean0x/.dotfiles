@@ -29,10 +29,10 @@ in {
     pantheon.elementary-mail
     onedrivegui
     signal-desktop
-    libreoffice
-    qbittorrent
-    xivlauncher
-    kuro
+    # libreoffice
+    # qbittorrent
+    # xivlauncher
+    # kuro
   ];
 
   # Flatpak packages
