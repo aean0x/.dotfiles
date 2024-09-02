@@ -38,6 +38,8 @@ in {
     unzip
     python3
     exfatprogs
+    zip2john
+    hashcat
 
     #LLM
     python312Full
