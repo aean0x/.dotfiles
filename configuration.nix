@@ -41,8 +41,10 @@ in {
     john
     hashcat
 
-    #LLM
+    # ML
     python312Full
+    cudaPackages.cudatoolkit
+    cudaPackages.cudnn
     # python311Packages.bentoml
     # python311Packages.openllm
     # python311Packages.gradio
