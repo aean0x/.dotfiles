@@ -38,7 +38,7 @@ in {
     unzip
     python3
     exfatprogs
-    zip2john
+    john
     hashcat
 
     #LLM
