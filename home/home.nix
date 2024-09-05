@@ -32,7 +32,6 @@ in {
     libreoffice
     qbittorrent
     xivlauncher
-    cursor
   ];
 
   # Flatpak packages
