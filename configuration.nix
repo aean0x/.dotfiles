@@ -113,6 +113,7 @@ in {
   #   wantedBy = ["multi-user.target"];
   #   after = ["docker.service" "docker.socket"];
   # };
+  systemd.enableUnifiedCgroupHierarchy = false;
 
   # Boot settings
   boot = {
@@ -238,6 +239,7 @@ in {
   # Docker settings
   virtualisation.docker = {
     enable = true;
+    enableOnBoot = true;
     # enableNvidia = true;
     # rootless.enable = true;
     # rootless.setSocketVariable = true;
