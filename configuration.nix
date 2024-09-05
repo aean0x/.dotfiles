@@ -241,10 +241,10 @@ in {
     # enableNvidia = true;
     # rootless.enable = true;
     # rootless.setSocketVariable = true;
-    # daemon.settings = {
-    #   default-runtime = "nvidia";
-    #   # runtimes.nvidia.path = "${pkgs.nvidia-container-toolkit}/bin/nvidia-container-runtime";
-    # };
+    daemon.settings = {
+      default-runtime = "nvidia";
+      # runtimes.nvidia.path = "${pkgs.nvidia-container-toolkit}/bin/nvidia-container-runtime";
+    };
     # extraPackages = with pkgs; [
     #   nvidia-container-toolkit
     # ];
