@@ -113,7 +113,6 @@ in {
   #   wantedBy = ["multi-user.target"];
   #   after = ["docker.service" "docker.socket"];
   # };
-  systemd.enableUnifiedCgroupHierarchy = false;
 
   # Boot settings
   boot = {
@@ -240,13 +239,13 @@ in {
   virtualisation.docker = {
     enable = true;
     enableOnBoot = true;
-    # enableNvidia = true;
+    enableNvidia = true;
     # rootless.enable = true;
     # rootless.setSocketVariable = true;
-    # daemon.settings = {
-    #   default-runtime = "nvidia";
-    #   # runtimes.nvidia.path = "${pkgs.nvidia-container-toolkit}/bin/nvidia-container-runtime";
-    # };
+    daemon.settings = {
+      default-runtime = "nvidia";
+      # runtimes.nvidia.path = "${pkgs.nvidia-container-toolkit}/bin/nvidia-container-runtime";
+    };
     # extraPackages = with pkgs; [
     #   nvidia-container-toolkit
     # ];
