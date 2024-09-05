@@ -189,7 +189,7 @@ in {
     };
   };
   hardware.nvidia-container-toolkit.enable = true; # docker usage
-  # hardware.nvidia-container-toolkit.mount-nvidia-executables
+  hardware.nvidia-container-toolkit.mount-nvidia-executables = true;
   services.xserver.videoDrivers = ["nvidia" "amdgpu"];
 
   # KDE
@@ -238,13 +238,13 @@ in {
   # Docker settings
   virtualisation.docker = {
     enable = true;
-    enableNvidia = true;
+    # enableNvidia = true;
     # rootless.enable = true;
     # rootless.setSocketVariable = true;
-    daemon.settings = {
-      default-runtime = "nvidia";
-      # runtimes.nvidia.path = "${pkgs.nvidia-container-toolkit}/bin/nvidia-container-runtime";
-    };
+    # daemon.settings = {
+    #   default-runtime = "nvidia";
+    #   # runtimes.nvidia.path = "${pkgs.nvidia-container-toolkit}/bin/nvidia-container-runtime";
+    # };
     # extraPackages = with pkgs; [
     #   nvidia-container-toolkit
     # ];
