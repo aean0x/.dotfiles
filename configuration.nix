@@ -32,6 +32,7 @@ in {
     ffmpeg
     kubectl
     docker-compose
+    nvidia-docker
     mono
     p7zip
     unrar
