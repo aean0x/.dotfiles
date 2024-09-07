@@ -32,7 +32,6 @@ in {
     ffmpeg
     kubectl
     docker-compose
-    nvidia-docker2
     mono
     p7zip
     unrar
@@ -247,9 +246,10 @@ in {
     #   default-runtime = "nvidia";
     #   # runtimes.nvidia.path = "${pkgs.nvidia-container-toolkit}/bin/nvidia-container-runtime";
     # };
-    # extraPackages = with pkgs; [
-    #   nvidia-container-toolkit
-    # ];
+    extraPackages = with pkgs; [
+      nvidia-container-toolkit
+      nvidia-docker
+    ];
   };
 
   # Virtualization settings
