@@ -146,6 +146,7 @@ in {
     # "acpi_osi=!"
     "acpi_osi=Linux"
     # "acpi_sleep=s4_nohwsleep" # alternate sleep fix
+    # Should disable S4/S5 in BIOS. If not possible, try various options above.
     "quiet"
     "splash"
     "boot.shell_on_fail"
