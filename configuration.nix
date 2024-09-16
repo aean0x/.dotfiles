@@ -40,7 +40,6 @@ in {
     exfatprogs
     john
     hashcat
-    cursor
 
     # ML
     python312Full
