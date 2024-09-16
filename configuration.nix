@@ -40,7 +40,7 @@ in {
     exfatprogs
     john
     hashcat
-    cursor
+    cursor.packages.${pkgs.system}.default
 
     # ML
     python312Full
