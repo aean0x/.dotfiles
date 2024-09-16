@@ -39,6 +39,7 @@
 
         flatpaks.nixosModules.nix-flatpak
         home-manager.nixosModules.home-manager
+        cursor.packages.${pkgs.system}.default
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
