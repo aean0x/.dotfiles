@@ -36,10 +36,12 @@
       modules = [
         ./configuration.nix
         ./hardware-configuration.nix
+        ({pkgs, ...}: {
+          environment.systemPackages = [cursor.packages.${system}.default];
+        })
 
         flatpaks.nixosModules.nix-flatpak
         home-manager.nixosModules.home-manager
-        cursor.packages.${pkgs.system}.default
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
