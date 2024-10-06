@@ -166,6 +166,7 @@ in {
   hardware = {
     steam-hardware.enable = true;
     pulseaudio.enable = false;
+    bluetooth.enable = true;
   };
 
   # Graphics settings
