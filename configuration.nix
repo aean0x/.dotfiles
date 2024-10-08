@@ -159,6 +159,7 @@ in {
   # udev rules
   services.udev.extraRules = ''
     ACTION=="add", ATTR{idVendor}=="046d", ATTR{idProduct}=="c548", TEST=="power/wakeup", ATTR{power/wakeup}="disabled"
+    ACTION=="add", SUBSYSTEM=="bluetooth", ATTRS{address}=="D8:93:67:08:1C:C9", TEST=="power/wakeup", ATTR{power/wakeup}="disabled"
     ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{class}=="0x040300", ATTR{remove}="1"
   ''; # Disable USB mouse wake up because my fucking logitech mouse randomly wakes up computer
 
