@@ -157,7 +157,8 @@ in {
   ];
 
   # Enable Xbox One driver
-  linuxKernel.packages.linux_6_11.xone = true;
+  boot.extraModulePackages = [config.boot.kernelPackages.xone];
+  boot.kernelModules = ["xone"];
 
   # udev rules
   services.udev.extraRules = ''
