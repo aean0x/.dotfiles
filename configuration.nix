@@ -156,6 +156,9 @@ in {
     "udev.log_priority=3"
   ];
 
+  # Enable Xbox One driver
+  linuxKernel.packages.linux_6_11.xone = true;
+
   # udev rules
   services.udev.extraRules = ''
     ACTION=="add", ATTR{idVendor}=="046d", ATTR{idProduct}=="c548", TEST=="power/wakeup", ATTR{power/wakeup}="disabled"
