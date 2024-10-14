@@ -32,6 +32,7 @@ in {
     libreoffice
     qbittorrent
     xivlauncher
+    openshot-qt
   ];
 
   # Flatpak packages
