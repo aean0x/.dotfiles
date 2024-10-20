@@ -55,14 +55,20 @@ sudo nix flake update
 
 # Rebuild NixOS with the new configuration
 echo "NixOS Rebuilding..."
-sudo nixos-rebuild switch --flake "$NIXOS_DIR" &>$LOG_FILE || (
-    (cat $LOG_FILE | grep -A 2 --color error) || (cat $LOG_FILE | grep -A 2 --color warning) && false
-)
-
-echo "Log file written to: $LOG_FILE"
+sudo nixos-rebuild switch --flake "$NIXOS_DIR" 2>&1 | tee "$LOG_FILE" | while IFS= read -r line; do
+    echo -ne "\r\033[K$line"
+done
+echo  # Add a newline after the rebuild process
 
 # Check if there were any errors during the rebuild
-if [ $? -eq 0 ]; then
+if grep -qE "error|warning" "$LOG_FILE"; then
+    echo "Errors or warnings detected. Displaying relevant lines:"
+    grep -A 2 --color=always -E "error|warning" "$LOG_FILE"
+    exit 1
+else
+    echo "Rebuild completed successfully."
+    echo "Full log file written to: $LOG_FILE"
+
     # Commit changes to the repository
     gen=$(nixos-rebuild list-generations | grep current)
     git commit -am "$gen"
