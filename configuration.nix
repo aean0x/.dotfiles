@@ -246,7 +246,6 @@ in {
   virtualisation.docker = {
     enable = true;
     enableOnBoot = true;
-    enableNvidia = true;
     rootless.enable = true;
     rootless.setSocketVariable = true;
     # daemon.settings = {
