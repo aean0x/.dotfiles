@@ -24,6 +24,7 @@ in {
   home.packages = with pkgs; [
     brave
     discord
+    gimp
     vlc
     thunderbird
     pantheon.elementary-mail
