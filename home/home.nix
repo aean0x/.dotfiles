@@ -26,6 +26,7 @@ in {
     discord
     gimp
     vlc
+    turbovnc
     thunderbird
     pantheon.elementary-mail
     onedrivegui
