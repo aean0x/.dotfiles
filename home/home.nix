@@ -25,6 +25,7 @@ in {
     brave
     discord
     gimp
+    inkscape
     vlc
     turbovnc
     thunderbird
