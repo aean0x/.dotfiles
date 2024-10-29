@@ -40,6 +40,7 @@ in {
     exfatprogs
     john
     hashcat
+    hpl
 
     # ML
     python312Full
