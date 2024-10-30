@@ -106,6 +106,18 @@ in {
         "0 0 * * 1 ${pkgs.bash}/bin/bash -c '${config.users.users.${secrets.username}.home}/.local/bin/rebuild'"
       ];
     };
+
+    # Add Avahi for Samba printing discovery
+    avahi = {
+      enable = true;
+      nssmdns4 = true;
+      publish = {
+        enable = true;
+        userServices = true;
+        workstation = true;
+      };
+    };
+    samba.enable = true;
   };
 
   # Systemd services
