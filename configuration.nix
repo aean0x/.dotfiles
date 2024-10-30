@@ -63,7 +63,6 @@ in {
     vulkan-tools
     vulkan-headers
     dxvk
-    epson-escpr # my printer
     pciutils
     glxinfo
     lshw
@@ -95,7 +94,10 @@ in {
   # Services settings
   services = {
     flatpak.enable = true;
-    printing.enable = true;
+    printing = {
+      enable = true;
+      drivers = with pkgs; [epson-escpr];
+    };
 
     # Cron jobs
     cron = {
