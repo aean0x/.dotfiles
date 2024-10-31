@@ -103,7 +103,7 @@ in {
     cron = {
       enable = true;
       systemCronJobs = [
-        "0 0 * * 1 ${pkgs.bash}/bin/bash -c '${config.users.users.${secrets.username}.home}/.local/bin/rebuild'"
+        "0 0 * * * ${pkgs.bash}/bin/bash -c '${config.users.users.${secrets.username}.home}/.local/bin/rebuild'"
       ];
     };
 
@@ -128,6 +128,27 @@ in {
   #   wantedBy = ["multi-user.target"];
   #   after = ["docker.service" "docker.socket"];
   # };
+  systemd = {
+    timers = {
+      weeklyUpdate = {
+        description = "Weekly NixOS system update";
+        wantedBy = ["timers.target"];
+        timerConfig = {
+          OnCalendar = "weekly";
+          Persistent = true; # Ensures the job runs if missed
+        };
+      };
+    };
+    services = {
+      weeklyUpdate = {
+        description = "Update NixOS system";
+        serviceConfig = {
+          ExecStart = "${pkgs.bash}/bin/bash -c 'for i in {1..3}; do nix flake update && nixos-rebuild switch --flake /etc/nixos && break || sleep 10; done'";
+          User = "root";
+        };
+      };
+    };
+  };
 
   # Boot settings
   boot = {
