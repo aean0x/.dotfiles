@@ -42,6 +42,7 @@ in {
     hashcat
     hpl
     protontricks
+    protonup-ng
 
     # ML
     python312Full

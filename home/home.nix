@@ -41,6 +41,8 @@ in {
     qbittorrent
     xivlauncher
     openshot-qt
+    protontricks
+    protonup-ng
   ];
 
   # Flatpak packages
