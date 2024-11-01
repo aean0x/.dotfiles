@@ -138,6 +138,14 @@ in {
           Persistent = true; # Ensures the job runs if missed
         };
       };
+      monthlyCleanup = {
+        description = "Monthly NixOS garbage collection";
+        wantedBy = ["timers.target"];
+        timerConfig = {
+          OnCalendar = "monthly";
+          Persistent = true; # Ensures the job runs if missed
+        };
+      };
     };
     services = {
       weeklyUpdate = {
@@ -147,7 +155,21 @@ in {
           User = "root";
         };
       };
+      monthlyCleanup = {
+        description = "Clean up old NixOS generations";
+        serviceConfig = {
+          ExecStart = "${pkgs.nix}/bin/nix-collect-garbage --delete-older-than 7d";
+          User = "root";
+        };
+      };
     };
+    # Disable hibernation because it's broken
+    sleep.extraConfig = ''
+      [Sleep]
+      AllowHibernation=no
+      AllowHybridSleep=no
+      AllowSuspendThenHibernate=no
+    '';
   };
 
   # Boot settings
@@ -211,6 +233,12 @@ in {
       enable = true;
       powerOnBoot = true;
     };
+  };
+
+  # Power settings
+  powerManagement = {
+    enable = true;
+    cpuFreqGovernor = "ondemand";
   };
 
   # Graphics settings

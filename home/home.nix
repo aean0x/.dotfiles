@@ -18,6 +18,11 @@ in {
         export PATH=$PATH:$HOME/.local/bin
       '';
     };
+    neovim = {
+      enable = true;
+      viAlias = true;
+      vimAlias = true;
+    };
   };
 
   # Packages https://search.nixos.org/packages
