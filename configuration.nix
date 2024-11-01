@@ -41,6 +41,7 @@ in {
     john
     hashcat
     hpl
+    protontricks
 
     # ML
     python312Full
