@@ -167,7 +167,7 @@ in {
     sleep.extraConfig = ''
       [Sleep]
       AllowHibernation=no
-      AllowHybridSleep=no
+      AllowHybridSleep=yes
       AllowSuspendThenHibernate=no
     '';
   };
