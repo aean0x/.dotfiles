@@ -373,6 +373,7 @@ in {
           "scanner"
           "docker"
           "libvirtd"
+          "kvm"
         ];
         shell = pkgs.bash;
         hashedPassword = "${secrets.hashedPassword}";
