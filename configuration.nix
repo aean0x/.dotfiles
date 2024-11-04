@@ -42,6 +42,7 @@ in {
     john
     hashcat
     hpl
+    gptfdisk
 
     # VM/KVM tools
     qemu
