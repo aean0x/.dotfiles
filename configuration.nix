@@ -53,6 +53,7 @@ in {
     libguestfs
     bridge-utils
     seabios
+    dmg2img
 
     # ML
     python312Full
