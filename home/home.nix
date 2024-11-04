@@ -27,6 +27,7 @@ in {
 
   # Packages https://search.nixos.org/packages
   home.packages = with pkgs; [
+    # User applications
     brave
     discord
     gimp
@@ -41,6 +42,11 @@ in {
     qbittorrent
     xivlauncher
     openshot-qt
+
+    # VM management GUI tools (user-level)
+    virt-manager
+    virt-viewer
+    looking-glass-client
   ];
 
   # Flatpak packages
@@ -89,6 +95,11 @@ in {
     ];
 
   dconf.settings = {
+    "org/virt-manager/virt-manager" = {
+      system-tray = true;
+      xmleditor-enabled = true;
+    };
+
     "org/virt-manager/virt-manager/connections" = {
       autoconnect = ["qemu:///system"];
       uris = ["qemu:///system"];

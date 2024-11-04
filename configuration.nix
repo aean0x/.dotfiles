@@ -43,6 +43,16 @@ in {
     hashcat
     hpl
 
+    # VM/KVM tools
+    qemu
+    OVMF
+    spice
+    spice-gtk
+    spice-protocol
+    virt-viewer
+    libguestfs
+    bridge-utils
+
     # ML
     python312Full
     cudaPackages.cudatoolkit
@@ -217,7 +227,14 @@ in {
 
   # Enable Xbox One driver
   boot.extraModulePackages = [config.boot.kernelPackages.xone];
-  boot.kernelModules = ["xone"];
+  boot.kernelModules = [
+    "xone"
+    "kvm-amd"
+    "vfio"
+    "vfio_iommu_type1"
+    "vfio_pci"
+    "vfio_virqfd"
+  ];
 
   # udev rules
   services.udev.extraRules = ''
@@ -327,7 +344,20 @@ in {
   };
 
   # Virtualization settings
-  virtualisation.libvirtd.enable = true;
+  virtualisation = {
+    libvirtd = {
+      enable = true;
+      qemu = {
+        package = pkgs.qemu;
+        ovmf = {
+          enable = true;
+          packages = [pkgs.OVMF];
+        };
+        swtpm.enable = true;
+      };
+    };
+    spiceUSBRedirection.enable = true;
+  };
 
   # User settings
   users = {
