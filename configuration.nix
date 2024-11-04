@@ -52,6 +52,7 @@ in {
     virt-viewer
     libguestfs
     bridge-utils
+    seabios
 
     # ML
     python312Full
@@ -351,7 +352,12 @@ in {
         package = pkgs.qemu;
         ovmf = {
           enable = true;
-          packages = [pkgs.OVMF];
+          packages = [
+            (pkgs.OVMF.override {
+              secureBoot = true;
+              tpmSupport = true;
+            })
+          ];
         };
         swtpm.enable = true;
       };
