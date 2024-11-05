@@ -43,6 +43,7 @@ in {
     hashcat
     hpl
     gptfdisk
+    cdrkit
 
     # VM/KVM tools
     qemu
