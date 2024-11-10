@@ -44,6 +44,7 @@ in {
     hpl
     gptfdisk
     cdrkit
+    gnome-disk-utility
 
     # VM/KVM tools
     qemu
