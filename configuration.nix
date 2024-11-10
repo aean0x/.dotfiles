@@ -373,9 +373,17 @@ in {
           ];
         };
         swtpm.enable = true;
+        runAsRoot = true;
       };
     };
     spiceUSBRedirection.enable = true;
+  };
+
+  # Make sure the libvirtd service is running
+  systemd.services.libvirtd = {
+    enable = true;
+    wantedBy = ["multi-user.target"];
+    path = [pkgs.qemu];
   };
 
   # User settings
