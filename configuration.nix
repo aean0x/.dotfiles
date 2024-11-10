@@ -362,7 +362,7 @@ in {
     libvirtd = {
       enable = true;
       qemu = {
-        package = pkgs.qemu;
+        package = pkgs.qemu_kvm;
         ovmf = {
           enable = true;
           packages = [
