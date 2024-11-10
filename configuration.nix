@@ -45,6 +45,7 @@ in {
     gptfdisk
     cdrkit
     gnome-disk-utility
+    gnumake
 
     # VM/KVM tools
     qemu
@@ -57,6 +58,8 @@ in {
     bridge-utils
     seabios
     dmg2img
+    tesseract
+    screen
 
     # ML
     python312Full
@@ -197,6 +200,12 @@ in {
     consoleLogLevel = 0;
     initrd.verbose = false;
     loader.timeout = 0;
+
+    # Add modprobe configuration
+    extraModprobeConfig = ''
+      options kvm_amd nested=1
+      options kvm ignore_msrs=1 report_ignored_msrs=0
+    '';
   };
 
   # Plymouth (boot screen)
@@ -384,6 +393,7 @@ in {
           "docker"
           "libvirtd"
           "kvm"
+          "input"
         ];
         shell = pkgs.bash;
         hashedPassword = "${secrets.hashedPassword}";
