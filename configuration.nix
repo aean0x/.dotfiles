@@ -94,6 +94,7 @@ in {
     kdePackages.kdenlive
     kdePackages.okular
     kdePackages.kmail
+    kdePackages.kmail-account-wizard
     kdePackages.elisa
     kdePackages.kcalc
     kdePackages.ksystemlog
