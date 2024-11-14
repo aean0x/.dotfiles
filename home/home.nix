@@ -30,6 +30,7 @@ in {
     # User applications
     brave
     discord
+    zoom-us
     gimp
     inkscape
     vlc
