@@ -104,6 +104,9 @@ in {
     kdePackages.qtstyleplugin-kvantum
     kdePackages.partitionmanager
 
+    # Misc
+    trezord
+
     # Package derivation template
     (writeTextDir "share/sddm/themes/breeze/theme.conf.user" ''
       [General]

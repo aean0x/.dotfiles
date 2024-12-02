@@ -43,6 +43,7 @@ in {
     qbittorrent
     xivlauncher
     openshot-qt
+    trezor-suite
 
     # VM management GUI tools (user-level)
     virt-manager
