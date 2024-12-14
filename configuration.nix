@@ -46,6 +46,7 @@ in {
     cdrkit
     gnome-disk-utility
     gnumake
+    cloudflared
 
     # VM/KVM tools
     qemu
@@ -383,11 +384,23 @@ in {
     spiceUSBRedirection.enable = true;
   };
 
-  # Make sure the libvirtd service is running
   systemd.services.libvirtd = {
     enable = true;
     wantedBy = ["multi-user.target"];
     path = [pkgs.qemu];
+  };
+
+  systemd.services.cloudflared = {
+    description = "Cloudflare Tunnel";
+    wantedBy = ["multi-user.target"];
+    serviceConfig = {
+      ExecStart = "${pkgs.cloudflared}/bin/cloudflared tunnel run terminal-of-tetsuo";
+      Restart = "always";
+      User = "${secrets.username}"; # Run as your user
+      StateDirectory = "cloudflared";
+      ConfigurationDirectory = "cloudflared";
+      ConfigurationDirectoryMode = "0755";
+    };
   };
 
   # User settings
