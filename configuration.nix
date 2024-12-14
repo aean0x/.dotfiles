@@ -63,7 +63,8 @@ in {
     screen
 
     # ML
-    python312Full
+    python3Full
+    python3Packages.pip
     cudaPackages.cudatoolkit
     cudaPackages.cudnn
     # python311Packages.bentoml
