@@ -395,9 +395,9 @@ in {
     description = "Cloudflare Tunnel";
     wantedBy = ["multi-user.target"];
     serviceConfig = {
-      ExecStart = "${pkgs.cloudflared}/bin/cloudflared tunnel run terminal-of-tetsuo";
+      ExecStart = "${pkgs.cloudflared}/bin/cloudflared tunnel --config /home/${secrets.username}/.cloudflared/config.yml run 97f0877b-9ed5-42ba-999e-d13903c05d52";
       Restart = "always";
-      User = "${secrets.username}"; # Run as your user
+      User = "${secrets.username}";
       StateDirectory = "cloudflared";
       ConfigurationDirectory = "cloudflared";
       ConfigurationDirectoryMode = "0755";
