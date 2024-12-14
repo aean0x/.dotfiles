@@ -13,7 +13,6 @@
       inputs.home-manager.follows = "home-manager";
     };
     flatpaks.url = "github:gmodena/nix-flatpak";
-    cursor.url = "github:omarcresp/cursor-flake/main";
   };
 
   outputs = {
@@ -22,7 +21,6 @@
     home-manager,
     plasma-manager,
     flatpaks,
-    cursor,
     ...
   } @ inputs: let
     inherit (self) outputs;
@@ -36,10 +34,6 @@
       modules = [
         ./configuration.nix
         ./hardware-configuration.nix
-        ({pkgs, ...}: {
-          environment.systemPackages = [cursor.packages.${system}.default];
-        })
-
         flatpaks.nixosModules.nix-flatpak
         home-manager.nixosModules.home-manager
         {

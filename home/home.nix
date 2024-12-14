@@ -9,7 +9,6 @@
 in {
   # Programs with options https://home-manager-options.extranix.com/
   programs = {
-    vscode.enable = true;
     fzf.enable = true;
     home-manager.enable = true;
     bash = {
@@ -30,6 +29,7 @@ in {
     # User applications
     brave
     discord
+    code-cursor
     zoom-us
     gimp
     inkscape
