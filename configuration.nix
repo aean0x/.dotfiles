@@ -61,6 +61,7 @@ in {
     automake
     libtool
     gcc-arm-embedded
+    pkgsCross.aarch64-multiplatform.buildPackages.gcc
 
     # VM/KVM tools
     qemu
