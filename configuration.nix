@@ -60,10 +60,7 @@ in {
     autoconf
     automake
     libtool
-
-    # Cross compilation
-    pkgsCross.aarch64-multiplatform.buildPackages.gcc
-    pkgsCross.aarch64-multiplatform.buildPackages.binutils
+    gcc-arm-embedded
 
     # VM/KVM tools
     qemu
