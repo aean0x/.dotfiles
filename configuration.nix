@@ -45,10 +45,21 @@ in {
     gptfdisk
     cdrkit
     gnome-disk-utility
-    gnumake
     cloudflared
+
+    # Build tools
+    cmake
     bison
     flex
+    fontforge
+    makeWrapper
+    pkg-config
+    gnumake
+    gcc
+    libiconv
+    autoconf
+    automake
+    libtool
 
     # VM/KVM tools
     qemu
