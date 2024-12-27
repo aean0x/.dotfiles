@@ -47,6 +47,8 @@ in {
     gnome-disk-utility
     gnumake
     cloudflared
+    bison
+    flex
 
     # VM/KVM tools
     qemu
