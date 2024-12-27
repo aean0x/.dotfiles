@@ -61,6 +61,10 @@ in {
     automake
     libtool
 
+    # Cross compilation
+    pkgsCross.aarch64-multiplatform.buildPackages.gcc
+    pkgsCross.aarch64-multiplatform.buildPackages.binutils
+
     # VM/KVM tools
     qemu
     OVMF
