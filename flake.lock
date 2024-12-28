@@ -57,11 +57,11 @@
         "zig": "zig"
       },
       "locked": {
-        "lastModified": 1735418095,
-        "narHash": "sha256-3tTbXfMUuBhp5pp16MccgqiP/3uWHTu5O5Pf7XziAkg=",
+        "lastModified": 1735419510,
+        "narHash": "sha256-P7Xk49Gccom6vCJu1rynNxNrs2moRGsrzuASgzaWw/Q=",
         "owner": "ghostty-org",
         "repo": "ghostty",
-        "rev": "2362a67f685032ab5b45c29bf270da82c8ad37a2",
+        "rev": "ca7c9547129cb156417f7aa50cb390edecb685d7",
         "type": "github"
       },
       "original": {
@@ -122,6 +122,22 @@
         "type": "github"
       }
     },
+    "nixpkgs-stable_2": {
+      "locked": {
+        "lastModified": 1735286948,
+        "narHash": "sha256-JMRV2RI58nV1UqLXqm+lcea1/dr92fYjWU5S+Rz3fmE=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "31ac92f9628682b294026f0860e14587a09ffb4b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-24.05",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "nixpkgs-unstable": {
       "locked": {
         "lastModified": 1733229606,
@@ -167,6 +183,7 @@
         "ghostty": "ghostty",
         "home-manager": "home-manager",
         "nixpkgs": "nixpkgs",
+        "nixpkgs-stable": "nixpkgs-stable_2",
         "plasma-manager": "plasma-manager"
       }
     },

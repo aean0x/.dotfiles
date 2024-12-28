@@ -50,7 +50,7 @@ in {
     # VM management GUI tools (user-level)
     virt-manager
     virt-viewer
-    looking-glass-client
+    stable.looking-glass-client
   ];
 
   # Flatpak packages

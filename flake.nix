@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-24.05";
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -19,6 +20,7 @@
   outputs = {
     self,
     nixpkgs,
+    nixpkgs-stable,
     home-manager,
     plasma-manager,
     flatpaks,
@@ -28,13 +30,21 @@
     inherit (self) outputs;
     secrets = import ./home/secrets.nix;
     system = "x86_64-linux";
-  in {
-    # overlays = import ./overlays {inherit inputs;};
 
+    overlays = [
+      (final: prev: {
+        stable = import nixpkgs-stable {
+          inherit system;
+          config.allowUnfree = true;
+        };
+      })
+    ];
+  in {
     nixosConfigurations.${secrets.hostName} = nixpkgs.lib.nixosSystem {
       inherit system;
       specialArgs = {inherit inputs;};
       modules = [
+        {nixpkgs.overlays = overlays;}
         ./configuration.nix
         ./hardware-configuration.nix
         flatpaks.nixosModules.nix-flatpak

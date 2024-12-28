@@ -131,7 +131,7 @@ in {
     flatpak.enable = true;
     printing = {
       enable = true;
-      drivers = with pkgs; [epson-escpr];
+      drivers = [pkgs.stable.epson-escpr];
     };
 
     # Cron jobs
