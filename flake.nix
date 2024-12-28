@@ -13,10 +13,7 @@
       inputs.home-manager.follows = "home-manager";
     };
     flatpaks.url = "github:gmodena/nix-flatpak";
-    ghostty = {
-      url = "github:ghostty-org/ghostty";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    ghostty.url = "github:ghostty-org/ghostty";
   };
 
   outputs = {
@@ -36,6 +33,7 @@
 
     nixosConfigurations.${secrets.hostName} = nixpkgs.lib.nixosSystem {
       inherit system;
+      specialArgs = {inherit inputs;};
       modules = [
         ./configuration.nix
         ./hardware-configuration.nix
@@ -45,6 +43,7 @@
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
           home-manager.sharedModules = [plasma-manager.homeManagerModules.plasma-manager];
+          home-manager.extraSpecialArgs = {inherit inputs;};
 
           home-manager.users."${secrets.username}" = {
             imports = [

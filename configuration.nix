@@ -46,7 +46,6 @@ in {
     cdrkit
     gnome-disk-utility
     cloudflared
-    ghostty
 
     # Build tools
     cmake
@@ -56,7 +55,6 @@ in {
     makeWrapper
     pkg-config
     gnumake
-    gcc-multi
     libiconv
     autoconf
     automake

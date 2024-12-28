@@ -3,6 +3,7 @@
   pkgs,
   lib,
   username,
+  inputs,
   ...
 }: let
   secrets = import ./secrets.nix;
@@ -44,6 +45,7 @@ in {
     xivlauncher
     openshot-qt
     trezor-suite
+    inputs.ghostty.packages.${pkgs.stdenv.hostPlatform.system}.default
 
     # VM management GUI tools (user-level)
     virt-manager
