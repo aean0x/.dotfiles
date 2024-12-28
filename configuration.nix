@@ -46,6 +46,7 @@ in {
     cdrkit
     gnome-disk-utility
     cloudflared
+    ghostty
 
     # Build tools
     cmake
@@ -55,13 +56,12 @@ in {
     makeWrapper
     pkg-config
     gnumake
-    gcc
+    gcc-multi
     libiconv
     autoconf
     automake
     libtool
     gcc-arm-embedded
-    pkgsCross.aarch64-multiplatform.buildPackages.gcc
 
     # VM/KVM tools
     qemu
