@@ -36,11 +36,11 @@
     },
     "flatpaks": {
       "locked": {
-        "lastModified": 1734864618,
-        "narHash": "sha256-8SCTJhDH1fdNGGFhuGStIqbO7vwUKQokgQu6nQlQagY=",
+        "lastModified": 1735500379,
+        "narHash": "sha256-5qmX6YYjYfVYBbsmd2XxbTi7A59YuuN9IwfXU7qFquQ=",
         "owner": "gmodena",
         "repo": "nix-flatpak",
-        "rev": "13be795cac27df7044a425c0b2de3a42b10ddb18",
+        "rev": "c31b6cbd11707fe2c74ad805ef085d59d75116ae",
         "type": "github"
       },
       "original": {
@@ -57,11 +57,11 @@
         "zig": "zig"
       },
       "locked": {
-        "lastModified": 1735419510,
-        "narHash": "sha256-P7Xk49Gccom6vCJu1rynNxNrs2moRGsrzuASgzaWw/Q=",
+        "lastModified": 1735492974,
+        "narHash": "sha256-zExkl4adjfBJXG59M29nZ/Zi5H1EC4p5TNtLqjOps2I=",
         "owner": "ghostty-org",
         "repo": "ghostty",
-        "rev": "ca7c9547129cb156417f7aa50cb390edecb685d7",
+        "rev": "6508fec945258f526e0adf0dcc174d954e23fb8d",
         "type": "github"
       },
       "original": {
