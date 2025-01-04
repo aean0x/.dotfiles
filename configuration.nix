@@ -257,8 +257,6 @@ in {
     "udev.log_priority=3"
   ];
 
-  boot.kernelPackages = pkgs.linuxPackages_latest;
-
   # Enable Xbox One driver
   boot.extraModulePackages = [config.boot.kernelPackages.xone];
   boot.kernelModules = [
