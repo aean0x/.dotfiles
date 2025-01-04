@@ -279,7 +279,6 @@ in {
   # Hardware settings
   hardware = {
     steam-hardware.enable = true;
-    pulseaudio.enable = false;
     bluetooth = {
       enable = true;
       powerOnBoot = true;
