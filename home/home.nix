@@ -46,6 +46,11 @@ in {
     openshot-qt
     trezor-suite
     inputs.ghostty.packages.${pkgs.stdenv.hostPlatform.system}.default
+    minder
+    bluemail
+    masterpdfeditor
+    teams-for-linux
+    element-desktop
 
     # VM management GUI tools (user-level)
     virt-manager
@@ -54,25 +59,24 @@ in {
   ];
 
   # Flatpak packages
-  services.flatpak.packages = [
-    # { appId = "com.brave.Browser"; origin = "flathub";  }
-    "im.riot.Riot"
-    "com.github.IsmaelMartinez.teams_for_linux"
-    "com.usebottles.bottles"
-  ];
+  # services.flatpak.packages = [
+  #   # { appId = "com.brave.Browser"; origin = "flathub";  }
+  #   "im.riot.Riot"
+  #   "com.github.IsmaelMartinez.teams_for_linux"
+  # ];
 
   # Flatpak settings
-  services.flatpak = {
-    enable = true;
-    update.auto.enable = true;
-    uninstallUnmanaged = true;
-    remotes = lib.mkOptionDefault [
-      {
-        name = "flathub-beta";
-        location = "https://flathub.org/beta-repo/flathub-beta.flatpakrepo";
-      }
-    ];
-  };
+  # services.flatpak = {
+  #   enable = true;
+  #   update.auto.enable = true;
+  #   uninstallUnmanaged = true;
+  #   remotes = lib.mkOptionDefault [
+  #     {
+  #       name = "flathub-beta";
+  #       location = "https://flathub.org/beta-repo/flathub-beta.flatpakrepo";
+  #     }
+  #   ];
+  # };
 
   # Dotfiles tracking: Add files to be symlinked to the home directory on nixos-rebuild
   home.file =

@@ -32,7 +32,6 @@ in {
     ltunify
     ffmpeg
     kubectl
-    docker-compose
     mono
     p7zip
     unrar
@@ -46,6 +45,7 @@ in {
     cdrkit
     gnome-disk-utility
     cloudflared
+    bottles
 
     # Build tools
     cmake
@@ -62,6 +62,7 @@ in {
     gcc-arm-embedded
 
     # VM/KVM tools
+    docker-compose
     qemu
     OVMF
     spice
@@ -115,6 +116,7 @@ in {
     kdePackages.ksystemlog
     kdePackages.kolourpaint
     kdePackages.isoimagewriter
+    # kdePackages.audiotube
     plasma-browser-integration
     kdePackages.qtstyleplugin-kvantum
     kdePackages.partitionmanager
@@ -419,11 +421,14 @@ in {
   # User settings
   users = {
     mutableUsers = false; # Ensure users are managed declaratively
+    groups.${secrets.username} = {};
     users = {
       ${secrets.username} = {
         isNormalUser = true;
+        group = "${secrets.username}";
         home = "${secrets.userHome}";
         extraGroups = [
+          "${secrets.username}"
           "wheel"
           "networkmanager"
           "lp"
