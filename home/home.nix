@@ -29,6 +29,7 @@ in {
   home.packages = with pkgs; [
     # User applications
     brave
+    firefox
     discord
     code-cursor
     zoom-us
