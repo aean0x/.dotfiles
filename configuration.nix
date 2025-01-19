@@ -46,6 +46,7 @@ in {
     gnome-disk-utility
     cloudflared
     bottles
+    picocom
 
     # Build tools
     cmake
@@ -268,6 +269,7 @@ in {
     "vfio_iommu_type1"
     "vfio_pci"
     "vfio_virqfd"
+    "ch343"
   ];
 
   # udev rules
@@ -276,6 +278,8 @@ in {
     ACTION=="add", ATTR{idVendor}=="046d", ATTR{idProduct}=="c548", TEST=="power/wakeup", ATTR{power/wakeup}="disabled"
     ACTION=="add", SUBSYSTEM=="bluetooth", ATTRS{address}=="D8:93:67:08:1C:C9", TEST=="power/wakeup", ATTR{power/wakeup}="disabled"
     ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{class}=="0x040300", ATTR{remove}="1"
+    # CH343 Serial adapter rules
+    SUBSYSTEM=="tty", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55d4", SYMLINK+="ttyUSB_CH343G"
   '';
 
   # Hardware settings
