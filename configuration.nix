@@ -242,6 +242,7 @@ in {
   };
 
   # Kernel Parameters
+  boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.kernelParams = [
     # "nvidia_drm.modeset=1" # Enable DRM kernel mode setting
     # "nvidia_drm.fbdev=1" # Fix phantom monitor issue (I have a 3060 Ti)
