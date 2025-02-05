@@ -218,10 +218,11 @@ in {
     loader = {
       systemd-boot.enable = true;
       efi.canTouchEfiVariables = true;
+      systemd-boot.consoleMode = "auto";
+      timeout = 1;
     };
     consoleLogLevel = 0;
     initrd.verbose = false;
-    loader.timeout = 0;
 
     # Add modprobe configuration
     extraModprobeConfig = ''
@@ -305,12 +306,10 @@ in {
     enable32Bit = true;
   };
   hardware.nvidia = {
-    modesetting.enable = true; # use kernel param instead
-    open = false;
+    open = true;
     nvidiaSettings = true;
     package = config.boot.kernelPackages.nvidiaPackages.beta;
     prime = {
-      sync.enable = false;
       offload.enable = true;
       nvidiaBusId = "PCI:1:0:0";
       amdgpuBusId = "PCI:13:0:0";
