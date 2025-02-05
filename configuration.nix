@@ -47,6 +47,7 @@ in {
     cloudflared
     bottles
     picocom
+    neofetch
 
     # Build tools
     cmake
