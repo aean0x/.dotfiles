@@ -52,6 +52,7 @@ in {
     masterpdfeditor
     teams-for-linux
     element-desktop
+    anki-bin
 
     # VM management GUI tools (user-level)
     virt-manager

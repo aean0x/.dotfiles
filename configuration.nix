@@ -219,7 +219,7 @@ in {
       systemd-boot.enable = true;
       efi.canTouchEfiVariables = true;
       systemd-boot.consoleMode = "auto";
-      timeout = 1;
+      timeout = 0;
     };
     consoleLogLevel = 0;
     initrd.verbose = false;
