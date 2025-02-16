@@ -47,12 +47,26 @@ in {
     openshot-qt
     trezor-suite
     minder
-    bluemail
     masterpdfeditor
     teams-for-linux
     element-desktop
     anki-bin
     teamspeak6-client
+    (symlinkJoin {
+      name = "bluemail-wrapped";
+      paths = [bluemail];
+      buildInputs = [makeWrapper];
+      postBuild = ''
+        wrapProgram $out/bin/bluemail \
+          --set DISABLE_GPU_SANDBOX 1 \
+          --set ELECTRON_DISABLE_SANDBOX 1 \
+          --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath [
+          pkgs.gtk3
+          pkgs.libglvnd
+          pkgs.mesa
+        ]}"
+      '';
+    })
 
     # VM management GUI tools (user-level)
     virt-manager
