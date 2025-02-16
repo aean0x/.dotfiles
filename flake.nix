@@ -14,7 +14,6 @@
       inputs.home-manager.follows = "home-manager";
     };
     flatpaks.url = "github:gmodena/nix-flatpak";
-    ghostty.url = "github:ghostty-org/ghostty";
   };
 
   outputs = {
@@ -24,7 +23,6 @@
     home-manager,
     plasma-manager,
     flatpaks,
-    ghostty,
     ...
   } @ inputs: let
     inherit (self) outputs;

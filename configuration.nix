@@ -38,7 +38,6 @@ in {
     unzip
     python3
     exfatprogs
-    john
     hashcat
     hpl
     gptfdisk
@@ -122,6 +121,7 @@ in {
     plasma-browser-integration
     kdePackages.qtstyleplugin-kvantum
     kdePackages.partitionmanager
+    kdePackages.qttools
 
     # Package derivation template
     (writeTextDir "share/sddm/themes/breeze/theme.conf.user" ''

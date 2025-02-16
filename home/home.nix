@@ -46,13 +46,13 @@ in {
     xivlauncher
     openshot-qt
     trezor-suite
-    inputs.ghostty.packages.${pkgs.stdenv.hostPlatform.system}.default
     minder
     bluemail
     masterpdfeditor
     teams-for-linux
     element-desktop
     anki-bin
+    teamspeak6-client
 
     # VM management GUI tools (user-level)
     virt-manager
@@ -122,6 +122,5 @@ in {
     homeDirectory = lib.mkForce "/home/${secrets.username}";
     stateVersion = "24.05";
   };
-  nixpkgs.config.allowUnfree = true;
   systemd.user.startServices = "sd-switch";
 }
