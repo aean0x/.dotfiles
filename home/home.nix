@@ -53,6 +53,7 @@ in {
     anki-bin
     teamspeak6-client
     mailspring
+    youtube-music
 
     # VM management GUI tools (user-level)
     virt-manager
