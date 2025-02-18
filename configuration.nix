@@ -117,12 +117,12 @@ in {
     kdePackages.ksystemlog
     kdePackages.kolourpaint
     kdePackages.isoimagewriter
-    # kdePackages.audiotube
     plasma-browser-integration
     kdePackages.qtstyleplugin-kvantum
     kdePackages.partitionmanager
     kdePackages.qttools
     kdePackages.full
+    kdePackages.audiotube
 
     # Package derivation template
     (writeTextDir "share/sddm/themes/breeze/theme.conf.user" ''
