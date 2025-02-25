@@ -104,7 +104,7 @@ in {
     lshw
 
     # KDE
-    kdeplasma-addons
+    kdePackages.kdeplasma-addons
     kdePackages.sddm-kcm
     kdePackages.yakuake
     kdePackages.skanlite
@@ -117,7 +117,7 @@ in {
     kdePackages.ksystemlog
     kdePackages.kolourpaint
     kdePackages.isoimagewriter
-    plasma-browser-integration
+    kdePackages.plasma-browser-integration
     kdePackages.qtstyleplugin-kvantum
     kdePackages.partitionmanager
     kdePackages.qttools

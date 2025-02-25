@@ -62,24 +62,23 @@ in {
   ];
 
   # Flatpak packages
-  # services.flatpak.packages = [
-  #   # { appId = "com.brave.Browser"; origin = "flathub";  }
-  #   "im.riot.Riot"
-  #   "com.github.IsmaelMartinez.teams_for_linux"
-  # ];
+  services.flatpak.packages = [
+    # { appId = "com.brave.Browser"; origin = "flathub";  }
+    "net.blix.BlueMail"
+  ];
 
   # Flatpak settings
-  # services.flatpak = {
-  #   enable = true;
-  #   update.auto.enable = true;
-  #   uninstallUnmanaged = true;
-  #   remotes = lib.mkOptionDefault [
-  #     {
-  #       name = "flathub-beta";
-  #       location = "https://flathub.org/beta-repo/flathub-beta.flatpakrepo";
-  #     }
-  #   ];
-  # };
+  services.flatpak = {
+    enable = true;
+    update.auto.enable = true;
+    uninstallUnmanaged = true;
+    remotes = lib.mkOptionDefault [
+      {
+        name = "flathub-beta";
+        location = "https://flathub.org/beta-repo/flathub-beta.flatpakrepo";
+      }
+    ];
+  };
 
   # Dotfiles tracking: Add files to be symlinked to the home directory on nixos-rebuild
   home.file =
