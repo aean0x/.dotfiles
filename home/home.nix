@@ -52,8 +52,8 @@ in {
     element-desktop
     anki-bin
     teamspeak6-client
-    mailspring
     youtube-music
+    pdfsam-basic
 
     # VM management GUI tools (user-level)
     virt-manager
@@ -61,13 +61,13 @@ in {
     stable.looking-glass-client
   ];
 
-  # Flatpak packages
+  # # Flatpak packages
   services.flatpak.packages = [
     # { appId = "com.brave.Browser"; origin = "flathub";  }
-    "net.blix.BlueMail"
+    "com.getmailspring.Mailspring"
   ];
 
-  # Flatpak settings
+  # # Flatpak settings
   services.flatpak = {
     enable = true;
     update.auto.enable = true;
