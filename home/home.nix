@@ -37,8 +37,6 @@ in {
     inkscape
     vlc
     turbovnc
-    thunderbird
-    pantheon.elementary-mail
     onedrivegui
     signal-desktop
     libreoffice
