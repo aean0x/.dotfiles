@@ -54,6 +54,7 @@ in {
     teamspeak6-client
     youtube-music
     pdfsam-basic
+    mailspring
 
     # VM management GUI tools (user-level)
     virt-manager
@@ -62,23 +63,23 @@ in {
   ];
 
   # # Flatpak packages
-  services.flatpak.packages = [
-    # { appId = "com.brave.Browser"; origin = "flathub";  }
-    "com.getmailspring.Mailspring"
-  ];
+  # services.flatpak.packages = [
+  #   # { appId = "com.brave.Browser"; origin = "flathub";  }
+  #   "com.getmailspring.Mailspring"
+  # ];
 
-  # # Flatpak settings
-  services.flatpak = {
-    enable = true;
-    update.auto.enable = true;
-    uninstallUnmanaged = true;
-    remotes = lib.mkOptionDefault [
-      {
-        name = "flathub-beta";
-        location = "https://flathub.org/beta-repo/flathub-beta.flatpakrepo";
-      }
-    ];
-  };
+  # # # Flatpak settings
+  # services.flatpak = {
+  #   enable = true;
+  #   update.auto.enable = true;
+  #   uninstallUnmanaged = true;
+  #   remotes = lib.mkOptionDefault [
+  #     {
+  #       name = "flathub-beta";
+  #       location = "https://flathub.org/beta-repo/flathub-beta.flatpakrepo";
+  #     }
+  #   ];
+  # };
 
   # Dotfiles tracking: Add files to be symlinked to the home directory on nixos-rebuild
   home.file =
