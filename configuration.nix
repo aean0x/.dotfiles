@@ -47,7 +47,7 @@ in {
     bottles
     picocom
     neofetch
-    openvpn
+    openvpn3
 
     # Build tools
     cmake
