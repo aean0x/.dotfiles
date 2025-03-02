@@ -34,7 +34,6 @@ in {
     code-cursor
     zoom-us
     gimp
-    inkscape
     vlc
     turbovnc
     onedrivegui
@@ -45,7 +44,6 @@ in {
     openshot-qt
     trezor-suite
     minder
-    masterpdfeditor
     teams-for-linux
     element-desktop
     anki-bin
