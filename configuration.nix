@@ -65,6 +65,8 @@ in {
     ninja
     libgcc
     gcc
+    libGL
+    mesa
 
     # VM/KVM tools
     docker-compose
