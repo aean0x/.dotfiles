@@ -67,6 +67,7 @@ in {
     gcc
     libGL
     mesa
+    libglvnd
 
     # VM/KVM tools
     docker-compose
@@ -132,6 +133,9 @@ in {
     kdePackages.plasma5support
     kdePackages.qtstyleplugin-kvantum
     kdePackages.extra-cmake-modules
+    kdePackages.qtbase
+    kdePackages.qtquick3d
+    kdePackages.qtdeclarative
 
     # Package derivation template
     (writeTextDir "share/sddm/themes/breeze/theme.conf.user" ''
