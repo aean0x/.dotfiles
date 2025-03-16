@@ -68,6 +68,7 @@ in {
     libGL
     mesa
     libglvnd
+    appstream
 
     # VM/KVM tools
     docker-compose
@@ -135,7 +136,10 @@ in {
     kdePackages.extra-cmake-modules
     kdePackages.qtbase
     kdePackages.qtquick3d
+    kdePackages.qtquicktimeline
+    kdePackages.qtquick3dphysics
     kdePackages.qtdeclarative
+    kdePackages.appstream-qt
 
     # Package derivation template
     (writeTextDir "share/sddm/themes/breeze/theme.conf.user" ''
