@@ -141,6 +141,24 @@ in {
     kdePackages.qtdeclarative
     kdePackages.appstream-qt
 
+    # AeroThemePlasma dependencies
+    kdePackages.kwin
+    kdePackages.plasma-workspace
+    kdePackages.kdecoration
+    kdePackages.plasma-desktop
+    kdePackages.kglobalaccel
+    kdePackages.kpackage
+    kdePackages.ksvg
+    kdePackages.kcrash
+    kdePackages.kguiaddons
+    kdePackages.kcmutils
+    kdePackages.kio
+    kdePackages.ki18n
+    kdePackages.knotifications
+    kdePackages.kirigami
+    kdePackages.kiconthemes
+    kdePackages.karchive
+
     # Package derivation template
     (writeTextDir "share/sddm/themes/breeze/theme.conf.user" ''
       [General]
