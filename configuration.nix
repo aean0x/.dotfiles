@@ -62,6 +62,7 @@ in {
     automake
     libtool
     gcc-arm-embedded
+    ninja
 
     # VM/KVM tools
     docker-compose
@@ -121,6 +122,12 @@ in {
     kdePackages.partitionmanager
     kdePackages.qttools
     kdePackages.full
+    kdePackages.qtvirtualkeyboard
+    kdePackages.qt5compat
+    kdePackages.plasma-wayland-protocols
+    kdePackages.plasma5support
+    kdePackages.qtstyleplugin-kvantum
+    kdePackages.extra-cmake-modules
 
     # Package derivation template
     (writeTextDir "share/sddm/themes/breeze/theme.conf.user" ''
