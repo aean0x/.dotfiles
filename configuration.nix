@@ -63,6 +63,7 @@ in {
     libtool
     gcc-arm-embedded
     ninja
+    libgcc
 
     # VM/KVM tools
     docker-compose
