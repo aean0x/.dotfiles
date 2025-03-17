@@ -16,7 +16,7 @@ in {
   # Enable AeroThemePlasma
   services.aerotheme = {
     enable = true;
-    autoInstall = false; # Set to true if you want it to install automatically on rebuild
+    autoInstall = true; # Set to true to install automatically on rebuild
   };
 
   # Programs with options https://home-manager-options.extranix.com/
@@ -108,16 +108,6 @@ in {
       {
         source = ./bin/cleanup;
         target = ".local/bin/cleanup";
-        executable = true;
-      }
-      {
-        source = ./bin/setup-aerotheme.sh;
-        target = ".local/bin/setup-aerotheme";
-        executable = true;
-      }
-      {
-        source = ./bin/build-aerotheme.sh;
-        target = ".local/bin/build-aerotheme";
         executable = true;
       }
     ];
