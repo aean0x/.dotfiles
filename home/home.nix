@@ -17,6 +17,7 @@ in {
   services.aerotheme = {
     enable = true;
     autoInstall = true; # Set to true to install automatically on rebuild
+    cleanInstall = true;
   };
 
   # Programs with options https://home-manager-options.extranix.com/
