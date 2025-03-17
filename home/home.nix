@@ -8,18 +8,6 @@
 }: let
   secrets = import ./secrets.nix;
 in {
-  # Import the AeroThemePlasma module
-  imports = [
-    ./modules/aerotheme.nix
-  ];
-
-  # Enable AeroThemePlasma
-  services.aerotheme = {
-    enable = true;
-    autoInstall = true; # Set to true to install automatically on rebuild
-    cleanInstall = true;
-  };
-
   # Programs with options https://home-manager-options.extranix.com/
   programs = {
     fzf.enable = true;

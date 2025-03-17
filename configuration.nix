@@ -6,6 +6,13 @@
   ...
 }: let
   secrets = import ./home/secrets.nix;
+  # Set buildComponents to true to build the system components, or false to skip building
+  # aerothemeplasmaFn = pkgs.callPackage ./pkgs/aerothemeplasma.nix {};
+  # aerothemeplasma = aerothemeplasmaFn {
+  #   buildComponents = false; # Set to false to skip building
+  #   repoUrl = "https://gitgud.io/wackyideas/aerothemeplasma.git";
+  #   repoRef = "master";
+  # };
 in {
   # Programs with options https://search.nixos.org/options
   programs = {
@@ -141,30 +148,39 @@ in {
     kdePackages.qtdeclarative
     kdePackages.appstream-qt
 
-    # AeroThemePlasma dependencies
-    kdePackages.kwin
-    kdePackages.plasma-workspace
-    kdePackages.kdecoration
-    kdePackages.plasma-desktop
-    kdePackages.kglobalaccel
-    kdePackages.kpackage
-    kdePackages.ksvg
-    kdePackages.kcrash
-    kdePackages.kguiaddons
-    kdePackages.kcmutils
-    kdePackages.kio
-    kdePackages.ki18n
-    kdePackages.knotifications
-    kdePackages.kirigami
-    kdePackages.kiconthemes
-    kdePackages.karchive
-
     # Package derivation template
     (writeTextDir "share/sddm/themes/breeze/theme.conf.user" ''
       [General]
       background=${pkgs.kdePackages.plasma-workspace-wallpapers}/share/wallpapers/Mountain/contents/images_dark/5120x2880.png
     '')
   ];
+
+  # Install AeroThemePlasma system components
+  # Temporarily disabled to allow Docker socket changes to be applied
+  # system.activationScripts.installAeroThemePlasma = {
+  #   text = ''
+  #     # Create necessary directories
+  #     mkdir -p /usr/lib/qt6/qml/org/kde/plasma/core/
+  #     mkdir -p /usr/lib/qt6/plugins/org.kde.kdecoration2/
+  #     mkdir -p /usr/lib/qt6/plugins/kwin/effects/plugins/
+
+  #     # Copy DefaultToolTip component
+  #     if [ -f ${aerothemeplasma}/qt6/qml/org/kde/plasma/core/libcorebindingsplugin.so ]; then
+  #       cp ${aerothemeplasma}/qt6/qml/org/kde/plasma/core/libcorebindingsplugin.so /usr/lib/qt6/qml/org/kde/plasma/core/
+  #     fi
+
+  #     # Copy KWin decoration
+  #     if [ -f ${aerothemeplasma}/lib/qt6/plugins/org.kde.kdecoration2/breezedecoration.so ]; then
+  #       cp ${aerothemeplasma}/lib/qt6/plugins/org.kde.kdecoration2/breezedecoration.so /usr/lib/qt6/plugins/org.kde.kdecoration2/
+  #     fi
+
+  #     # Copy KWin effects
+  #     if [ -d ${aerothemeplasma}/lib/qt6/plugins/kwin/effects/plugins ]; then
+  #       cp -r ${aerothemeplasma}/lib/qt6/plugins/kwin/effects/plugins/* /usr/lib/qt6/plugins/kwin/effects/plugins/
+  #     fi
+  #   '';
+  #   deps = [];
+  # };
 
   # Services settings
   services = {
@@ -402,24 +418,25 @@ in {
     };
   };
 
-  # Docker settings
-  virtualisation.docker = {
-    enable = true;
-    enableOnBoot = true;
-    rootless.enable = true;
-    rootless.setSocketVariable = true;
-    # daemon.settings = {
-    #   default-runtime = "nvidia";
-    #   # runtimes.nvidia.path = "${pkgs.nvidia-container-toolkit}/bin/nvidia-container-runtime";
-    # };
-    extraPackages = with pkgs; [
-      nvidia-container-toolkit
-      nvidia-docker
-    ];
-  };
-
   # Virtualization settings
   virtualisation = {
+    # Docker settings
+    docker = {
+      enable = true;
+      enableOnBoot = true;
+      rootless.enable = true;
+      rootless.setSocketVariable = true;
+      # daemon.settings = {
+      #   default-runtime = "nvidia";
+      #   # runtimes.nvidia.path = "${pkgs.nvidia-container-toolkit}/bin/nvidia-container-runtime";
+      # };
+      extraPackages = with pkgs; [
+        nvidia-container-toolkit
+        nvidia-docker
+      ];
+    };
+
+    # Libvirt settings
     libvirtd = {
       enable = true;
       qemu = {
@@ -438,6 +455,14 @@ in {
       };
     };
     spiceUSBRedirection.enable = true;
+  };
+
+  # Nix settings for sandbox
+  nix.settings = {
+    sandbox = true; # Ensure sandboxing is enabled (default in NixOS)
+    extra-sandbox-paths = ["/var/run/docker.sock"]; # Mount the Docker socket into the sandbox
+    experimental-features = "nix-command flakes";
+    nix-path = ["nixpkgs=${pkgs.path}"];
   };
 
   systemd.services.libvirtd = {
@@ -463,27 +488,34 @@ in {
   users = {
     mutableUsers = false; # Ensure users are managed declaratively
     groups.${secrets.username} = {};
-    users = {
-      ${secrets.username} = {
-        isNormalUser = true;
-        group = "${secrets.username}";
-        home = "${secrets.userHome}";
-        extraGroups = [
-          "${secrets.username}"
-          "wheel"
-          "networkmanager"
-          "lp"
-          "scanner"
-          "docker"
-          "libvirtd"
-          "kvm"
-          "input"
-        ];
-        shell = pkgs.bash;
-        hashedPassword = "${secrets.hashedPassword}";
-        description = "${secrets.description}";
-      };
-    };
+    users = lib.mkMerge ([
+        {
+          ${secrets.username} = {
+            isNormalUser = true;
+            group = "${secrets.username}";
+            home = "${secrets.userHome}";
+            extraGroups = [
+              "${secrets.username}"
+              "wheel"
+              "networkmanager"
+              "lp"
+              "scanner"
+              "docker"
+              "libvirtd"
+              "kvm"
+              "input"
+            ];
+            shell = pkgs.bash;
+            hashedPassword = "${secrets.hashedPassword}";
+            description = "${secrets.description}";
+          };
+        }
+      ]
+      ++ (map (n: {
+        "nixbld${toString n}" = {
+          extraGroups = ["docker"];
+        };
+      }) (lib.range 1 32)));
   };
 
   # Locale and timezone settings
@@ -503,12 +535,26 @@ in {
     };
   };
 
+  # Install Segoe UI fonts
+  fonts = {
+    packages = with pkgs; [
+      corefonts # Includes Segoe UI
+      vistafonts # Additional Vista fonts
+    ];
+    fontconfig = {
+      enable = true;
+      defaultFonts = {
+        sansSerif = ["Segoe UI"];
+        serif = ["Segoe UI"];
+        monospace = ["Consolas"];
+      };
+    };
+  };
+
   # Other settings
   system.stateVersion = "24.05";
   nixpkgs.config.allowUnfree = true;
   nix = {
-    settings.experimental-features = "nix-command flakes";
-    settings.nix-path = ["nixpkgs=${pkgs.path}"];
     channel.enable = false;
   };
 }

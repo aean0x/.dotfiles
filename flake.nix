@@ -57,6 +57,8 @@
             imports = [
               ./home/home.nix
               ./home/plasma.nix
+              # Temporarily disabled to allow Docker socket changes to be applied
+              # ./home/aerotheme.nix
               flatpaks.homeManagerModules.nix-flatpak
             ];
           };
