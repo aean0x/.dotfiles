@@ -31,6 +31,7 @@
 
     overlays = [
       (final: prev: {
+        aerothemeplasma = prev.callPackage ./aerotheme/aerothemeplasma.nix {};
         stable = import nixpkgs-stable {
           inherit system;
           config.allowUnfree = true;
@@ -45,6 +46,7 @@
         {nixpkgs.overlays = overlays;}
         ./configuration.nix
         ./hardware-configuration.nix
+        ./aerotheme/aerotheme-system.nix
         flatpaks.nixosModules.nix-flatpak
         home-manager.nixosModules.home-manager
         {
@@ -52,13 +54,11 @@
           home-manager.useUserPackages = true;
           home-manager.sharedModules = [plasma-manager.homeManagerModules.plasma-manager];
           home-manager.extraSpecialArgs = {inherit inputs;};
-
           home-manager.users."${secrets.username}" = {
             imports = [
               ./home/home.nix
               ./home/plasma.nix
-              # Temporarily disabled to allow Docker socket changes to be applied
-              # ./home/aerotheme.nix
+              ./aerotheme/aerotheme.nix
               flatpaks.homeManagerModules.nix-flatpak
             ];
           };

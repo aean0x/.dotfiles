@@ -6,13 +6,6 @@
   ...
 }: let
   secrets = import ./home/secrets.nix;
-  # Set buildComponents to true to build the system components, or false to skip building
-  # aerothemeplasmaFn = pkgs.callPackage ./pkgs/aerothemeplasma.nix {};
-  # aerothemeplasma = aerothemeplasmaFn {
-  #   buildComponents = false; # Set to false to skip building
-  #   repoUrl = "https://gitgud.io/wackyideas/aerothemeplasma.git";
-  #   repoRef = "master";
-  # };
 in {
   # Programs with options https://search.nixos.org/options
   programs = {
@@ -22,9 +15,7 @@ in {
       enable = true;
       remotePlay.openFirewall = true;
       protontricks.enable = true;
-      extraCompatPackages = with pkgs; [
-        proton-ge-bin
-      ];
+      extraCompatPackages = with pkgs; [proton-ge-bin];
     };
     virt-manager.enable = true;
   };
@@ -97,9 +88,6 @@ in {
     python3Packages.pip
     cudaPackages.cudatoolkit
     cudaPackages.cudnn
-    # python311Packages.bentoml
-    # python311Packages.openllm
-    # python311Packages.gradio
 
     # Wine
     wineWowPackages.unstableFull
@@ -139,7 +127,6 @@ in {
     kdePackages.qt5compat
     kdePackages.plasma-wayland-protocols
     kdePackages.plasma5support
-    kdePackages.qtstyleplugin-kvantum
     kdePackages.extra-cmake-modules
     kdePackages.qtbase
     kdePackages.qtquick3d
@@ -154,33 +141,6 @@ in {
       background=${pkgs.kdePackages.plasma-workspace-wallpapers}/share/wallpapers/Mountain/contents/images_dark/5120x2880.png
     '')
   ];
-
-  # Install AeroThemePlasma system components
-  # Temporarily disabled to allow Docker socket changes to be applied
-  # system.activationScripts.installAeroThemePlasma = {
-  #   text = ''
-  #     # Create necessary directories
-  #     mkdir -p /usr/lib/qt6/qml/org/kde/plasma/core/
-  #     mkdir -p /usr/lib/qt6/plugins/org.kde.kdecoration2/
-  #     mkdir -p /usr/lib/qt6/plugins/kwin/effects/plugins/
-
-  #     # Copy DefaultToolTip component
-  #     if [ -f ${aerothemeplasma}/qt6/qml/org/kde/plasma/core/libcorebindingsplugin.so ]; then
-  #       cp ${aerothemeplasma}/qt6/qml/org/kde/plasma/core/libcorebindingsplugin.so /usr/lib/qt6/qml/org/kde/plasma/core/
-  #     fi
-
-  #     # Copy KWin decoration
-  #     if [ -f ${aerothemeplasma}/lib/qt6/plugins/org.kde.kdecoration2/breezedecoration.so ]; then
-  #       cp ${aerothemeplasma}/lib/qt6/plugins/org.kde.kdecoration2/breezedecoration.so /usr/lib/qt6/plugins/org.kde.kdecoration2/
-  #     fi
-
-  #     # Copy KWin effects
-  #     if [ -d ${aerothemeplasma}/lib/qt6/plugins/kwin/effects/plugins ]; then
-  #       cp -r ${aerothemeplasma}/lib/qt6/plugins/kwin/effects/plugins/* /usr/lib/qt6/plugins/kwin/effects/plugins/
-  #     fi
-  #   '';
-  #   deps = [];
-  # };
 
   # Services settings
   services = {
@@ -213,14 +173,7 @@ in {
     samba.enable = true;
   };
 
-  # Systemd services
-  # systemd.services.huggingchat = {
-  #   script = ''
-  #     docker-compose -f ${secrets.userHome}/dev/docker-compose/huggingchat.yml up
-  #   '';
-  #   wantedBy = ["multi-user.target"];
-  #   after = ["docker.service" "docker.socket"];
-  # };
+  # Systemd services and timers
   systemd = {
     timers = {
       weeklyUpdate = {
@@ -228,7 +181,7 @@ in {
         wantedBy = ["timers.target"];
         timerConfig = {
           OnCalendar = "weekly";
-          Persistent = true; # Ensures the job runs if missed
+          Persistent = true;
         };
       };
       monthlyCleanup = {
@@ -236,7 +189,7 @@ in {
         wantedBy = ["timers.target"];
         timerConfig = {
           OnCalendar = "monthly";
-          Persistent = true; # Ensures the job runs if missed
+          Persistent = true;
         };
       };
     };
@@ -256,7 +209,6 @@ in {
         };
       };
     };
-    # Disable hibernation because it's broken
     sleep.extraConfig = ''
       [Sleep]
       AllowHibernation=no
@@ -275,8 +227,6 @@ in {
     };
     consoleLogLevel = 0;
     initrd.verbose = false;
-
-    # Add modprobe configuration
     extraModprobeConfig = ''
       options kvm_amd nested=1
       options kvm ignore_msrs=1 report_ignored_msrs=0
@@ -287,25 +237,14 @@ in {
   boot.plymouth = {
     enable = true;
     theme = "rings";
-    # To only install one theme:
     themePackages = with pkgs; [
-      (adi1090x-plymouth-themes.override {
-        selected_themes = ["rings"];
-      })
+      (adi1090x-plymouth-themes.override {selected_themes = ["rings"];})
     ];
   };
 
   # Kernel Parameters
   boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.kernelParams = [
-    # "nvidia_drm.modeset=1" # Enable DRM kernel mode setting
-    # "nvidia_drm.fbdev=1" # Fix phantom monitor issue (I have a 3060 Ti)
-    # "nvidia.NVreg_EnableGpuFirmware=0" # Disable GSP (GPU offloading) to fix Wayland performance
-    # "mem_sleep_default=shallow" # Fix sleep issues
-    # "acpi_osi=!"
-    # "acpi_osi=Linux"
-    # "acpi_sleep=s4_nohwsleep" # alternate sleep fix
-    # Should disable S4/S5 in BIOS. If not possible, try various options above.
     "quiet"
     "splash"
     "boot.shell_on_fail"
@@ -329,11 +268,9 @@ in {
 
   # udev rules
   services.udev.extraRules = ''
-    # Disable USB mouse wake up because my fucking logitech mouse randomly wakes up computer
     ACTION=="add", ATTR{idVendor}=="046d", ATTR{idProduct}=="c548", TEST=="power/wakeup", ATTR{power/wakeup}="disabled"
     ACTION=="add", SUBSYSTEM=="bluetooth", ATTRS{address}=="D8:93:67:08:1C:C9", TEST=="power/wakeup", ATTR{power/wakeup}="disabled"
     ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{class}=="0x040300", ATTR{remove}="1"
-    # CH343 Serial adapter rules
     SUBSYSTEM=="tty", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55d4", SYMLINK+="ttyUSB_CH343G"
   '';
 
@@ -371,7 +308,7 @@ in {
       finegrained = true;
     };
   };
-  hardware.nvidia-container-toolkit.enable = true; # docker usage
+  hardware.nvidia-container-toolkit.enable = true;
   hardware.nvidia-container-toolkit.mount-nvidia-executables = true;
   services.xserver.videoDrivers = ["nvidia" "amdgpu"];
 
@@ -388,9 +325,7 @@ in {
     wayland.enable = true;
     enable = true;
     settings = {
-      General = {
-        # GreeterEnvironment = "QT_SCREEN_SCALE_FACTORS=0.75";
-      };
+      General = {};
     };
     extraPackages = with pkgs; [];
   };
@@ -402,7 +337,7 @@ in {
       enable = true;
       support32Bit = true;
     };
-    pulse.enable = true; # PipeWire pulse audio service
+    pulse.enable = true;
   };
 
   # Networking settings
@@ -410,33 +345,20 @@ in {
     networkmanager.enable = true;
     hostName = "${secrets.hostName}";
     firewall = {
-      allowedTCPPorts = [
-        631 # CUPS
-      ];
-      allowedUDPPorts = [
-      ];
+      allowedTCPPorts = [631]; # CUPS
+      allowedUDPPorts = [];
     };
   };
 
   # Virtualization settings
   virtualisation = {
-    # Docker settings
     docker = {
       enable = true;
       enableOnBoot = true;
       rootless.enable = true;
       rootless.setSocketVariable = true;
-      # daemon.settings = {
-      #   default-runtime = "nvidia";
-      #   # runtimes.nvidia.path = "${pkgs.nvidia-container-toolkit}/bin/nvidia-container-runtime";
-      # };
-      extraPackages = with pkgs; [
-        nvidia-container-toolkit
-        nvidia-docker
-      ];
+      extraPackages = with pkgs; [nvidia-container-toolkit nvidia-docker];
     };
-
-    # Libvirt settings
     libvirtd = {
       enable = true;
       qemu = {
@@ -457,10 +379,9 @@ in {
     spiceUSBRedirection.enable = true;
   };
 
-  # Nix settings for sandbox
+  # Nix settings
   nix.settings = {
-    sandbox = true; # Ensure sandboxing is enabled (default in NixOS)
-    extra-sandbox-paths = ["/var/run/docker.sock"]; # Mount the Docker socket into the sandbox
+    sandbox = true;
     experimental-features = "nix-command flakes";
     nix-path = ["nixpkgs=${pkgs.path}"];
   };
@@ -486,36 +407,27 @@ in {
 
   # User settings
   users = {
-    mutableUsers = false; # Ensure users are managed declaratively
+    mutableUsers = false;
     groups.${secrets.username} = {};
-    users = lib.mkMerge ([
-        {
-          ${secrets.username} = {
-            isNormalUser = true;
-            group = "${secrets.username}";
-            home = "${secrets.userHome}";
-            extraGroups = [
-              "${secrets.username}"
-              "wheel"
-              "networkmanager"
-              "lp"
-              "scanner"
-              "docker"
-              "libvirtd"
-              "kvm"
-              "input"
-            ];
-            shell = pkgs.bash;
-            hashedPassword = "${secrets.hashedPassword}";
-            description = "${secrets.description}";
-          };
-        }
-      ]
-      ++ (map (n: {
-        "nixbld${toString n}" = {
-          extraGroups = ["docker"];
-        };
-      }) (lib.range 1 32)));
+    users.${secrets.username} = {
+      isNormalUser = true;
+      group = "${secrets.username}";
+      home = "${secrets.userHome}";
+      extraGroups = [
+        "${secrets.username}"
+        "wheel"
+        "networkmanager"
+        "lp"
+        "scanner"
+        "docker"
+        "libvirtd"
+        "kvm"
+        "input"
+      ];
+      shell = pkgs.bash;
+      hashedPassword = "${secrets.hashedPassword}";
+      description = "${secrets.description}";
+    };
   };
 
   # Locale and timezone settings
@@ -537,10 +449,7 @@ in {
 
   # Install Segoe UI fonts
   fonts = {
-    packages = with pkgs; [
-      corefonts # Includes Segoe UI
-      vistafonts # Additional Vista fonts
-    ];
+    packages = with pkgs; [corefonts vistafonts];
     fontconfig = {
       enable = true;
       defaultFonts = {
@@ -554,7 +463,5 @@ in {
   # Other settings
   system.stateVersion = "24.05";
   nixpkgs.config.allowUnfree = true;
-  nix = {
-    channel.enable = false;
-  };
+  nix.channel.enable = false;
 }
