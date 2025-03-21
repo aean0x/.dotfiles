@@ -54,6 +54,7 @@
           home-manager.useUserPackages = true;
           home-manager.sharedModules = [plasma-manager.homeManagerModules.plasma-manager];
           home-manager.extraSpecialArgs = {inherit inputs;};
+          home-manager.backupFileExtension = "backup";
           home-manager.users."${secrets.username}" = {
             imports = [
               ./home/home.nix
