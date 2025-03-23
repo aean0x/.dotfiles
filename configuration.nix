@@ -447,19 +447,6 @@ in {
     };
   };
 
-  # Install Segoe UI fonts
-  fonts = {
-    packages = with pkgs; [corefonts vistafonts];
-    fontconfig = {
-      enable = true;
-      defaultFonts = {
-        sansSerif = ["Segoe UI"];
-        serif = ["Segoe UI"];
-        monospace = ["Consolas"];
-      };
-    };
-  };
-
   # Other settings
   system.stateVersion = "24.05";
   nixpkgs.config.allowUnfree = true;
