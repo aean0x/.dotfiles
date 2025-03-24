@@ -89,7 +89,26 @@ stdenv.mkDerivation rec {
         set(KDE6_INCLUDE_DIRS ''${CMAKE_CURRENT_LIST_DIR}/../../include)
         set(KDE6_LIB_DIR ''${CMAKE_CURRENT_LIST_DIR}/../../lib)
 
-        # Define macros for KConfig
+        # Define KF6 targets
+        if(NOT TARGET KF6::ConfigCore)
+          add_library(KF6::ConfigCore INTERFACE IMPORTED)
+          set_target_properties(KF6::ConfigCore PROPERTIES
+            INTERFACE_INCLUDE_DIRECTORIES "''${KDE6_INCLUDE_DIRS}")
+        endif()
+
+        if(NOT TARGET KF6::CoreAddons)
+          add_library(KF6::CoreAddons INTERFACE IMPORTED)
+          set_target_properties(KF6::CoreAddons PROPERTIES
+            INTERFACE_INCLUDE_DIRECTORIES "''${KDE6_INCLUDE_DIRS}")
+        endif()
+
+        if(NOT TARGET KF6::WindowSystem)
+          add_library(KF6::WindowSystem INTERFACE IMPORTED)
+          set_target_properties(KF6::WindowSystem PROPERTIES
+            INTERFACE_INCLUDE_DIRECTORIES "''${KDE6_INCLUDE_DIRS}")
+        endif()
+
+        # Define KConfig macros
         macro(kconfig_add_kcfg_files _target)
           message(STATUS "Processing KConfig files for target: ''${_target}")
           foreach(file ''${ARGN})
@@ -101,6 +120,11 @@ stdenv.mkDerivation rec {
         macro(ki18n_wrap_ui)
           message(STATUS "KI18n: Wrapping UI files (compatibility function)")
           # Just a stub to make CMake happy
+        endmacro()
+
+        # Add common KDE macros
+        macro(kcoreaddons_desktop)
+          message(STATUS "KCoreAddons: Processing desktop files (compatibility function)")
         endmacro()
         ' > kde_support/cmake_modules/KDE6Config.cmake
 
@@ -160,56 +184,100 @@ stdenv.mkDerivation rec {
         echo "Analyzing effect CMakeLists.txt files:"
         for effect_dir in kwin/effects_cpp/*; do
           if [ -d "$effect_dir/src" ] && [ -f "$effect_dir/src/CMakeLists.txt" ]; then
+            effect_name=$(basename "$effect_dir")
             echo "Found effect: $effect_dir"
 
-            # Check if the effect's CMakeLists.txt is missing basic elements
-            if ! grep -q "cmake_minimum_required" "$effect_dir/src/CMakeLists.txt"; then
-              echo "  - Adding missing cmake_minimum_required"
-              sed -i '1i cmake_minimum_required(VERSION 3.16)' "$effect_dir/src/CMakeLists.txt"
+            # Save the original file for reference
+            cp "$effect_dir/src/CMakeLists.txt" "$effect_dir/src/CMakeLists.txt.orig"
+
+            # Rather than patching, completely rewrite each CMakeLists.txt based on the original content
+            # First, extract the relevant parts from the original
+            effect_sources=$(grep -o 'add_library([^)]*' "$effect_dir/src/CMakeLists.txt.orig" | grep -v '^#' || echo "")
+            effect_target=$(echo "$effect_sources" | sed -n 's/add_library(\([^ ]*\).*/\1/p' || echo "$effect_name")
+
+            # Find any .qrc files referenced in the original CMakeLists.txt
+            qrc_files=$(grep -o '[^ ]*\.qrc' "$effect_dir/src/CMakeLists.txt.orig" || echo "")
+
+            # Look for .cpp files in the directory to use as source files
+            cpp_files=$(find "$effect_dir/src" -name "*.cpp" -printf "%f " 2>/dev/null || echo "")
+            header_files=$(find "$effect_dir/src" -name "*.h" -printf "%f " 2>/dev/null || echo "")
+
+            # Ensure we have a target name
+            if [ -z "$effect_target" ]; then
+              effect_target="$effect_name"
             fi
 
-            if ! grep -q "project" "$effect_dir/src/CMakeLists.txt"; then
-              echo "  - Adding missing project declaration"
-              effect_name=$(basename "$effect_dir")
-              sed -i "2i project($effect_name VERSION 1.0)" "$effect_dir/src/CMakeLists.txt"
-            fi
+            echo "  - Creating new CMakeLists.txt for $effect_name (target: $effect_target)"
 
-            # Adapt CMakeLists.txt to work with KF6
-            echo "  - Updating CMakeLists.txt for KF6 compatibility"
-
-            # Backup original file
-            cp "$effect_dir/src/CMakeLists.txt" "$effect_dir/src/CMakeLists.txt.bak"
-
-            # Update package references
-            sed -i 's/find_package(KF5 /find_package(KF6 /g' "$effect_dir/src/CMakeLists.txt"
-            sed -i 's/find_package(KDE4 /find_package(KF6 /g' "$effect_dir/src/CMakeLists.txt"
-            sed -i 's/find_package(Qt5 /find_package(Qt6 /g' "$effect_dir/src/CMakeLists.txt"
-
-            # Update target references
-            sed -i 's/Qt5::/Qt6::/g' "$effect_dir/src/CMakeLists.txt"
-            sed -i 's/KF5::/KF6::/g' "$effect_dir/src/CMakeLists.txt"
-            sed -i 's/KDE4::/KF6::/g' "$effect_dir/src/CMakeLists.txt"
-
-            # Fix include paths - completely rewrite the beginning of the file
-            echo "  - Rewriting CMake includes and directives"
-            tmpfile=$(mktemp)
-            cat > "$tmpfile" << EOT
+            # Write a completely new CMakeLists.txt
+            cat > "$effect_dir/src/CMakeLists.txt" << EOT
     cmake_minimum_required(VERSION 3.16)
-    project($(basename "$effect_dir") VERSION 1.0)
+    project($effect_name VERSION 1.0)
 
-    # Include KF6 compatibility modules - absolute paths for reliability
+    # Include KF6 compatibility modules
     list(APPEND CMAKE_MODULE_PATH "$MODULES_PATH")
     include(KDE6Config)
     include(KWinTargets)
 
-    EOT
-            # Append the rest of the file
-            tail -n +7 "$effect_dir/src/CMakeLists.txt" >> "$tmpfile"
-            # Replace the original file
-            mv "$tmpfile" "$effect_dir/src/CMakeLists.txt"
+    # Find the required packages
+    find_package(KF6 REQUIRED COMPONENTS
+        ConfigCore
+        CoreAddons
+        WindowSystem
+    )
 
-            # Remove any existing include with relative path that would fail
-            sed -i '/include.*kde_support.*KDE6Config.cmake/d' "$effect_dir/src/CMakeLists.txt"
+    find_package(Qt6 REQUIRED COMPONENTS
+        Core
+        Gui
+        Widgets
+    )
+
+    # Define the effect library
+    add_library($effect_target SHARED
+    EOT
+
+            # Add all detected source files
+            for src in $cpp_files; do
+              echo "    $src" >> "$effect_dir/src/CMakeLists.txt"
+            done
+
+            # Close the add_library command
+            echo ")" >> "$effect_dir/src/CMakeLists.txt"
+
+            # Add QRC files if any were found
+            if [ -n "$qrc_files" ]; then
+              echo "" >> "$effect_dir/src/CMakeLists.txt"
+              echo "# Add Qt resources" >> "$effect_dir/src/CMakeLists.txt"
+              for qrc in $qrc_files; do
+                echo "qt6_add_resources($effect_target $qrc)" >> "$effect_dir/src/CMakeLists.txt"
+              done
+            fi
+
+            # Add the rest of the standard configuration
+            cat >> "$effect_dir/src/CMakeLists.txt" << EOT
+
+    # Set target properties
+    set_target_properties($effect_target PROPERTIES
+        LIBRARY_OUTPUT_DIRECTORY "\''${CMAKE_BINARY_DIR}/lib/plugins/kwin/effects/"
+    )
+
+    # Link with required libraries
+    target_link_libraries($effect_target
+        Qt6::Core
+        Qt6::Gui
+        Qt6::Widgets
+        KF6::ConfigCore
+        KF6::CoreAddons
+        KF6::WindowSystem
+        KWin::kwin
+    )
+
+    # Install the plugin
+    install(TARGETS $effect_target
+            DESTINATION \''${CMAKE_INSTALL_PREFIX}/lib/qt6/plugins/kwin/effects/plugins)
+    EOT
+
+            echo "  - Successfully created new CMakeLists.txt for $effect_name"
           fi
         done
 
