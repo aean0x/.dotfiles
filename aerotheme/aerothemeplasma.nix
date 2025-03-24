@@ -102,7 +102,7 @@ in
     buildPhase = "true"; # No build steps required
 
     installPhase = ''
-      mkdir -p $out/bin $out/share/aerothemeplasma/source $out/share/aerothemeplasma/icons $out/share/aerothemeplasma/sounds
+      mkdir -p $out/bin $out/share/aerothemeplasma/source $out/share/aerothemeplasma/icons $out/share/aerothemeplasma/sounds $out/share/sddm/themes/sddm-theme-mod $out/share/plasma/look-and-feel
 
       # Copy the main repository files
       cp -r $src/* $out/share/aerothemeplasma/source/
@@ -112,6 +112,12 @@ in
 
       # Extract sounds to $out/share/aerothemeplasma/sounds
       tar -xzf $src/misc/sounds/sounds.tar.gz -C $out/share/aerothemeplasma/sounds
+
+      # Copy the SDDM theme
+      cp -r $src/plasma/sddm/sddm-theme-mod/* $out/share/sddm/themes/sddm-theme-mod/
+
+      # Copy the look-and-feel package
+      cp -r $src/plasma/look-and-feel/* $out/share/plasma/look-and-feel/
 
       # Copy the build script
       cp ${buildScript}/bin/build-aerotheme $out/bin/

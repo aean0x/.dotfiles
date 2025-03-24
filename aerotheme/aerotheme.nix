@@ -80,6 +80,7 @@ in {
         "ShowDeleteCommand" = false;
       };
       "kdeglobals"."Sounds"."Theme" = "Windows 7";
+      "kdeglobals"."KDE"."LookAndFeelPackage" = "org.kde.aerothemeplasma";
       "kwinrc"."Windows" = {
         "RollOverTitlebar" = "None";
         "BorderSnapZone" = 15;

@@ -20,18 +20,6 @@ in {
     settings.Theme.Current = "sddm-theme-mod";
   };
 
-  environment.etc."sddm/themes/sddm-theme-mod/theme.conf.user".text = ''
-    [General]
-    background=${pkgs.kdePackages.plasma-workspace}/share/wallpapers/Next/contents/images/1920x1080.jpg
-    type=image
-    enableStartup=true
-  '';
-
-  system.activationScripts.aerotheme-sddm = ''
-    [ -d /usr/share/sddm/themes/sddm-theme-mod ] || mkdir -p /usr/share/sddm/themes/sddm-theme-mod
-    cp -rf ${repoDir}/plasma/sddm/sddm-theme-mod/. /usr/share/sddm/themes/sddm-theme-mod/
-  '';
-
   # Install Segoe UI fonts
   fonts = {
     packages = with pkgs; [corefonts vistafonts fira fira-code fira-mono];
