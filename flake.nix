@@ -9,7 +9,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     plasma-manager = {
-      url = "github:pjones/plasma-manager";
+      url = "github:nix-community/plasma-manager";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.home-manager.follows = "home-manager";
     };
@@ -46,7 +46,7 @@
         {nixpkgs.overlays = overlays;}
         ./configuration.nix
         ./hardware-configuration.nix
-        ./aerotheme/aerotheme-system.nix
+        ./aerotheme/system.nix
         flatpaks.nixosModules.nix-flatpak
         home-manager.nixosModules.home-manager
         {
@@ -59,7 +59,7 @@
             imports = [
               ./home/home.nix
               ./home/plasma.nix
-              ./aerotheme/aerotheme.nix
+              ./aerotheme/user.nix
               flatpaks.homeManagerModules.nix-flatpak
             ];
           };
