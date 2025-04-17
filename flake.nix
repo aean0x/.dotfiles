@@ -46,7 +46,7 @@
         {nixpkgs.overlays = overlays;}
         ./configuration.nix
         ./hardware-configuration.nix
-        #./aerotheme/system.nix
+        ./aerotheme/system.nix
         flatpaks.nixosModules.nix-flatpak
         home-manager.nixosModules.home-manager
         {
@@ -58,8 +58,8 @@
           home-manager.users."${secrets.username}" = {
             imports = [
               ./home/home.nix
-              ./home/plasma.nix
-              #./aerotheme/user.nix
+              # ./home/plasma.nix
+              ./aerotheme/user.nix
               flatpaks.homeManagerModules.nix-flatpak
             ];
           };

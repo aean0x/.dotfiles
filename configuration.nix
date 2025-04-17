@@ -423,6 +423,7 @@ in {
         "libvirtd"
         "kvm"
         "input"
+        "builder"
       ];
       shell = pkgs.bash;
       hashedPassword = "${secrets.hashedPassword}";

@@ -37,7 +37,7 @@ in {
     vlc
     turbovnc
     onedrivegui
-    signal-desktop
+    signal-desktop-bin
     libreoffice
     qbittorrent
     xivlauncher
