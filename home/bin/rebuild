@@ -9,9 +9,10 @@ LOG_FILE="$HOME/.nixos-rebuild.log"
 # Set default values for options
 REBOOT=false
 SAVE_PLASMA=false
+UPDATE=false
 
 # Parse optional arguments
-while getopts "rp" opt; do
+while getopts "rpuU" opt; do
     case ${opt} in
         r)
             REBOOT=true
@@ -19,8 +20,11 @@ while getopts "rp" opt; do
         p)
             SAVE_PLASMA=true
             ;;
+        u|U)
+            UPDATE=true
+            ;;
         *)
-            echo "Usage: $0 [-r] [-p]"
+            echo "Usage: $0 [-r] [-p] [-u|-U]"
             exit 1
             ;;
     esac
@@ -50,8 +54,13 @@ sudo chown -R root:root "$NIXOS_DIR"
 sudo find "$NIXOS_DIR" -type d -exec chmod 755 {} +
 sudo find "$NIXOS_DIR" -type f -exec chmod 644 {} +
 
-echo "NixOS Upgrading..."
-sudo nix flake update
+# Update NixOS only if the update flag is set
+if [ "$UPDATE" = true ]; then
+    echo "NixOS Upgrading..."
+    sudo nix flake update
+else
+    echo "Skipping NixOS update. Use -u or -U to update."
+fi
 
 # Rebuild NixOS with the new configuration
 echo "NixOS Rebuilding..."
