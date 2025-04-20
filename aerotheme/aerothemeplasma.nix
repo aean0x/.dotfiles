@@ -97,8 +97,8 @@
     "-DCMAKE_BUILD_TYPE=Release"
     "-DBUILD_KF6=ON"
     "-DCMAKE_INSTALL_PREFIX=$out"
-    "-DKDE_INSTALL_PLUGINDIR=lib/qt6/plugins"
-    "-DKDE_INSTALL_QMLDIR=lib/qt6/qml"
+    # "-DKDE_INSTALL_PLUGINDIR=lib/qt-6/plugins"
+    # "-DKDE_INSTALL_QMLDIR=lib/qt-6/qml"
     "-DKWIN_INCLUDE=${pkgs.kdePackages.kwin.dev}/include/kwin"
     "-DKPLUGINFACTORY_INCLUDE=${pkgs.kdePackages.kcoreaddons.dev}/include/KF6/KCoreAddons"
     ''-DCMAKE_CXX_FLAGS="-I${pkgs.kdePackages.kwin.dev}/include/kwin -I${pkgs.kdePackages.kcoreaddons.dev}/include/KF6/KCoreAddons"''
