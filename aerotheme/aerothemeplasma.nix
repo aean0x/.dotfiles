@@ -258,7 +258,7 @@
       [ -d "$src/misc/mimetype" ] && cp -r "$src/misc/mimetype"/* $out/share/mime/packages/
       [ -f "$src/misc/cursors/aero-drop.tar.gz" ] && tar -xzf "$src/misc/cursors/aero-drop.tar.gz" -C $out/share/icons
       [ -f "$src/misc/icons/Windows 7 Aero.tar.gz" ] && tar -xzf "$src/misc/icons/Windows 7 Aero.tar.gz" -C $out/share/icons/Windows\ 7\ Aero
-      [ -f "$src/misc/sounds/sounds.tar.gz" ] && tar -xzf "$src/misc/sounds/sounds.tar.gz" -C $out/share/sounds/Windows\ 7
+      [ -f "$src/misc/sounds/sounds.tar.gz" ] && tar -xzf "$src/misc/sounds/sounds.tar.gz" -C $out/share/sounds
     '';
     meta = {
       description = "Windows 7 theme for KDE Plasma";
