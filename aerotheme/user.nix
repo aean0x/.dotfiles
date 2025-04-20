@@ -3,33 +3,7 @@
   pkgs,
   lib,
   ...
-}: let
-  aerothemeplasmaPkgs = pkgs.callPackage ./aerothemeplasma.nix {inherit pkgs;};
-  inherit (aerothemeplasmaPkgs) aerothemeplasma aerothemeplasma-git;
-in {
-  home.sessionVariables = {
-    QT_PLUGIN_PATH = "${aerothemeplasma}/lib/qt-6/plugins:$QT_PLUGIN_PATH";
-    QML2_IMPORT_PATH = "${aerothemeplasma}/lib/qt-6/qml:$QML2_IMPORT_PATH";
-    QML_DISABLE_DISTANCEFIELD = "1";
-  };
-
-  home.file = {
-    ".local/share/plasma/desktoptheme".source = "${aerothemeplasma-git}/plasma/desktoptheme";
-    ".local/share/plasma/look-and-feel".source = "${aerothemeplasma-git}/plasma/look-and-feel";
-    ".local/share/plasma/plasmoids".source = "${aerothemeplasma-git}/plasma/plasmoids";
-    ".local/share/plasma/layout-templates".source = "${aerothemeplasma-git}/plasma/layout-templates";
-    ".local/share/plasma/shells".source = "${aerothemeplasma-git}/plasma/shells";
-    ".local/share/kwin/effects".source = "${aerothemeplasma-git}/kwin/effects";
-    ".local/share/kwin/tabbox".source = "${aerothemeplasma-git}/kwin/tabbox";
-    ".local/share/kwin/outline".source = "${aerothemeplasma-git}/kwin/outline";
-    ".local/share/kwin/scripts".source = "${aerothemeplasma-git}/kwin/scripts";
-    ".local/share/color-schemes".source = "${aerothemeplasma-git}/plasma/color_scheme";
-    ".config/Kvantum".source = "${aerothemeplasma-git}/misc/kvantum/Kvantum";
-    ".config/fontconfig/fonts.conf".source = "${aerothemeplasma-git}/misc/fontconfig/fonts.conf";
-    ".local/share/smod".source = "${aerothemeplasma-git}/plasma/smod";
-    ".local/share/sddm/themes/sddm-theme-mod".source = "${aerothemeplasma-git}/plasma/sddm/sddm-theme-mod";
-  };
-
+}: {
   programs.plasma = {
     enable = true;
     shortcuts.kwin = {

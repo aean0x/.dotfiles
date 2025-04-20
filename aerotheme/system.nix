@@ -5,7 +5,7 @@
   ...
 }: let
   aerothemeplasmaPkgs = pkgs.callPackage ./aerothemeplasma.nix {inherit pkgs;};
-  inherit (aerothemeplasmaPkgs) decoration smodsnap smodglow startupfeedback aeroglassblur aeroglide aerothemeplasma aerothemeplasma-git;
+  inherit (aerothemeplasmaPkgs) decoration smodsnap smodglow startupfeedback aeroglassblur aeroglide aerothemeplasma aerothemeplasma-git corebindingsplugin;
 in {
   # System packages
   environment.systemPackages = with pkgs; [
@@ -16,6 +16,7 @@ in {
     aeroglassblur
     aeroglide
     aerothemeplasma
+    corebindingsplugin
     kdePackages.qtstyleplugin-kvantum
     kdePackages.plasma5support
     shared-mime-info

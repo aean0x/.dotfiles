@@ -14,10 +14,8 @@
     sha256 = "sha256-vnYi1uV3HUAAyZhPMPazI/1V6x88QoknKNBiMiVBGYA=";
   };
 
-  # Expose the source repo directly
   aerothemeplasma-git = themeRepo;
 
-  # Common native build inputs
   commonNativeBuildInputs = [
     cmake
     ninja
@@ -27,7 +25,6 @@
     makeWrapper
   ];
 
-  # Common Qt6 dependencies
   qt6Deps = with pkgs.kdePackages; [
     qtbase
     qtwayland
@@ -40,7 +37,6 @@
     pkgs.qt6.qtbase.dev
   ];
 
-  # Common KF6 dependencies
   kf6Deps = with pkgs.kdePackages; [
     karchive
     kwindowsystem
@@ -62,9 +58,9 @@
     kxmlgui
     ksvg
     kcmutils
+    kpackage
   ];
 
-  # Common development packages
   kf6DevDeps = with pkgs.kdePackages; [
     kconfig.dev
     kcoreaddons.dev
@@ -82,48 +78,48 @@
     kiconthemes.dev
   ];
 
-  # Common Plasma/KWin dependencies
   plasmaDeps = with pkgs.kdePackages; [
     plasma5support
     plasma-wayland-protocols
     kwin
     kwin.dev
     kirigami
+    plasma-activities
   ];
 
-  # Common X11/OpenGL dependencies
   x11Deps = with pkgs; [
     libepoxy
     xorg.libX11
     xorg.xcbutil
   ];
 
-  # Define separate derivations for each component
+  commonCmakeFlags = [
+    "-DCMAKE_BUILD_TYPE=Release"
+    "-DBUILD_KF6=ON"
+    "-DCMAKE_INSTALL_PREFIX=$out"
+    "-DKDE_INSTALL_PLUGINDIR=lib/qt6/plugins"
+    "-DKDE_INSTALL_QMLDIR=lib/qt6/qml"
+    "-DKWIN_INCLUDE=${pkgs.kdePackages.kwin.dev}/include/kwin"
+    "-DKPLUGINFACTORY_INCLUDE=${pkgs.kdePackages.kcoreaddons.dev}/include/KF6/KCoreAddons"
+    ''-DCMAKE_CXX_FLAGS="-I${pkgs.kdePackages.kwin.dev}/include/kwin -I${pkgs.kdePackages.kcoreaddons.dev}/include/KF6/KCoreAddons"''
+    "-DKWin_DIR=${pkgs.kdePackages.kwin.dev}/lib/cmake/KWin"
+  ];
+
   decoration = stdenv.mkDerivation {
     name = "aerotheme-decoration";
     src = "${themeRepo}/kwin/decoration";
     nativeBuildInputs = commonNativeBuildInputs ++ [pkgs.pkg-config];
     buildInputs = qt6Deps ++ kf6Deps ++ kf6DevDeps ++ plasmaDeps ++ x11Deps ++ [pkgs.kdePackages.libplasma];
-    cmakeFlags = [
-      "-DBUILD_QT6=ON"
-      "-DCMAKE_INCLUDE_PATH=${pkgs.kdePackages.kwin.dev}/include/kwin"
-    ];
+    configurePhase = ''
+      cmake -B build -G Ninja ${lib.concatStringsSep " " commonCmakeFlags}
+    '';
+    buildPhase = ''
+      ninja -C build
+    '';
     installPhase = ''
-      mkdir -p $out/lib/qt-6/plugins/org.kde.kdecoration3
-      mkdir -p $out/lib/qt-6/plugins/org.kde.kdecoration3.kcm
-      ninja install
+      ninja install -C build
     '';
   };
-
-  commonCmakeFlags = [
-    "-DCMAKE_BUILD_TYPE=Release"
-    "-DBUILD_KF6=ON"
-    "-DKWIN_INCLUDE=${pkgs.kdePackages.kwin.dev}/include/kwin"
-    "-DKPLUGINFACTORY_INCLUDE=${pkgs.kdePackages.kcoreaddons.dev}/include/KF6/KCoreAddons"
-    ''-DCMAKE_CXX_FLAGS="-I${pkgs.kdePackages.kwin.dev}/include/kwin -I${pkgs.kdePackages.kcoreaddons.dev}/include/KF6/KCoreAddons"''
-    "-DKWin_DIR=${pkgs.kdePackages.kwin.dev}/lib/cmake/KWin"
-    "-DKDE_INSTALL_PLUGINDIR=lib/qt-6/plugins"
-  ];
 
   smodsnap = stdenv.mkDerivation {
     name = "aerotheme-smodsnap";
@@ -131,16 +127,13 @@
     nativeBuildInputs = commonNativeBuildInputs ++ [pkgs.pkg-config];
     buildInputs = qt6Deps ++ kf6Deps ++ kf6DevDeps ++ plasmaDeps ++ x11Deps ++ [decoration];
     configurePhase = ''
-      cmake -B build-kf6 -G Ninja -DCMAKE_INSTALL_PREFIX=$out ${lib.concatStringsSep " " commonCmakeFlags}
+      cmake -B build -G Ninja ${lib.concatStringsSep " " commonCmakeFlags}
     '';
     buildPhase = ''
-      ninja -C build-kf6
+      ninja -C build
     '';
     installPhase = ''
-      ninja install -C build-kf6
-      # Ensure the plugin is in the correct directory
-      mkdir -p $out/lib/qt-6/plugins/kwin/effects/plugins
-      mv $out/lib/plugins/kwin/effects/plugins/* $out/lib/qt-6/plugins/kwin/effects/plugins/ || true
+      ninja install -C build
     '';
   };
 
@@ -150,15 +143,13 @@
     nativeBuildInputs = commonNativeBuildInputs ++ [pkgs.pkg-config];
     buildInputs = qt6Deps ++ kf6Deps ++ kf6DevDeps ++ plasmaDeps ++ x11Deps ++ [decoration];
     configurePhase = ''
-      cmake -B build-kf6 -G Ninja -DCMAKE_INSTALL_PREFIX=$out ${lib.concatStringsSep " " commonCmakeFlags}
+      cmake -B build -G Ninja ${lib.concatStringsSep " " commonCmakeFlags}
     '';
     buildPhase = ''
-      ninja -C build-kf6
+      ninja -C build
     '';
     installPhase = ''
-      ninja install -C build-kf6
-      mkdir -p $out/lib/qt-6/plugins/kwin/effects/plugins
-      mv $out/lib/plugins/kwin/effects/plugins/* $out/lib/qt-6/plugins/kwin/effects/plugins/ || true
+      ninja install -C build
     '';
   };
 
@@ -168,15 +159,13 @@
     nativeBuildInputs = commonNativeBuildInputs;
     buildInputs = qt6Deps ++ kf6Deps ++ kf6DevDeps ++ plasmaDeps ++ x11Deps ++ [decoration];
     configurePhase = ''
-      cmake -B build-kf6 -G Ninja -DCMAKE_INSTALL_PREFIX=$out ${lib.concatStringsSep " " commonCmakeFlags}
+      cmake -B build -G Ninja ${lib.concatStringsSep " " commonCmakeFlags}
     '';
     buildPhase = ''
-      ninja -C build-kf6
+      ninja -C build
     '';
     installPhase = ''
-      ninja install -C build-kf6
-      mkdir -p $out/lib/qt-6/plugins/kwin/effects/plugins
-      mv $out/lib/plugins/kwin/effects/plugins/* $out/lib/qt-6/plugins/kwin/effects/plugins/ || true
+      ninja install -C build
     '';
   };
 
@@ -186,15 +175,13 @@
     nativeBuildInputs = commonNativeBuildInputs;
     buildInputs = qt6Deps ++ kf6Deps ++ kf6DevDeps ++ plasmaDeps ++ x11Deps ++ [decoration];
     configurePhase = ''
-      cmake -B build-kf6 -G Ninja -DCMAKE_INSTALL_PREFIX=$out ${lib.concatStringsSep " " commonCmakeFlags}
+      cmake -B build -G Ninja ${lib.concatStringsSep " " commonCmakeFlags}
     '';
     buildPhase = ''
-      ninja -C build-kf6
+      ninja -C build
     '';
     installPhase = ''
-      ninja install -C build-kf6
-      mkdir -p $out/lib/qt-6/plugins/kwin/effects/plugins
-      mv $out/lib/plugins/kwin/effects/plugins/* $out/lib/qt-6/plugins/kwin/effects/plugins/ || true
+      ninja install -C build
     '';
   };
 
@@ -204,36 +191,32 @@
     nativeBuildInputs = commonNativeBuildInputs;
     buildInputs = qt6Deps ++ kf6Deps ++ kf6DevDeps ++ plasmaDeps ++ x11Deps ++ [decoration];
     configurePhase = ''
-      cmake -B build-kf6 -G Ninja -DCMAKE_INSTALL_PREFIX=$out ${lib.concatStringsSep " " commonCmakeFlags}
+      cmake -B build -G Ninja ${lib.concatStringsSep " " commonCmakeFlags}
     '';
     buildPhase = ''
-      ninja -C build-kf6
+      ninja -C build
     '';
     installPhase = ''
-      ninja install -C build-kf6
-      mkdir -p $out/lib/qt-6/plugins/kwin/effects/plugins
-      mv $out/lib/plugins/kwin/effects/plugins/* $out/lib/qt-6/plugins/kwin/effects/plugins/ || true
+      ninja install -C build
     '';
   };
 
   corebindingsplugin = stdenv.mkDerivation {
     name = "aerotheme-corebindingsplugin";
     src = pkgs.kdePackages.libplasma.src;
-    nativeBuildInputs = commonNativeBuildInputs;
-    buildInputs = qt6Deps ++ kf6Deps ++ [ pkgs.kdePackages.plasma-wayland-protocols ];
-    postUnpack = ''
-      cp ${themeRepo}/misc/defaulttooltip/DefaultToolTip.qml $sourceRoot/src/declarativeimports/core/private/
+    nativeBuildInputs = commonNativeBuildInputs ++ [pkgs.pkg-config];
+    buildInputs = qt6Deps ++ kf6Deps ++ kf6DevDeps ++ plasmaDeps ++ [pkgs.wayland];
+    postunpack = ''
+      cp ${themeRepo}/misc/defaulttooltip/defaulttooltip.qml $sourceroot/src/declarativeimports/core/private/
     '';
     configurePhase = ''
-      cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+      cmake -B build -G Ninja ${lib.concatStringsSep " " commonCmakeFlags}
     '';
     buildPhase = ''
       ninja -C build corebindingsplugin
     '';
     installPhase = ''
-      pluginPath=$(find build -name libcorebindingsplugin.so)
-      mkdir -p $out/lib/qt6/qml/org/kde/plasma/core
-      cp $pluginPath $out/lib/qt6/qml/org/kde/plasma/core/
+      ninja install -C build
     '';
   };
 
@@ -242,7 +225,6 @@
     src = themeRepo;
     nativeBuildInputs = [gnutar];
     installPhase = ''
-      # Create necessary directories
       mkdir -p $out/share/plasma/desktoptheme \
         $out/share/plasma/look-and-feel \
         $out/share/plasma/plasmoids \
@@ -260,7 +242,6 @@
         $out/share/sounds/Windows\ 7 \
         $out/share/icons
 
-      # Copy Plasma components
       [ -d "$src/plasma/desktoptheme" ] && cp -r "$src/plasma/desktoptheme"/* $out/share/plasma/desktoptheme/
       [ -d "$src/plasma/look-and-feel" ] && cp -r "$src/plasma/look-and-feel"/* $out/share/plasma/look-and-feel/
       [ -d "$src/plasma/plasmoids" ] && cp -r "$src/plasma/plasmoids"/* $out/share/plasma/plasmoids/
@@ -272,8 +253,6 @@
       [ -d "$src/kwin/scripts" ] && cp -r "$src/kwin/scripts"/* $out/share/kwin/scripts/
       [ -d "$src/plasma/color_scheme" ] && cp -r "$src/plasma/color_scheme"/* $out/share/color-schemes/
       [ -d "$src/misc/kvantum/Kvantum" ] && cp -r "$src/misc/kvantum/Kvantum"/* $out/share/Kvantum/
-
-      # Existing installations (SDDM, MIME, icons, sounds)
       [ -d "$src/plasma/smod" ] && cp -r "$src/plasma/smod" $out/share/smod
       [ -d "$src/plasma/sddm/sddm-theme-mod" ] && cp -r "$src/plasma/sddm/sddm-theme-mod" $out/share/sddm/themes/
       [ -d "$src/misc/mimetype" ] && cp -r "$src/misc/mimetype"/* $out/share/mime/packages/
@@ -288,5 +267,5 @@
     };
   };
 in {
-  inherit decoration smodsnap smodglow startupfeedback aeroglassblur aeroglide aerothemeplasma aerothemeplasma-git;
+  inherit decoration smodsnap smodglow startupfeedback aeroglassblur aeroglide aerothemeplasma aerothemeplasma-git corebindingsplugin;
 }
