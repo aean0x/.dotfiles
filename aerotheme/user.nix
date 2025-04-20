@@ -12,31 +12,31 @@
       "Walk Through Windows Alternative" = "Meta+Tab";
     };
     configFile = {
-      "kcminputrc"."Mouse" = {
-        "cursorTheme" = "aero-drop";
-        "BusyCursor" = "none";
-      };
-      "kdeglobals"."General" = {
-        "font" = "Segoe UI,9,-1,5,50,0,0,0,0,0";
-        "fixed" = "Hack,10,-1,5,50,0,0,0,0,0";
-        "menuFont" = "Segoe UI,9,-1,5,50,0,0,0,0,0";
-        "toolBarFont" = "Segoe UI,9,-1,5,50,0,0,0,0,0";
-        "smallestReadableFont" = "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1";
-        "XftAntialias" = true;
-        "XftHintStyle" = "hintslight";
-        "accentColorFromWallpaper" = false;
-        "ColorScheme" = "AeroColorScheme1";
-        "ShowDeleteCommand" = false;
-      };
-      "kdeglobals"."Icons"."Theme" = "Windows 7 Aero";
-      "kdeglobals"."Sounds"."Theme" = "Windows 7";
-      "kdeglobals"."KDE"."LookAndFeelPackage" = "AeroThemePlasma";
-      "kdeglobals"."WM"."activeFont" = "Segoe UI,9,-1,5,50,0,0,0,0,0";
-      "kwinrc"."Windows" = {
-        "RollOverTitlebar" = "None";
-        "BorderSnapZone" = 15;
-        "WindowSnapZone" = 15;
-      };
+      # "kcminputrc"."Mouse" = {
+      #   "cursorTheme" = "aero-drop";
+      #   "BusyCursor" = "none";
+      # };
+      # "kdeglobals"."General" = {
+      #   "font" = "Segoe UI,9,-1,5,50,0,0,0,0,0";
+      #   "fixed" = "Hack,10,-1,5,50,0,0,0,0,0";
+      #   "menuFont" = "Segoe UI,9,-1,5,50,0,0,0,0,0";
+      #   "toolBarFont" = "Segoe UI,9,-1,5,50,0,0,0,0,0";
+      #   "smallestReadableFont" = "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1";
+      #   "XftAntialias" = true;
+      #   "XftHintStyle" = "hintslight";
+      #   "accentColorFromWallpaper" = false;
+      #   "ColorScheme" = "AeroColorScheme1";
+      #   "ShowDeleteCommand" = false;
+      # };
+      # "kdeglobals"."Icons"."Theme" = "Windows 7 Aero";
+      # "kdeglobals"."Sounds"."Theme" = "Windows 7";
+      # "kdeglobals"."KDE"."LookAndFeelPackage" = "AeroThemePlasma";
+      # "kdeglobals"."WM"."activeFont" = "Segoe UI,9,-1,5,50,0,0,0,0,0";
+      # "kwinrc"."Windows" = {
+      #   "RollOverTitlebar" = "None";
+      #   "BorderSnapZone" = 15;
+      #   "WindowSnapZone" = 15;
+      # };
       "kwinrc"."TabBox" = {
         "LayoutName" = "thumbnail_seven";
         "ShowDesktopMode" = 1;
@@ -71,10 +71,10 @@
         "minimizeall" = true;
         "smodpeekscript" = true;
       };
-      "kwinrc"."org.kde.kdecoration2" = {
-        "library" = "org.smod.smod";
-        "theme" = "aerotheme";
-      };
+      # "kwinrc"."org.kde.kdecoration2" = {
+      #   "library" = "org.smod.smod";
+      #   "theme" = "aerotheme";
+      # };
       "ksmserverrc"."General"."confirmLogout" = false;
     };
   };
