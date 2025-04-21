@@ -6,14 +6,10 @@
 }: let
   aerothemeplasmaPkgs = pkgs.callPackage ./aerothemeplasma.nix {inherit pkgs;};
   inherit (aerothemeplasmaPkgs) decoration smodsnap smodglow startupfeedback aeroglassblur aeroglide aerothemeplasma aerothemeplasma-git corebindingsplugin;
-
-  # Add the dereference workaround
-  derefDecoration = pkgs.runCommand "smod-decoration-workaround" {} ''
-    cp -r --dereference ${decoration}/lib/qt-6/plugins $out
-  '';
 in {
   environment.sessionVariables = {
-    QT_PLUGIN_PATH = ["${derefDecoration}"];
+    QT_PLUGIN_PATH = "${aerothemeplasma}/lib/qt-6/plugins:$QT_PLUGIN_PATH";
+    QML2_IMPORT_PATH = "${aerothemeplasma}/lib/qt-6/qml:$QML2_IMPORT_PATH";
     QML_DISABLE_DISTANCEFIELD = "1";
   };
 
@@ -51,20 +47,12 @@ in {
     };
   };
 
-  environment.etc."kwinrc" = {
-    text = ''
-      [org.kde.kdecoration2]
-      library=org.kde.kdecoration3.smod
-    '';
-    mode = "0644";
-  };
-
   # Install SDDM theme
-  # environment.etc."sddm.conf.d/theme.conf".text = ''
-  #   [Theme]
-  #   Current=sddm-theme-mod
-  #   CursorTheme=aero-drop
-  # '';
+  environment.etc."sddm.conf.d/theme.conf".text = ''
+    [Theme]
+    Current=sddm-theme-mod
+    CursorTheme=aero-drop
+  '';
 
   # Fonts
   fonts = {
