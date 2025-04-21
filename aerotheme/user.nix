@@ -3,7 +3,16 @@
   pkgs,
   lib,
   ...
-}: {
+}: let
+  aerothemeplasmaPkgs = pkgs.callPackage ./aerothemeplasma.nix {inherit pkgs;};
+  inherit (aerothemeplasmaPkgs) aerothemeplasma;
+in {
+  home.sessionVariables = {
+    QT_PLUGIN_PATH = "${aerothemeplasma}/lib/qt-6/plugins:$QT_PLUGIN_PATH";
+    QML2_IMPORT_PATH = "${aerothemeplasma}/lib/qt-6/qml:$QML2_IMPORT_PATH";
+    QML_DISABLE_DISTANCEFIELD = "1";
+  };
+
   programs.plasma = {
     enable = true;
     shortcuts.kwin = {
