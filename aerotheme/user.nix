@@ -50,7 +50,7 @@ in {
         "smodpeekscript" = true;
       };
       "ksmserverrc"."General"."confirmLogout" = false;
-      "kwinrc"."org.kde.kdecoration2" = {
+      "kwinrc"."org.kde.kdecoration3" = {
         "library" = "org.smod.smod";
         "theme" = "aerotheme";
       };
