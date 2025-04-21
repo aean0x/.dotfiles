@@ -50,10 +50,10 @@ in {
         "smodpeekscript" = true;
       };
       "ksmserverrc"."General"."confirmLogout" = false;
-      "kwinrc"."org.kde.kdecoration3" = {
-        "library" = "org.smod.smod";
-        "theme" = "aerotheme";
-      };
+      "kwinrc"."org.kde.kdecoration2"."BorderSize" = "Normal";
+      "kwinrc"."org.kde.kdecoration2"."theme" = "SMOD";
+      "kwinrc"."org.kde.kdecoration3"."library" = "org.smod.smod";
+      "kwinrc"."org.kde.kdecoration3"."theme" = "aerotheme";
     };
   };
 
