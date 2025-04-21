@@ -7,6 +7,12 @@
   aerothemeplasmaPkgs = pkgs.callPackage ./aerothemeplasma.nix {inherit pkgs;};
   inherit (aerothemeplasmaPkgs) decoration smodsnap smodglow startupfeedback aeroglassblur aeroglide aerothemeplasma aerothemeplasma-git corebindingsplugin;
 in {
+  environment.sessionVariables = {
+    QT_PLUGIN_PATH = "${aerothemeplasma}/lib/qt-6/plugins:$QT_PLUGIN_PATH";
+    QML2_IMPORT_PATH = "${aerothemeplasma}/lib/qt-6/qml:$QML2_IMPORT_PATH";
+    QML_DISABLE_DISTANCEFIELD = "1";
+  };
+
   # System packages
   environment.systemPackages = with pkgs; [
     decoration
