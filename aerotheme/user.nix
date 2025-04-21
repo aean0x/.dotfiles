@@ -52,7 +52,7 @@ in {
       "ksmserverrc"."General"."confirmLogout" = false;
       "kwinrc"."org.kde.kdecoration2" = {
         "library" = "org.smod.smod";
-        "theme" = "smod";
+        "theme" = "aerotheme";
       };
     };
   };
