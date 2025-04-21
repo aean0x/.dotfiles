@@ -51,6 +51,14 @@ in {
     };
   };
 
+  environment.etc."kwinrc" = {
+    text = ''
+      [org.kde.kdecoration2]
+      library=org.kde.kdecoration3.smod
+    '';
+    mode = "0644";
+  };
+
   # Install SDDM theme
   # environment.etc."sddm.conf.d/theme.conf".text = ''
   #   [Theme]
