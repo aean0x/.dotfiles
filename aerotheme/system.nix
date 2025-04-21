@@ -13,6 +13,7 @@ in {
     QML_DISABLE_DISTANCEFIELD = "1";
     # Ensure KDE can find custom themes and decorations
     # XDG_DATA_DIRS = "${aerothemeplasma}/share:$XDG_DATA_DIRS";
+    KDEDIRS = "${aerothemeplasma}/share:$KDEDIRS";
   };
 
   # System packages
