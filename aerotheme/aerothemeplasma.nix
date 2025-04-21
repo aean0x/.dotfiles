@@ -233,7 +233,6 @@
         $out/share/kwin/effects \
         $out/share/kwin/tabbox \
         $out/share/kwin/outline \
-        $out/share/plasma/desktoptheme/aerotheme/outline \
         $out/share/kwin/scripts \
         $out/share/color-schemes \
         $out/share/Kvantum \
@@ -250,7 +249,7 @@
       [ -d "$src/plasma/shells" ] && cp -r "$src/plasma/shells"/* $out/share/plasma/shells/
       [ -d "$src/kwin/effects" ] && cp -r "$src/kwin/effects"/* $out/share/kwin/effects/
       [ -d "$src/kwin/tabbox" ] && cp -r "$src/kwin/tabbox"/* $out/share/kwin/tabbox/
-      [ -d "$src/kwin/outline" ] && cp -r "$src/kwin/outline"/* $out/share/plasma/desktoptheme/aerotheme/outline/
+      [ -d "$src/kwin/outline" ] && cp -r "$src/kwin/outline"/* $out/share/kwin/outline/
       [ -d "$src/kwin/scripts" ] && cp -r "$src/kwin/scripts"/* $out/share/kwin/scripts/
       [ -d "$src/plasma/color_scheme" ] && cp -r "$src/plasma/color_scheme"/* $out/share/color-schemes/
       [ -d "$src/misc/kvantum/Kvantum" ] && cp -r "$src/misc/kvantum/Kvantum"/* $out/share/Kvantum/
