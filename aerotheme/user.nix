@@ -20,7 +20,7 @@ in {
     # ".local/share/color-schemes".source = "${aerothemeplasma-git}/plasma/color_scheme";
     # ".config/Kvantum".source = "${aerothemeplasma-git}/misc/kvantum/Kvantum";
     # ".config/fontconfig/fonts.conf".source = "${aerothemeplasma-git}/misc/fontconfig/fonts.conf";
-    # ".local/share/smod".source = "${aerothemeplasma-git}/plasma/smod";
+    ".local/share/smod".source = "${aerothemeplasma-git}/plasma/smod";
     # ".local/share/sddm/themes/sddm-theme-mod".source = "${aerothemeplasma-git}/plasma/sddm/sddm-theme-mod";
   };
   programs.plasma = {
