@@ -10,10 +10,9 @@ in {
   environment.sessionVariables = {
     QT_PLUGIN_PATH = "${aerothemeplasma}/lib/qt-6/plugins:${decoration}/lib/qt-6/plugins:$QT_PLUGIN_PATH";
     QML2_IMPORT_PATH = "${aerothemeplasma}/lib/qt-6/qml:$QML2_IMPORT_PATH";
-    QML_DISABLE_DISTANCEFIELD = "1";
-    # Ensure KDE can find custom themes and decorations
+    # QML_DISABLE_DISTANCEFIELD = "1";
     # XDG_DATA_DIRS = "${aerothemeplasma}/share:$XDG_DATA_DIRS";
-    KDEDIRS = "${aerothemeplasma}/share:$KDEDIRS";
+    # KDEDIRS = "${aerothemeplasma}/share:$KDEDIRS";
   };
 
   # System packages
@@ -49,13 +48,6 @@ in {
       };
     };
   };
-
-  # Install SDDM theme
-  environment.etc."sddm.conf.d/theme.conf".text = ''
-    [Theme]
-    Current=sddm-theme-mod
-    CursorTheme=aero-drop
-  '';
 
   # Fonts
   fonts = {

@@ -220,6 +220,54 @@
     '';
   };
 
+  seventasks = stdenv.mkDerivation {
+    name = "aerotheme-seventasks";
+    src = "${themeRepo}/plasma/plasmoids/src/seventasks_src";
+    nativeBuildInputs = commonNativeBuildInputs ++ [pkgs.pkg-config];
+    buildInputs = qt6Deps ++ kf6Deps ++ kf6DevDeps ++ plasmaDeps;
+    configurePhase = ''
+      cmake -B build -G Ninja ${lib.concatStringsSep " " commonCmakeFlags}
+    '';
+    buildPhase = ''
+      ninja -C build
+    '';
+    installPhase = ''
+      ninja install -C build
+    '';
+  };
+
+  sevenstart = stdenv.mkDerivation {
+    name = "aerotheme-sevenstart";
+    src = "${themeRepo}/plasma/plasmoids/src/sevenstart_src";
+    nativeBuildInputs = commonNativeBuildInputs ++ [pkgs.pkg-config];
+    buildInputs = qt6Deps ++ kf6Deps ++ kf6DevDeps ++ plasmaDeps;
+    configurePhase = ''
+      cmake -B build -G Ninja ${lib.concatStringsSep " " commonCmakeFlags}
+    '';
+    buildPhase = ''
+      ninja -C build
+    '';
+    installPhase = ''
+      ninja install -C build
+    '';
+  };
+
+  desktopcontainment = stdenv.mkDerivation {
+    name = "aerotheme-desktopcontainment";
+    src = "${themeRepo}/plasma/plasmoids/src/desktopcontainment";
+    nativeBuildInputs = commonNativeBuildInputs ++ [pkgs.pkg-config];
+    buildInputs = qt6Deps ++ kf6Deps ++ kf6DevDeps ++ plasmaDeps ++ [pkgs.kdePackages.kirigami pkgs.kdePackages.plasma5support pkgs.kdePackages.plasma-activities-stats];
+    configurePhase = ''
+      cmake -B build -G Ninja ${lib.concatStringsSep " " commonCmakeFlags}
+    '';
+    buildPhase = ''
+      ninja -C build
+    '';
+    installPhase = ''
+      ninja install -C build
+    '';
+  };
+
   aerothemeplasma = stdenv.mkDerivation {
     name = "aerothemeplasma";
     src = themeRepo;
@@ -267,5 +315,5 @@
     };
   };
 in {
-  inherit decoration smodsnap smodglow startupfeedback aeroglassblur aeroglide aerothemeplasma aerothemeplasma-git corebindingsplugin;
+  inherit decoration smodsnap smodglow startupfeedback aeroglassblur aeroglide aerothemeplasma aerothemeplasma-git corebindingsplugin seventasks sevenstart desktopcontainment;
 }
