@@ -8,20 +8,11 @@
   inherit (aerothemeplasmaPkgs) aerothemeplasma aerothemeplasma-git;
 in {
   home.file = {
-    # ".local/share/plasma/desktoptheme".source = "${aerothemeplasma-git}/plasma/desktoptheme";
-    # ".local/share/plasma/look-and-feel".source = "${aerothemeplasma-git}/plasma/look-and-feel";
-    # ".local/share/plasma/plasmoids".source = "${aerothemeplasma-git}/plasma/plasmoids";
-    # ".local/share/plasma/layout-templates".source = "${aerothemeplasma-git}/plasma/layout-templates";
-    # ".local/share/plasma/shells".source = "${aerothemeplasma-git}/plasma/shells";
-    ".local/share/kwin/effects".source = "${aerothemeplasma-git}/kwin/effects";
-    ".local/share/kwin/tabbox".source = "${aerothemeplasma-git}/kwin/tabbox";
-    ".local/share/kwin/outline".source = "${aerothemeplasma-git}/kwin/outline";
-    ".local/share/kwin/scripts".source = "${aerothemeplasma-git}/kwin/scripts";
-    # ".local/share/color-schemes".source = "${aerothemeplasma-git}/plasma/color_scheme";
-    # ".config/Kvantum".source = "${aerothemeplasma-git}/misc/kvantum/Kvantum";
-    # ".config/fontconfig/fonts.conf".source = "${aerothemeplasma-git}/misc/fontconfig/fonts.conf";
+    # I have tried for hours to get this to work without the home symlinks
+    # I give up.
     ".local/share/smod".source = "${aerothemeplasma-git}/plasma/smod";
-    # ".local/share/sddm/themes/sddm-theme-mod".source = "${aerothemeplasma-git}/plasma/sddm/sddm-theme-mod";
+    ".local/share/plasma/plasmoids".source = "${aerothemeplasma-git}/plasma/plasmoids";
+    ".local/share/plasma/layout-templates".source = "${aerothemeplasma-git}/plasma/layout-templates";
   };
   programs.plasma = {
     enable = true;
