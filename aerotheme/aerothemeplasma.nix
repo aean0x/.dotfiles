@@ -104,7 +104,7 @@
     "-DKDE_INSTALL_QMLDIR=lib/qt-6/qml" # no idea why
     "-DKWIN_INCLUDE=${pkgs.kdePackages.kwin.dev}/include/kwin"
     "-DKPLUGINFACTORY_INCLUDE=${pkgs.kdePackages.kcoreaddons.dev}/include/KF6/KCoreAddons"
-    ''-DCMAKE_CXX_FLAGS="-I${pkgs.kdePackages.kwin.dev}/include/kwin -I${pkgs.kdePackages.kcoreaddons.dev}/include/KF6/KCoreAddons -I${pkgs.kdePackages.libplasma.dev}/include/Plasma"''
+    ''-DCMAKE_CXX_FLAGS="-I${pkgs.kdePackages.kwin.dev}/include/kwin -I${pkgs.kdePackages.kcoreaddons.dev}/include/KF6/KCoreAddons -I${pkgs.kdePackages.libplasma.dev}/include/Plasma -I${pkgs.kdePackages.libplasma.dev}/include/PlasmaQuick"''
     "-DKWin_DIR=${pkgs.kdePackages.kwin.dev}/lib/cmake/KWin"
   ];
 
