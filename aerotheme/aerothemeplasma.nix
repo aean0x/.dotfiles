@@ -85,6 +85,9 @@
     kwin.dev
     kirigami
     plasma-activities
+    plasma-activities-stats
+    libplasma
+    libplasma.dev
   ];
 
   x11Deps = with pkgs; [
@@ -101,7 +104,7 @@
     "-DKDE_INSTALL_QMLDIR=lib/qt-6/qml" # no idea why
     "-DKWIN_INCLUDE=${pkgs.kdePackages.kwin.dev}/include/kwin"
     "-DKPLUGINFACTORY_INCLUDE=${pkgs.kdePackages.kcoreaddons.dev}/include/KF6/KCoreAddons"
-    ''-DCMAKE_CXX_FLAGS="-I${pkgs.kdePackages.kwin.dev}/include/kwin -I${pkgs.kdePackages.kcoreaddons.dev}/include/KF6/KCoreAddons"''
+    ''-DCMAKE_CXX_FLAGS="-I${pkgs.kdePackages.kwin.dev}/include/kwin -I${pkgs.kdePackages.kcoreaddons.dev}/include/KF6/KCoreAddons -I${pkgs.kdePackages.libplasma.dev}/include/Plasma"''
     "-DKWin_DIR=${pkgs.kdePackages.kwin.dev}/lib/cmake/KWin"
   ];
 
@@ -256,8 +259,18 @@
     name = "aerotheme-desktopcontainment";
     src = "${themeRepo}/plasma/plasmoids/src/desktopcontainment";
     nativeBuildInputs = commonNativeBuildInputs ++ [pkgs.pkg-config];
-    buildInputs = qt6Deps ++ kf6Deps ++ kf6DevDeps ++ plasmaDeps ++ [pkgs.kdePackages.kirigami pkgs.kdePackages.plasma5support pkgs.kdePackages.plasma-activities-stats];
+    buildInputs = qt6Deps ++ kf6Deps ++ kf6DevDeps ++ plasmaDeps ++ [pkgs.kdePackages.knotifyconfig pkgs.kdePackages.krunner];
+    postPatch = ''
+      sed -i 's/ecm_find_qmlmodule(org.kde.kirigami REQUIRED)/ecm_find_qmlmodule(org.kde.kirigami)/' CMakeLists.txt
+    '';
     configurePhase = ''
+      mkdir -p $TMPDIR/cmake-modules
+      cat > $TMPDIR/cmake-modules/Findorg.kde.kirigami-QMLModule.cmake <<EOF
+        set(org_kde_kirigami_QMLModule_FOUND TRUE)
+        set(org_kde_kirigami_QMLModule_DIR "${pkgs.kdePackages.kirigami}/lib/qt-6/qml/org/kde/kirigami")
+        message(STATUS "Found org.kde.kirigami-QMLModule")
+      EOF
+      export CMAKE_MODULE_PATH=$TMPDIR/cmake-modules:$CMAKE_MODULE_PATH
       cmake -B build -G Ninja ${lib.concatStringsSep " " commonCmakeFlags}
     '';
     buildPhase = ''

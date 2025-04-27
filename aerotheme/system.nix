@@ -5,14 +5,11 @@
   ...
 }: let
   aerothemeplasmaPkgs = pkgs.callPackage ./aerothemeplasma.nix {inherit pkgs;};
-  inherit (aerothemeplasmaPkgs) decoration smodsnap smodglow startupfeedback aeroglassblur aeroglide aerothemeplasma aerothemeplasma-git corebindingsplugin;
+  inherit (aerothemeplasmaPkgs) decoration smodsnap smodglow startupfeedback aeroglassblur aeroglide aerothemeplasma aerothemeplasma-git corebindingsplugin seventasks sevenstart desktopcontainment;
 in {
   environment.sessionVariables = {
     QT_PLUGIN_PATH = "${aerothemeplasma}/lib/qt-6/plugins:${decoration}/lib/qt-6/plugins:$QT_PLUGIN_PATH";
     QML2_IMPORT_PATH = "${aerothemeplasma}/lib/qt-6/qml:$QML2_IMPORT_PATH";
-    # QML_DISABLE_DISTANCEFIELD = "1";
-    # XDG_DATA_DIRS = "${aerothemeplasma}/share:$XDG_DATA_DIRS";
-    # KDEDIRS = "${aerothemeplasma}/share:$KDEDIRS";
   };
 
   # System packages
@@ -25,6 +22,9 @@ in {
     aeroglide
     aerothemeplasma
     corebindingsplugin
+    seventasks
+    sevenstart
+    desktopcontainment
     kdePackages.qtstyleplugin-kvantum
     kdePackages.plasma5support
     shared-mime-info
