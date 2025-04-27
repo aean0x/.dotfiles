@@ -263,6 +263,7 @@
     postPatch = ''
       sed -i 's/ecm_find_qmlmodule(org.kde.kirigami REQUIRED)/ecm_find_qmlmodule(org.kde.kirigami)/' CMakeLists.txt
     '';
+    # TODO: find a better way to do this than faking a cmake module
     configurePhase = ''
       mkdir -p $TMPDIR/cmake-modules
       cat > $TMPDIR/cmake-modules/Findorg.kde.kirigami-QMLModule.cmake <<EOF

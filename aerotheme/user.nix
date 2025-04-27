@@ -8,7 +8,7 @@
   inherit (aerothemeplasmaPkgs) aerothemeplasma aerothemeplasma-git;
 in {
   home.file = {
-    # I hate how much time I spent trying to get this to work without the home symlinks. I give up.
+    # TODO: find a better way to do this than home symlinks.
     ".local/share/plasma/desktoptheme".source = "${aerothemeplasma-git}/plasma/desktoptheme";
     ".local/share/plasma/look-and-feel".source = "${aerothemeplasma-git}/plasma/look-and-feel";
     ".local/share/plasma/plasmoids".source = "${aerothemeplasma-git}/plasma/plasmoids";
@@ -64,10 +64,15 @@ in {
         "smodpeekscript" = true;
       };
       "ksmserverrc"."General"."confirmLogout" = false;
-      "kwinrc"."org.kde.kdecoration2"."BorderSize" = "Normal";
-      "kwinrc"."org.kde.kdecoration2"."theme" = "SMOD";
-      "kwinrc"."org.kde.kdecoration3"."library" = "org.smod.smod";
-      "kwinrc"."org.kde.kdecoration3"."theme" = "aerotheme";
+      "kcminputrc"."Mouse"."BusyCursor" = "none";
+      "klaunchrc"."FeedbackStyle"."BusyCursor" = false;
+      "kdeglobals"."General" = {
+        "font" = "Segoe UI,9,-1,5,50,0,0,0,0,0";
+        "menuFont" = "Segoe UI,9,-1,5,50,0,0,0,0,0";
+        "toolBarFont" = "Segoe UI,9,-1,5,50,0,0,0,0,0";
+        "smallestReadableFont" = "Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1";
+      };
+      "kdeglobals"."General"."accentColorFromWallpaper" = false;
     };
   };
 
