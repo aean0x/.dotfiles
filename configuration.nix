@@ -134,6 +134,7 @@ in {
     kdePackages.qtquick3dphysics
     kdePackages.qtdeclarative
     kdePackages.appstream-qt
+    kdePackages.filelight
 
     # Package derivation template
     # (writeTextDir "share/sddm/themes/breeze/theme.conf.user" ''
