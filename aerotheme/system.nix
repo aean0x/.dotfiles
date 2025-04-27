@@ -34,15 +34,45 @@ in {
     kdePackages.kitemviews
     kdePackages.knewstuff
     kdePackages.kcmutils
+    kdePackages.kdeplasma-addons
+    kdePackages.sddm-kcm
+    kdePackages.yakuake
+    kdePackages.skanlite
+    kdePackages.kdenlive
+    kdePackages.okular
+    kdePackages.elisa
+    kdePackages.kcalc
+    kdePackages.ksystemlog
+    kdePackages.kolourpaint
+    kdePackages.isoimagewriter
+    kdePackages.plasma-browser-integration
+    kdePackages.partitionmanager
+    kdePackages.qttools
+    kdePackages.full
+    kdePackages.qtvirtualkeyboard
+    kdePackages.qt5compat
+    kdePackages.plasma-wayland-protocols
+    kdePackages.extra-cmake-modules
+    kdePackages.qtbase
+    kdePackages.qtquick3d
+    kdePackages.qtquicktimeline
+    kdePackages.qtquick3dphysics
+    kdePackages.qtdeclarative
+    kdePackages.appstream-qt
   ];
 
   system.activationScripts.updateMimeDatabase = lib.stringAfter ["etc"] ''
     ${pkgs.shared-mime-info}/bin/update-mime-database /etc/xdg/mime
   '';
 
-  # SDDM configuration
+  # KDE Plasma and SDDM configuration
+  services.desktopManager.plasma6.enable = true;
+  services.xserver = {
+    enable = true;
+  };
   services.displayManager.sddm = {
     enable = true;
+    wayland.enable = true;
     theme = "sddm-theme-mod";
     settings = {
       Theme = {
