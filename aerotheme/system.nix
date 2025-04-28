@@ -11,7 +11,7 @@ in {
     # TODO: find a better way to do this than system session variables.
     QT_PLUGIN_PATH = "${aerothemeplasma}/lib/qt-6/plugins:${decoration}/lib/qt-6/plugins:$QT_PLUGIN_PATH";
     QML2_IMPORT_PATH = "${aerothemeplasma}/lib/qt-6/qml:$QML2_IMPORT_PATH";
-    QML_DISABLE_DISTANCEFIELD = "1";
+    # QML_DISABLE_DISTANCEFIELD = "1";
   };
 
   # System packages

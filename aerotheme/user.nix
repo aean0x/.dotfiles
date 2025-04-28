@@ -41,7 +41,7 @@ in {
         "kwin4_effect_aeroglassblurEnabled" = true;
         "kwin4_effect_aeroglideEnabled" = true;
         "smodsnapEnabled" = true;
-        "smodglowEnabled" = true;
+        # "smodglowEnabled" = true;
         "startupfeedbackEnabled" = true;
         "desaturateUnresponsiveAppsEnabled" = true;
         "fadingPopupsEnabled" = true;
