@@ -380,6 +380,8 @@ in {
     spiceUSBRedirection.enable = true;
   };
 
+  boot.binfmt.emulatedSystems = ["aarch64-linux"];
+
   # Nix settings
   nix.settings = {
     sandbox = true;
