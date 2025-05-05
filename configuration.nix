@@ -46,6 +46,7 @@ in {
     picocom
     neofetch
     openvpn3
+    sops
 
     # Build tools
     cmake

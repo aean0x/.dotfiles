@@ -66,6 +66,9 @@ in {
       "ksmserverrc"."General"."confirmLogout" = false;
       "kcminputrc"."Mouse"."BusyCursor" = "none";
       "klaunchrc"."FeedbackStyle"."BusyCursor" = false;
+      "kdeglobals"."General"."XftAntialias" = true;
+      "kdeglobals"."General"."XftHintStyle" = "hintslight";
+      "kdeglobals"."General"."XftSubPixel" = "rgb";
       "kdeglobals"."General" = {
         "font" = "Segoe UI,9,-1,5,50,0,0,0,0,0";
         "menuFont" = "Segoe UI,9,-1,5,50,0,0,0,0,0";
