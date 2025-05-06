@@ -96,4 +96,6 @@ in {
       };
     };
   };
+
+  environment.etc."environment".text = "QML_DISABLE_DISTANCEFIELD=1";
 }
