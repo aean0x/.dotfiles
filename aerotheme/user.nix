@@ -17,7 +17,7 @@ in {
     ".local/share/kwin/effects".source = "${aerothemeplasma-git}/kwin/effects";
     ".local/share/kwin/tabbox".source = "${aerothemeplasma-git}/kwin/tabbox";
     ".local/share/kwin/outline".source = "${aerothemeplasma-git}/kwin/outline";
-    ".config/fontconfig/fonts.conf".source = "${aerothemeplasma-git}/misc/fontconfig/fonts.conf";
+    # ".config/fontconfig/fonts.conf".source = "${aerothemeplasma-git}/misc/fontconfig/fonts.conf";
     ".local/share/smod".source = "${aerothemeplasma-git}/plasma/smod";
     ".local/share/sddm/themes/sddm-theme-mod".source = "${aerothemeplasma-git}/plasma/sddm/sddm-theme-mod";
   };
