@@ -47,6 +47,7 @@ in {
     neofetch
     openvpn3
     sops
+    tree
 
     # Build tools
     cmake
