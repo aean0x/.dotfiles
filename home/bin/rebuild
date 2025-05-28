@@ -62,7 +62,7 @@ if [ "$UPDATE" = true ]; then
     echo "Evaluating updated flake..."
     sudo nix flake check "$NIXOS_DIR" || true
     echo "Waiting for store to update..."
-    sleep 5
+    sleep 10
 else
     echo "Skipping NixOS update. Use -u or -U to update."
 fi
