@@ -391,6 +391,17 @@ in {
     nix-path = ["nixpkgs=${pkgs.path}"];
   };
 
+  nix = {
+    optimise = {
+      automatic = true;
+      dates = ["weekly"];
+    };
+    gc = {
+      automatic = true;
+      dates = ["weekly"];
+    };
+  };
+
   systemd.services.libvirtd = {
     enable = true;
     wantedBy = ["multi-user.target"];
