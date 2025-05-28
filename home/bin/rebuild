@@ -58,7 +58,10 @@ sudo find "$NIXOS_DIR" -type f -exec chmod 644 {} +
 if [ "$UPDATE" = true ]; then
     echo "NixOS Upgrading..."
     sudo nix flake update
-    # To ensure update is applied before rebuild
+    # Ensure the flake update is fully processed
+    echo "Evaluating updated flake..."
+    sudo nix flake check "$NIXOS_DIR" || true
+    echo "Waiting for store to update..."
     sleep 5
 else
     echo "Skipping NixOS update. Use -u or -U to update."
