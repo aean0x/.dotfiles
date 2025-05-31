@@ -302,7 +302,7 @@ in {
   hardware.nvidia = {
     open = true;
     nvidiaSettings = true;
-    package = config.boot.kernelPackages.nvidiaPackages.beta;
+    package = config.boot.kernelPackages.nvidiaPackages.stable;
     prime = {
       offload.enable = true;
       nvidiaBusId = "PCI:1:0:0";
