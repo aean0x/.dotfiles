@@ -260,9 +260,8 @@ in {
   ];
 
   # Enable Xbox One driver
-  boot.extraModulePackages = [config.boot.kernelPackages.xone];
+  boot.extraModulePackages = [];
   boot.kernelModules = [
-    "xone"
     "kvm-amd"
     "vfio"
     "vfio_iommu_type1"
@@ -394,6 +393,14 @@ in {
     nix-path = ["nixpkgs=${pkgs.path}"];
   };
 
+  system.autoUpgrade = {
+    enable = true;
+    flake = inputs.self.outPath;
+    flags = ["--update-input" "nixpkgs" "-L"];
+    dates = "02:00";
+    randomizedDelaySec = "45min";
+  };
+
   nix = {
     optimise = {
       automatic = true;
@@ -403,18 +410,6 @@ in {
       automatic = true;
       dates = ["weekly"];
     };
-  };
-
-  system.autoUpgrade = {
-    enable = true;
-    flake = inputs.self.outPath;
-    flags = [
-      "--update-input"
-      "nixpkgs"
-      "-L" # print build logs
-    ];
-    dates = "weekly";
-    randomizedDelaySec = "45min";
   };
 
   systemd.services.libvirtd = {

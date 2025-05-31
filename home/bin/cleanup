@@ -1,9 +1,28 @@
 #!/usr/bin/env bash
 
+echo "Cleaning up temporary directories..."
+# Clean /tmp (files older than 30 days)
+sudo find /tmp -type f -atime +30 -delete
+sudo find /tmp -type d -empty -delete
+
+# Clean /var/tmp (files older than 30 days)
+sudo find /var/tmp -type f -atime +30 -delete
+sudo find /var/tmp -type d -empty -delete
+
+# Clean user's temporary directory
+find "$HOME/.cache" -type f -atime +30 -delete
+find "$HOME/.cache" -type d -empty -delete
+
+# Clean system journal logs older than 7 days
+sudo journalctl --vacuum-time=7d
+
 echo "Cleaning up nix store..."
 sudo nix-collect-garbage -d | grep freed
+
 echo "Optimising nix store..."
 sudo nix-store --optimise
+
 echo "Verifying nix store..."
 sudo nix-store --verify --repair --check-contents
+
 echo "Done."

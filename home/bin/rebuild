@@ -10,9 +10,11 @@ LOG_FILE="$HOME/.nixos-rebuild.log"
 REBOOT=false
 SAVE_PLASMA=false
 UPDATE=false
+ROLLBACK=false
+DRY_RUN=false
 
 # Parse optional arguments
-while getopts "rpuU" opt; do
+while getopts "rpuURd" opt; do
     case ${opt} in
         r)
             REBOOT=true
@@ -23,8 +25,15 @@ while getopts "rpuU" opt; do
         u|U)
             UPDATE=true
             ;;
+        d)
+            DRY_RUN=true
+            ;;
         *)
-            echo "Usage: $0 [-r] [-p] [-u|-U]"
+            echo "Usage: $0 [-r] [-p] [-u|-U] [-d]"
+            echo "  -r: Reboot after rebuild"
+            echo "  -p: Save Plasma config"
+            echo "  -u|-U: Update flake inputs and check"
+            echo "  -d: Perform a dry run of the rebuild"
             exit 1
             ;;
     esac
@@ -56,19 +65,31 @@ sudo find "$NIXOS_DIR" -type f -exec chmod 644 {} +
 
 # Update NixOS only if the update flag is set
 if [ "$UPDATE" = true ]; then
-    echo "NixOS Upgrading..."
+    echo "Updating flake inputs..."
     sudo nix flake update
-    # Ensure the flake update is fully processed
-    echo "Evaluating updated flake..."
-    sudo nix flake check "$NIXOS_DIR" || true
-    echo "Waiting for store to update..."
-    sleep 10
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to update flake inputs."
+        exit 1
+    fi
+
+    echo "Checking flake..."
+    sudo nix flake check "$NIXOS_DIR"
+    if [ $? -ne 0 ]; then
+        echo "Error: Flake check failed."
+        exit 1
+    fi
 else
     echo "Skipping NixOS update. Use -u or -U to update."
 fi
 
 # Rebuild NixOS with the new configuration
-echo "NixOS Rebuilding..."
+if [ "$DRY_RUN" = true ]; then
+    echo "Performing dry run of NixOS rebuild..."
+    sudo nixos-rebuild dry-run --flake "$NIXOS_DIR"
+    exit 0
+fi
+
+echo "Rebuilding NixOS configuration..."
 sudo nixos-rebuild switch --flake "$NIXOS_DIR" 2>&1 | tee "$LOG_FILE" | while IFS= read -r line; do
     echo -ne "\r\033[K$line"
 done
