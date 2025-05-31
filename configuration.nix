@@ -260,8 +260,9 @@ in {
   ];
 
   # Enable Xbox One driver
-  boot.extraModulePackages = [];
+  boot.extraModulePackages = [config.boot.kernelPackages.xpadneo];
   boot.kernelModules = [
+    "xpadneo"
     "kvm-amd"
     "vfio"
     "vfio_iommu_type1"
