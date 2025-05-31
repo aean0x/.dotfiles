@@ -88,6 +88,8 @@ in {
     # ML
     python3Full
     python3Packages.pip
+    python3Packages.torch-bin
+    python3Packages.torchWithCuda
     cudaPackages.cudatoolkit
     cudaPackages.cudnn
 
@@ -179,38 +181,38 @@ in {
   # Systemd services and timers
   systemd = {
     timers = {
-      weeklyUpdate = {
-        description = "Weekly NixOS system update";
-        wantedBy = ["timers.target"];
-        timerConfig = {
-          OnCalendar = "weekly";
-          Persistent = true;
-        };
-      };
-      monthlyCleanup = {
-        description = "Monthly NixOS garbage collection";
-        wantedBy = ["timers.target"];
-        timerConfig = {
-          OnCalendar = "monthly";
-          Persistent = true;
-        };
-      };
+      # weeklyUpdate = {
+      #   description = "Weekly NixOS system update";
+      #   wantedBy = ["timers.target"];
+      #   timerConfig = {
+      #     OnCalendar = "weekly";
+      #     Persistent = true;
+      #   };
+      # };
+      # monthlyCleanup = {
+      #   description = "Monthly NixOS garbage collection";
+      #   wantedBy = ["timers.target"];
+      #   timerConfig = {
+      #     OnCalendar = "monthly";
+      #     Persistent = true;
+      #   };
+      # };
     };
     services = {
-      weeklyUpdate = {
-        description = "Update NixOS system";
-        serviceConfig = {
-          ExecStart = "${pkgs.bash}/bin/bash -c 'for i in {1..3}; do nix flake update && nixos-rebuild switch --flake /etc/nixos && break || sleep 10; done'";
-          User = "root";
-        };
-      };
-      monthlyCleanup = {
-        description = "Clean up old NixOS generations";
-        serviceConfig = {
-          ExecStart = "${pkgs.nix}/bin/nix-collect-garbage --delete-older-than 7d";
-          User = "root";
-        };
-      };
+      # weeklyUpdate = {
+      #   description = "Update NixOS system";
+      #   serviceConfig = {
+      #     ExecStart = "${pkgs.bash}/bin/bash -c 'for i in {1..3}; do nix flake update && nixos-rebuild switch --flake /etc/nixos && break || sleep 10; done'";
+      #     User = "root";
+      #   };
+      # };
+      # monthlyCleanup = {
+      #   description = "Clean up old NixOS generations";
+      #   serviceConfig = {
+      #     ExecStart = "${pkgs.nix}/bin/nix-collect-garbage --delete-older-than 7d";
+      #     User = "root";
+      #   };
+      # };
     };
     sleep.extraConfig = ''
       [Sleep]
@@ -314,6 +316,7 @@ in {
   hardware.nvidia-container-toolkit.enable = true;
   hardware.nvidia-container-toolkit.mount-nvidia-executables = true;
   services.xserver.videoDrivers = ["nvidia" "amdgpu"];
+  nixpkgs.config.cudaSupport = true;
 
   # KDE
   services.desktopManager.plasma6.enable = true;
@@ -400,6 +403,18 @@ in {
       automatic = true;
       dates = ["weekly"];
     };
+  };
+
+  system.autoUpgrade = {
+    enable = true;
+    flake = inputs.self.outPath;
+    flags = [
+      "--update-input"
+      "nixpkgs"
+      "-L" # print build logs
+    ];
+    dates = "weekly";
+    randomizedDelaySec = "45min";
   };
 
   systemd.services.libvirtd = {
