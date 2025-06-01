@@ -89,9 +89,9 @@ in {
     python3Full
     python3Packages.pip
     python3Packages.torch-bin
-    python3Packages.torchWithCuda
-    cudaPackages.cudatoolkit
-    cudaPackages.cudnn
+    # python3Packages.torchWithCuda
+    # cudaPackages.cudatoolkit
+    # cudaPackages.cudnn
 
     # Wine
     wineWowPackages.unstableFull
@@ -248,21 +248,21 @@ in {
   };
 
   # Kernel Parameters
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  # boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.kernelParams = [
     "quiet"
     "splash"
     "boot.shell_on_fail"
     "loglevel=3"
-    "rd.systemd.show_status=false"
-    "rd.udev.log_level=3"
+    "rd.systemd.show_status=auto"
+    # "rd.udev.log_level=3"
     "udev.log_priority=3"
   ];
 
   # Enable Xbox One driver
-  boot.extraModulePackages = [config.boot.kernelPackages.xpadneo];
+  boot.extraModulePackages = [config.boot.kernelPackages.xone];
   boot.kernelModules = [
-    "xpadneo"
+    "xone"
     "kvm-amd"
     "vfio"
     "vfio_iommu_type1"
@@ -302,9 +302,12 @@ in {
   hardware.nvidia = {
     open = true;
     nvidiaSettings = true;
-    package = config.boot.kernelPackages.nvidiaPackages.stable;
+    package = config.boot.kernelPackages.nvidiaPackages.beta;
     prime = {
-      offload.enable = true;
+      offload = {
+        enable = true;
+        enableOffloadCmd = true;
+      };
       nvidiaBusId = "PCI:1:0:0";
       amdgpuBusId = "PCI:13:0:0";
     };
@@ -363,6 +366,7 @@ in {
       enableOnBoot = true;
       rootless.enable = true;
       rootless.setSocketVariable = true;
+      daemon.settings.features.cdi = true;
       extraPackages = with pkgs; [nvidia-container-toolkit nvidia-docker];
     };
     libvirtd = {
