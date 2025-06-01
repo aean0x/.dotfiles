@@ -89,9 +89,9 @@ in {
     python3Full
     python3Packages.pip
     python3Packages.torch-bin
-    # python3Packages.torchWithCuda
-    # cudaPackages.cudatoolkit
-    # cudaPackages.cudnn
+    cudaPackages.cudatoolkit
+    cudaPackages.cudnn
+    # python3Packages.torchWithCuda  # Commented out to avoid building from source
 
     # Wine
     wineWowPackages.unstableFull
