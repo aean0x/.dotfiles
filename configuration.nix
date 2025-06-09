@@ -49,6 +49,9 @@ in {
     sops
     tree
 
+    # Flatpak management
+    gnome-software
+
     # Build tools
     cmake
     bison
@@ -178,6 +181,15 @@ in {
     samba.enable = true;
   };
 
+  # Automatically configure Flathub repository for all users
+  systemd.services.flatpak-repo = {
+    wantedBy = ["multi-user.target"];
+    path = [pkgs.flatpak];
+    script = ''
+      flatpak remote-add --if-not-exists flathub-beta https://flathub.org/beta-repo/flathub-beta.flatpakrepo
+    '';
+  };
+
   # Systemd services and timers
   systemd = {
     timers = {
@@ -248,7 +260,7 @@ in {
   };
 
   # Kernel Parameters
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  # boot.kernelPackages = pkgs.linuxPackages_latest; # Uncomment to use latest stable
   boot.kernelParams = [
     "quiet"
     "splash"

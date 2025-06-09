@@ -13,7 +13,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.home-manager.follows = "home-manager";
     };
-    flatpaks.url = "github:gmodena/nix-flatpak";
   };
 
   outputs = {
@@ -22,7 +21,6 @@
     nixpkgs-stable,
     home-manager,
     plasma-manager,
-    flatpaks,
     ...
   } @ inputs: let
     inherit (self) outputs;
@@ -47,7 +45,6 @@
         ./configuration.nix
         ./hardware-configuration.nix
         ./aerotheme/system.nix
-        flatpaks.nixosModules.nix-flatpak
         home-manager.nixosModules.home-manager
         {
           home-manager.useGlobalPkgs = true;
@@ -58,9 +55,7 @@
           home-manager.users."${secrets.username}" = {
             imports = [
               ./home/home.nix
-              # ./home/plasma.nix
               ./aerotheme/user.nix
-              flatpaks.homeManagerModules.nix-flatpak
             ];
           };
         }
