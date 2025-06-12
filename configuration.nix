@@ -93,6 +93,7 @@ in {
     cudaPackages.cudatoolkit
     cudaPackages.cudnn
     python3
+    python3Packages.torch-bin
     python3Packages.pybind11
     python3Packages.pip
     python3Packages.dlib
