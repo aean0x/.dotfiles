@@ -92,11 +92,9 @@ in {
     # Python development
     cudaPackages.cudatoolkit
     cudaPackages.cudnn
-    (python3.withPackages (ps:
-      with ps; [
-        pip
-        torch-bin
-      ]))
+    python3
+    python3Packages.pybind11
+    python3Packages.pip
 
     # Wine
     wineWowPackages.unstableFull
