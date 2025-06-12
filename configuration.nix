@@ -54,6 +54,7 @@ in {
 
     # Build tools
     cmake
+    dlib
     bison
     flex
     fontforge
@@ -88,13 +89,14 @@ in {
     tesseract
     screen
 
-    # ML
-    python3Full
-    python3Packages.pip
-    python3Packages.torch-bin
+    # Python development
     cudaPackages.cudatoolkit
     cudaPackages.cudnn
-    # python3Packages.torchWithCuda  # Commented out to avoid building from source
+    (python3.withPackages (ps:
+      with ps; [
+        pip
+        torch-bin
+      ]))
 
     # Wine
     wineWowPackages.unstableFull
