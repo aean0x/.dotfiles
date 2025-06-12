@@ -95,6 +95,7 @@ in {
     python3
     python3Packages.pybind11
     python3Packages.pip
+    python3Packages.dlib
 
     # Wine
     wineWowPackages.unstableFull
