@@ -89,14 +89,14 @@ in {
     tesseract
     screen
 
-    # Python development
+    # oops all global packages
     cudaPackages.cudatoolkit
     cudaPackages.cudnn
     python3
     python3Packages.torch-bin
-    python3Packages.pybind11
-    python3Packages.pip
-    python3Packages.dlib
+    # python3Packages.pybind11
+    # python3Packages.pip
+    # python3Packages.dlib
 
     # Wine
     wineWowPackages.unstableFull

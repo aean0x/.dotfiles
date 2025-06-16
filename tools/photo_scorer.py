@@ -48,7 +48,7 @@ class PhotoScorer:
         ])
 
         # Load ImageNet class names
-        with open('imagenet_classes.txt') as f:
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'imagenet_classes.txt')) as f:
             self.categories = [s.strip() for s in f.readlines()]
 
         # Define important categories (positive and negative)
@@ -56,7 +56,53 @@ class PhotoScorer:
             'person', 'people', 'human', 'face', 'portrait', 'family', 'group',
             'wedding', 'event', 'celebration', 'vacation', 'travel', 'landscape',
             'nature', 'animal', 'pet', 'baby', 'child', 'building', 'architecture',
-            'food', 'dish', 'meal', 'art', 'painting', 'drawing', 'sculpture'
+            'food', 'dish', 'meal', 'art', 'painting', 'drawing', 'sculpture',
+            # Animals and pets (comprehensive)
+            'dog', 'puppy', 'cat', 'kitten', 'horse', 'bird', 'fish', 'rabbit',
+            'hamster', 'guinea pig', 'ferret', 'parrot', 'canary', 'goldfish',
+            'Chihuahua', 'beagle', 'golden retriever', 'Labrador retriever', 'German shepherd',
+            'bulldog', 'poodle', 'husky', 'dalmatian', 'collie', 'boxer', 'basset',
+            'Persian cat', 'Siamese cat', 'tabby', 'tiger cat', 'Egyptian cat',
+            # Musical instruments
+            'microphone', 'mike', 'harmonica', 'mouth organ', 'harp', 'mouth harp',
+            'drumstick', 'guitar', 'piano', 'violin', 'trumpet', 'saxophone',
+            'drum', 'flute', 'music', 'concert', 'performance', 'stage', 'accordion',
+            'acoustic guitar', 'electric guitar', 'banjo', 'bassoon', 'cello',
+            'French horn', 'grand piano', 'marimba', 'xylophone', 'oboe', 'organ',
+            'trombone', 'sax', 'violin', 'fiddle',
+            # Sports and recreation
+            'basketball', 'baseball', 'football helmet', 'golf ball', 'tennis ball',
+            'soccer ball', 'volleyball', 'rugby ball', 'ping-pong ball', 'hockey puck',
+            # Food items
+            'pizza', 'burger', 'hotdog', 'ice cream', 'cake', 'fruit', 'vegetable',
+            'strawberry', 'orange', 'banana', 'apple', 'pineapple', 'lemon',
+            # Wildlife and nature
+            'elephant', 'lion', 'tiger', 'bear', 'deer', 'zebra', 'giraffe',
+            'eagle', 'owl', 'dolphin', 'whale', 'butterfly', 'flower', 'tree'
+        }
+        
+        # Categories that indicate human presence (bodies, clothing, etc.)
+        self.human_presence_categories = {
+            'person', 'people', 'human', 'face', 'portrait', 'man', 'woman',
+            'boy', 'girl', 'child', 'baby', 'adult', 'body', 'torso',
+            'clothing', 'shirt', 'dress', 'jacket', 'coat', 'pants',
+            'shoes', 'hat', 'sunglasses', 'glasses', 'hair', 'hand',
+            'arm', 'leg', 'foot', 'head', 'shoulder', 'maillot', 'bikini',
+            'two-piece', 'miniskirt', 'mini', 'academic gown', 'robe',
+            'wig', 'mask', 'costume', 'uniform', 'suit', 'fur coat',
+            'dark glasses', 'shades', 'seat belt', 'seatbelt', 'hair spray',
+            'sweater', 'pullover', 'cardigan', 'hoodie', 'jeans', 'shorts',
+            # Additional clothing and accessories from ImageNet
+            'abaya', 'apron', 'backpack', 'brassiere', 'bra', 'bandeau',
+            'bulletproof vest', 'cardigan', 'cloak', 'clog', 'cowboy boot',
+            'cowboy hat', 'crash helmet', 'gown', 'handkerchief', 'holster',
+            'jersey', 'T-shirt', 'tee shirt', 'jean', 'blue jean', 'denim',
+            'kimono', 'knee pad', 'lab coat', 'Loafer', 'military uniform',
+            'mitten', 'muzzle', 'neck brace', 'necklace', 'overskirt',
+            'pajama', 'pyjama', 'poncho', 'purse', 'sandal', 'sarong',
+            'shoe shop', 'shower cap', 'ski mask', 'sock', 'sombrero',
+            'stole', 'sweatshirt', 'swimming trunks', 'bathing trunks',
+            'thimble', 'vestment', 'wallet', 'Windsor tie', 'mortarboard'
         }
 
         # Expanded negative categories for low-context photos
@@ -66,14 +112,54 @@ class PhotoScorer:
             'trash', 'garbage', 'waste', 'rubbish', 'screen', 'CRT screen',
             'web site', 'website', 'internet site', 'site', 'menu', 'envelope',
             'oscilloscope', 'scope', 'cathode-ray oscilloscope', 'CRO',
-            'part', 'component', 'detail', 'close-up', 'macro', 'fragment'
+            'part', 'component', 'detail', 'close-up', 'macro', 'fragment',
+            'monitor', 'computer screen', 'laptop', 'smartphone', 'tablet',
+            'display', 'receipt', 'invoice', 'form', 'paper', 'notebook',
+            'clipboard', 'whiteboard', 'blackboard', 'chart', 'graph',
+            # Additional tech/document items from ImageNet
+            'desktop computer', 'computer keyboard', 'keypad', 'dial telephone',
+            'digital clock', 'digital watch', 'disk brake', 'electric fan',
+            'typewriter keyboard', 'hand-held computer', 'laptop computer',
+            'notebook computer', 'mouse', 'computer mouse', 'modem', 'monitor',
+            'cellular telephone', 'cellular phone', 'cellphone', 'cell',
+            'mobile phone', 'iPod', 'remote control', 'remote', 'photocopier',
+            'printer', 'projector', 'radio telescope', 'radio reflector',
+            'cassette', 'cassette player', 'CD player', 'tape player',
+            'television', 'television system', 'loudspeaker', 'speaker',
+            'microwave', 'microwave oven', 'abacus', 'cash machine',
+            'automated teller machine', 'ATM', 'combination lock',
+            'crossword puzzle', 'crossword', 'jigsaw puzzle', 'book jacket',
+            'dust cover', 'comic book', 'menu', 'plate', 'toilet tissue',
+            'toilet paper', 'bathroom tissue'
         }
 
-        # Categories that require good context
+        # Categories that require good context (vehicles and transportation)
         self.context_required_categories = {
             'car', 'truck', 'bus', 'motorcycle', 'bicycle', 'vehicle',
             'boat', 'ship', 'airplane', 'aircraft', 'train', 'locomotive',
-            'building', 'house', 'architecture', 'structure'
+            'building', 'house', 'architecture', 'structure', 'minivan',
+            'minibus', 'police van', 'police wagon', 'paddy wagon', 'patrol wagon',
+            'wagon', 'black maria', 'van', 'jeep', 'landrover', 'suv',
+            'pickup truck', 'taxi', 'taxicab', 'cab', 'hack', 'limousine',
+            'ambulance', 'fire truck', 'fire engine', 'school bus',
+            # Additional vehicles from ImageNet
+            'aircraft carrier', 'airliner', 'airship', 'dirigible', 'amphibian',
+            'beach wagon', 'station wagon', 'estate car', 'beach waggon',
+            'station waggon', 'waggon', 'bobsled', 'bobsleigh', 'bob',
+            'bullet train', 'bullet', 'canoe', 'catamaran', 'convertible',
+            'dogsled', 'dog sled', 'dog sleigh', 'forklift', 'freight car',
+            'garbage truck', 'dustcart', 'go-kart', 'golfcart', 'golf cart',
+            'gondola', 'half track', 'jinrikisha', 'ricksha', 'rickshaw',
+            'liner', 'ocean liner', 'limousine', 'limo', 'Model T', 'moped',
+            'motor scooter', 'scooter', 'mountain bike', 'moving van',
+            'oxcart', 'passenger car', 'coach', 'carriage', 'pickup',
+            'pickup truck', 'police van', 'recreational vehicle', 'RV',
+            'schooner', 'snowmobile', 'snowplow', 'speedboat', 'sports car',
+            'steam locomotive', 'streetcar', 'tram', 'tramcar', 'trolley',
+            'submarine', 'tank', 'tow truck', 'tow car', 'wrecker',
+            'trailer truck', 'tractor trailer', 'trucking rig', 'rig',
+            'tricycle', 'trike', 'trimaran', 'trolleybus', 'unicycle',
+            'warplane', 'military plane', 'yawl'
         }
 
     def detect_faces(self, image_path):
@@ -85,6 +171,8 @@ class PhotoScorer:
         except Exception as e:
             logging.warning(f"Error detecting faces in {image_path}: {e}")
             return 0
+
+
 
     def get_image_quality_score(self, image):
         """Calculate a basic image quality score based on sharpness and contrast."""
@@ -129,6 +217,67 @@ class PhotoScorer:
             # Detect faces first
             num_faces = self.detect_faces(image_path)
             
+            # Get image quality score
+            quality_score = self.get_image_quality_score(image)
+
+            # Check for auto-delete conditions first (screenshots/documents) - VERY AGGRESSIVE
+            auto_delete_score = 0
+            screen_keywords = {'web site', 'website', 'internet site', 'site', 'menu', 'screen', 'CRT screen', 'monitor', 'display'}
+            
+            for cat, prob in zip(categories, probs):
+                if cat in self.negative_categories and prob > 0.2:  # Even lower threshold
+                    auto_delete_score += prob
+                    # Extra penalty for obvious screen/website content
+                    if cat in screen_keywords and prob > 0.4:
+                        auto_delete_score += prob * 0.5  # Boost screen detection
+            
+            # Auto-delete for clear screenshots/documents - VERY AGGRESSIVE  
+            if auto_delete_score > 0.25:  # Much lower threshold for auto-delete
+                logging.info(f"AUTO-DELETE triggered: screenshot/document detected (confidence: {auto_delete_score:.2f})")
+                return {
+                    'score': 0.05,  # Even lower score for auto-delete
+                    'categories': categories,
+                    'num_faces': num_faces,
+                    'quality_score': quality_score
+                }
+
+            # Check for human presence (faces OR body parts/clothing) - VERY LENIENT
+            human_presence_score = 0
+            for cat, prob in zip(categories, probs):
+                if cat in self.human_presence_categories and prob > 0.15:  # Lower threshold
+                    human_presence_score += prob
+            
+            # Check for auto-keep conditions (faces OR human presence) - EXTREMELY LENIENT
+            if (num_faces > 0) or (human_presence_score > 0.3):  # No quality requirement for human presence
+                if num_faces > 0:
+                    logging.info(f"AUTO-KEEP triggered: faces detected ({num_faces} faces, quality: {quality_score:.2f})")
+                else:
+                    logging.info(f"AUTO-KEEP triggered: human presence detected (confidence: {human_presence_score:.2f}, quality: {quality_score:.2f})")
+                return {
+                    'score': 0.85,  # High score for auto-keep
+                    'categories': categories,
+                    'num_faces': num_faces,
+                    'quality_score': quality_score
+                }
+
+            # Check for vehicle photos - EXTREMELY LENIENT
+            vehicle_score = 0
+            has_vehicle = False
+            for cat, prob in zip(categories, probs):
+                if cat in self.context_required_categories and prob > 0.2:  # Even lower threshold
+                    vehicle_score += prob
+                    has_vehicle = True
+
+            # MASSIVE BUFF for vehicle images - EXTREMELY LENIENT
+            if has_vehicle and vehicle_score > 0.25:  # Removed quality requirement entirely
+                logging.info(f"VEHICLE-BOOST triggered: vehicle detected (confidence: {vehicle_score:.2f}, quality: {quality_score:.2f})")
+                return {
+                    'score': 0.80,  # Even higher score for vehicles
+                    'categories': categories,
+                    'num_faces': num_faces,
+                    'quality_score': quality_score
+                }
+
             # Calculate base score from categories with adjusted weights
             category_score = 0
             has_human = False
@@ -146,9 +295,6 @@ class PhotoScorer:
 
             # Face detection score with higher weight
             face_score = min(num_faces * 0.8, 1.0)
-
-            # Get image quality score
-            quality_score = self.get_image_quality_score(image)
 
             # Calculate final score with adjusted weights
             if has_human or num_faces > 0:
@@ -188,7 +334,7 @@ class PhotoScorer:
                 'quality_score': 0.35
             }
 
-    def organize_photos(self, source_dir, threshold=0.48):  # Adjusted threshold
+    def organize_photos(self, source_dir, threshold=0.50):  # Adjusted threshold higher due to new scoring
         """Organize photos based on their scores."""
         source_path = Path(source_dir)
         keep_dir = source_path / "keep"
@@ -222,7 +368,7 @@ class PhotoScorer:
                     if score >= threshold:
                         target_dir = keep_dir
                         logging.info("Decision: KEEP")
-                    elif score >= threshold - 0.18:  # Adjusted gap
+                    elif score >= threshold - 0.20:  # Slightly larger review gap
                         target_dir = review_dir
                         logging.info("Decision: REVIEW")
                     else:

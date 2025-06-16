@@ -51,6 +51,7 @@ in {
     youtube-music
     pdfsam-basic
     mailspring
+    bitwarden-desktop
 
     # VM management GUI tools (user-level)
     virt-manager
