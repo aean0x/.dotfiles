@@ -34,7 +34,6 @@ in {
     p7zip
     unrar
     unzip
-    python3
     exfatprogs
     hashcat
     hpl
@@ -65,14 +64,12 @@ in {
     autoconf
     automake
     libtool
-    gcc-arm-embedded
     ninja
     libgcc
     gcc
     libGL
     mesa
     libglvnd
-    appstream
 
     # VM/KVM tools
     docker-compose
@@ -92,19 +89,16 @@ in {
     # oops all global packages
     cudaPackages.cudatoolkit
     cudaPackages.cudnn
-    python3
-    python3Packages.torch-bin
-    # python3Packages.pybind11
-    # python3Packages.pip
-    # python3Packages.dlib
+    python312
+    python312Packages.torch-bin
+    python312Packages.pybind11
+    python312Packages.pip
+    python312Packages.dlib
+    python312Packages.tensorflow-bin
 
     # Wine
-    wineWowPackages.unstableFull
-    wineWow64Packages.unstableFull
-    wineWowPackages.waylandFull
-    wineWow64Packages.waylandFull
-    wineWowPackages.fonts
     wineWow64Packages.fonts
+    wineWow64Packages.waylandFull
     winetricks
 
     # Hardware
@@ -115,9 +109,7 @@ in {
     glxinfo
     lshw
 
-    # KDE
-    kdePackages.kdeplasma-addons
-    kdePackages.sddm-kcm
+    # User-chosen applications (not theme dependencies)
     kdePackages.yakuake
     kdePackages.skanlite
     kdePackages.kdenlive
@@ -127,22 +119,6 @@ in {
     kdePackages.ksystemlog
     kdePackages.kolourpaint
     kdePackages.isoimagewriter
-    kdePackages.plasma-browser-integration
-    kdePackages.qtstyleplugin-kvantum
-    kdePackages.partitionmanager
-    kdePackages.qttools
-    kdePackages.full
-    kdePackages.qtvirtualkeyboard
-    kdePackages.qt5compat
-    kdePackages.plasma-wayland-protocols
-    kdePackages.plasma5support
-    kdePackages.extra-cmake-modules
-    kdePackages.qtbase
-    kdePackages.qtquick3d
-    kdePackages.qtquicktimeline
-    kdePackages.qtquick3dphysics
-    kdePackages.qtdeclarative
-    kdePackages.appstream-qt
     kdePackages.filelight
 
     # Package derivation template
@@ -335,22 +311,10 @@ in {
   services.xserver.videoDrivers = ["nvidia" "amdgpu"];
   nixpkgs.config.cudaSupport = true;
 
-  # KDE
-  services.desktopManager.plasma6.enable = true;
-  services.xserver = {
-    enable = true;
-    xkb = {
-      layout = "us";
-      variant = "colemak";
-    };
-  };
-  services.displayManager.sddm = {
-    wayland.enable = true;
-    enable = true;
-    settings = {
-      General = {};
-    };
-    extraPackages = with pkgs; [];
+  # User customizations (KDE services handled by aerotheme/system.nix)
+  services.xserver.xkb = {
+    layout = "us";
+    variant = "colemak";
   };
 
   # Sound settings
@@ -374,34 +338,34 @@ in {
   };
 
   # Virtualization settings
-  virtualisation = {
-    docker = {
-      enable = true;
-      enableOnBoot = true;
-      rootless.enable = true;
-      rootless.setSocketVariable = true;
-      daemon.settings.features.cdi = true;
-      extraPackages = with pkgs; [nvidia-container-toolkit nvidia-docker];
-    };
-    libvirtd = {
-      enable = true;
-      qemu = {
-        package = pkgs.qemu_kvm;
-        ovmf = {
-          enable = true;
-          packages = [
-            (pkgs.OVMF.override {
-              secureBoot = true;
-              tpmSupport = true;
-            })
-          ];
-        };
-        swtpm.enable = true;
-        runAsRoot = true;
-      };
-    };
-    spiceUSBRedirection.enable = true;
-  };
+  # virtualisation = {
+  #   docker = {
+  #     enable = true;
+  #     enableOnBoot = true;
+  #     rootless.enable = true;
+  #     rootless.setSocketVariable = true;
+  #     daemon.settings.features.cdi = true;
+  #     extraPackages = with pkgs; [nvidia-container-toolkit nvidia-docker];
+  #   };
+  #   libvirtd = {
+  #     enable = true;
+  #     qemu = {
+  #       package = pkgs.qemu_kvm;
+  #       ovmf = {
+  #         enable = true;
+  #         packages = [
+  #           (pkgs.OVMF.override {
+  #             secureBoot = true;
+  #             tpmSupport = true;
+  #           })
+  #         ];
+  #       };
+  #       swtpm.enable = true;
+  #       runAsRoot = true;
+  #     };
+  #   };
+  #   spiceUSBRedirection.enable = true;
+  # };
 
   boot.binfmt.emulatedSystems = ["aarch64-linux"];
 

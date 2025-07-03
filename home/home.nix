@@ -40,7 +40,7 @@ in {
     signal-desktop-bin
     libreoffice
     qbittorrent
-    xivlauncher
+    # xivlauncher
     openshot-qt
     trezor-suite
     minder

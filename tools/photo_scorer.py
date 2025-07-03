@@ -1,397 +1,464 @@
-#!/usr/bin/env python3
-
 import os
-from pathlib import Path
-import torch
-from torchvision import models, transforms
-from PIL import Image
-import face_recognition
-import numpy as np
-from datetime import datetime
 import shutil
-import logging
+from pathlib import Path
+import cv2
+import numpy as np
+from PIL import Image, ExifTags
+import tensorflow as tf
 
-# Set up logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
+# Enable HEIC support if available
+try:
+    from pillow_heif import register_heif_opener
+    register_heif_opener()
+    print("HEIC support enabled")
+except ImportError:
+    print("Warning: pillow-heif not installed, HEIC files may not be processed correctly")
+    print("Install with: pip install pillow-heif")
 
-class PhotoScorer:
-    def __init__(self):
-        # Initialize the model with explicit CUDA settings
-        if not torch.cuda.is_available():
-            logging.warning("CUDA is not available. Please check your PyTorch installation and NVIDIA drivers.")
-        else:
-            logging.info("CUDA is available. Enabling GPU acceleration.")
-            # Force CUDA device selection
-            torch.cuda.set_device(0)
-            # Enable CUDA optimizations
-            torch.backends.cudnn.benchmark = True
-            torch.backends.cuda.matmul.allow_tf32 = True
-            torch.backends.cudnn.allow_tf32 = True
-        
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        logging.info(f"Using device: {self.device}")
-        
-        # Initialize model with explicit weights
-        self.model = models.resnet50(weights=models.ResNet50_Weights.IMAGENET1K_V1)
-        self.model = self.model.to(self.device)
-        self.model.eval()
+# Define paths relative to the script's location
+script_dir = os.path.dirname(os.path.abspath(__file__))
+east_model_path = os.path.join(script_dir, "frozen_east_text_detection.pb")
+nima_model_path = os.path.join(script_dir, "mobilenet_weights.h5")
+face_cascade_path = os.path.join(script_dir, "haarcascade_frontalface_default.xml")
 
-        # Image preprocessing
-        self.transform = transforms.Compose([
-            transforms.Resize(256),
-            transforms.CenterCrop(224),
-            transforms.ToTensor(),
-            transforms.Normalize(
-                mean=[0.485, 0.456, 0.406],
-                std=[0.229, 0.224, 0.225]
-            )
-        ])
+# Check if model files exist (make NIMA optional)
+required_models = [(east_model_path, "EAST model")]
+optional_models = [(face_cascade_path, "Face cascade")]
+for path, name in required_models:
+    if not os.path.exists(path):
+        print(f"Error: {name} file not found at {path}")
+        exit(1)
 
-        # Load ImageNet class names
-        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'imagenet_classes.txt')) as f:
-            self.categories = [s.strip() for s in f.readlines()]
+# Download DNN face detection model if not present
+dnn_face_model_path = os.path.join(script_dir, "opencv_face_detector_uint8.pb")
+dnn_face_config_path = os.path.join(script_dir, "opencv_face_detector.pbtxt")
 
-        # Define important categories (positive and negative)
-        self.positive_categories = {
-            'person', 'people', 'human', 'face', 'portrait', 'family', 'group',
-            'wedding', 'event', 'celebration', 'vacation', 'travel', 'landscape',
-            'nature', 'animal', 'pet', 'baby', 'child', 'building', 'architecture',
-            'food', 'dish', 'meal', 'art', 'painting', 'drawing', 'sculpture',
-            # Animals and pets (comprehensive)
-            'dog', 'puppy', 'cat', 'kitten', 'horse', 'bird', 'fish', 'rabbit',
-            'hamster', 'guinea pig', 'ferret', 'parrot', 'canary', 'goldfish',
-            'Chihuahua', 'beagle', 'golden retriever', 'Labrador retriever', 'German shepherd',
-            'bulldog', 'poodle', 'husky', 'dalmatian', 'collie', 'boxer', 'basset',
-            'Persian cat', 'Siamese cat', 'tabby', 'tiger cat', 'Egyptian cat',
-            # Musical instruments
-            'microphone', 'mike', 'harmonica', 'mouth organ', 'harp', 'mouth harp',
-            'drumstick', 'guitar', 'piano', 'violin', 'trumpet', 'saxophone',
-            'drum', 'flute', 'music', 'concert', 'performance', 'stage', 'accordion',
-            'acoustic guitar', 'electric guitar', 'banjo', 'bassoon', 'cello',
-            'French horn', 'grand piano', 'marimba', 'xylophone', 'oboe', 'organ',
-            'trombone', 'sax', 'violin', 'fiddle',
-            # Sports and recreation
-            'basketball', 'baseball', 'football helmet', 'golf ball', 'tennis ball',
-            'soccer ball', 'volleyball', 'rugby ball', 'ping-pong ball', 'hockey puck',
-            # Food items
-            'pizza', 'burger', 'hotdog', 'ice cream', 'cake', 'fruit', 'vegetable',
-            'strawberry', 'orange', 'banana', 'apple', 'pineapple', 'lemon',
-            # Wildlife and nature
-            'elephant', 'lion', 'tiger', 'bear', 'deer', 'zebra', 'giraffe',
-            'eagle', 'owl', 'dolphin', 'whale', 'butterfly', 'flower', 'tree'
-        }
-        
-        # Categories that indicate human presence (bodies, clothing, etc.)
-        self.human_presence_categories = {
-            'person', 'people', 'human', 'face', 'portrait', 'man', 'woman',
-            'boy', 'girl', 'child', 'baby', 'adult', 'body', 'torso',
-            'clothing', 'shirt', 'dress', 'jacket', 'coat', 'pants',
-            'shoes', 'hat', 'sunglasses', 'glasses', 'hair', 'hand',
-            'arm', 'leg', 'foot', 'head', 'shoulder', 'maillot', 'bikini',
-            'two-piece', 'miniskirt', 'mini', 'academic gown', 'robe',
-            'wig', 'mask', 'costume', 'uniform', 'suit', 'fur coat',
-            'dark glasses', 'shades', 'seat belt', 'seatbelt', 'hair spray',
-            'sweater', 'pullover', 'cardigan', 'hoodie', 'jeans', 'shorts',
-            # Additional clothing and accessories from ImageNet
-            'abaya', 'apron', 'backpack', 'brassiere', 'bra', 'bandeau',
-            'bulletproof vest', 'cardigan', 'cloak', 'clog', 'cowboy boot',
-            'cowboy hat', 'crash helmet', 'gown', 'handkerchief', 'holster',
-            'jersey', 'T-shirt', 'tee shirt', 'jean', 'blue jean', 'denim',
-            'kimono', 'knee pad', 'lab coat', 'Loafer', 'military uniform',
-            'mitten', 'muzzle', 'neck brace', 'necklace', 'overskirt',
-            'pajama', 'pyjama', 'poncho', 'purse', 'sandal', 'sarong',
-            'shoe shop', 'shower cap', 'ski mask', 'sock', 'sombrero',
-            'stole', 'sweatshirt', 'swimming trunks', 'bathing trunks',
-            'thimble', 'vestment', 'wallet', 'Windsor tie', 'mortarboard'
-        }
+def download_dnn_face_model():
+    """Download OpenCV DNN face detection model if not present."""
+    import urllib.request
+    
+    model_url = "https://raw.githubusercontent.com/opencv/opencv_3rdparty/dnn_samples_face_detector_20180220_uint8/opencv_face_detector_uint8.pb"
+    config_url = "https://raw.githubusercontent.com/opencv/opencv/master/samples/dnn/face_detector/opencv_face_detector.pbtxt"
+    
+    if not os.path.exists(dnn_face_model_path):
+        print("Downloading DNN face detection model...")
+        urllib.request.urlretrieve(model_url, dnn_face_model_path)
+        print("Model downloaded successfully")
+    
+    if not os.path.exists(dnn_face_config_path):
+        print("Downloading DNN face detection config...")
+        urllib.request.urlretrieve(config_url, dnn_face_config_path)
+        print("Config downloaded successfully")
 
-        # Expanded negative categories for low-context photos
-        self.negative_categories = {
-            'document', 'text', 'screenshot', 'meme', 'furniture', 'object',
-            'product', 'advertisement', 'logo', 'icon', 'interface', 'toilet',
-            'trash', 'garbage', 'waste', 'rubbish', 'screen', 'CRT screen',
-            'web site', 'website', 'internet site', 'site', 'menu', 'envelope',
-            'oscilloscope', 'scope', 'cathode-ray oscilloscope', 'CRO',
-            'part', 'component', 'detail', 'close-up', 'macro', 'fragment',
-            'monitor', 'computer screen', 'laptop', 'smartphone', 'tablet',
-            'display', 'receipt', 'invoice', 'form', 'paper', 'notebook',
-            'clipboard', 'whiteboard', 'blackboard', 'chart', 'graph',
-            # Additional tech/document items from ImageNet
-            'desktop computer', 'computer keyboard', 'keypad', 'dial telephone',
-            'digital clock', 'digital watch', 'disk brake', 'electric fan',
-            'typewriter keyboard', 'hand-held computer', 'laptop computer',
-            'notebook computer', 'mouse', 'computer mouse', 'modem', 'monitor',
-            'cellular telephone', 'cellular phone', 'cellphone', 'cell',
-            'mobile phone', 'iPod', 'remote control', 'remote', 'photocopier',
-            'printer', 'projector', 'radio telescope', 'radio reflector',
-            'cassette', 'cassette player', 'CD player', 'tape player',
-            'television', 'television system', 'loudspeaker', 'speaker',
-            'microwave', 'microwave oven', 'abacus', 'cash machine',
-            'automated teller machine', 'ATM', 'combination lock',
-            'crossword puzzle', 'crossword', 'jigsaw puzzle', 'book jacket',
-            'dust cover', 'comic book', 'menu', 'plate', 'toilet tissue',
-            'toilet paper', 'bathroom tissue'
-        }
+# Download DNN models if needed
+download_dnn_face_model()
 
-        # Categories that require good context (vehicles and transportation)
-        self.context_required_categories = {
-            'car', 'truck', 'bus', 'motorcycle', 'bicycle', 'vehicle',
-            'boat', 'ship', 'airplane', 'aircraft', 'train', 'locomotive',
-            'building', 'house', 'architecture', 'structure', 'minivan',
-            'minibus', 'police van', 'police wagon', 'paddy wagon', 'patrol wagon',
-            'wagon', 'black maria', 'van', 'jeep', 'landrover', 'suv',
-            'pickup truck', 'taxi', 'taxicab', 'cab', 'hack', 'limousine',
-            'ambulance', 'fire truck', 'fire engine', 'school bus',
-            # Additional vehicles from ImageNet
-            'aircraft carrier', 'airliner', 'airship', 'dirigible', 'amphibian',
-            'beach wagon', 'station wagon', 'estate car', 'beach waggon',
-            'station waggon', 'waggon', 'bobsled', 'bobsleigh', 'bob',
-            'bullet train', 'bullet', 'canoe', 'catamaran', 'convertible',
-            'dogsled', 'dog sled', 'dog sleigh', 'forklift', 'freight car',
-            'garbage truck', 'dustcart', 'go-kart', 'golfcart', 'golf cart',
-            'gondola', 'half track', 'jinrikisha', 'ricksha', 'rickshaw',
-            'liner', 'ocean liner', 'limousine', 'limo', 'Model T', 'moped',
-            'motor scooter', 'scooter', 'mountain bike', 'moving van',
-            'oxcart', 'passenger car', 'coach', 'carriage', 'pickup',
-            'pickup truck', 'police van', 'recreational vehicle', 'RV',
-            'schooner', 'snowmobile', 'snowplow', 'speedboat', 'sports car',
-            'steam locomotive', 'streetcar', 'tram', 'tramcar', 'trolley',
-            'submarine', 'tank', 'tow truck', 'tow car', 'wrecker',
-            'trailer truck', 'tractor trailer', 'trucking rig', 'rig',
-            'tricycle', 'trike', 'trimaran', 'trolleybus', 'unicycle',
-            'warplane', 'military plane', 'yawl'
-        }
+# Define paths
+input_folder = Path("/home/aean/Pictures/Samsung Gallery")
+keep_folder = input_folder / "keep"
+delete_folder = input_folder / "delete"
+review_folder = input_folder / "review"
 
-    def detect_faces(self, image_path):
-        """Detect faces in the image and return the number of faces."""
+# Create folders if they don't exist
+for folder in [keep_folder, delete_folder, review_folder]:
+    folder.mkdir(exist_ok=True)
+
+# Define thresholds (adjust as needed)
+blurriness_threshold = 100  # Lower means blurrier
+text_area_threshold = 0.08   # Fraction of image with text - more liberal detection
+high_text_threshold = 0.20   # Lots of text = instant delete (charts, documents, memes)
+screenshot_text_threshold = 0.15  # Lower threshold for screenshot detection
+min_image_size = 100  # Minimum dimension to avoid tiny images
+
+# Global model variables - load once at startup
+face_cascade = None
+dnn_face_net = None
+east_net = None
+
+def load_image_for_opencv(image_path):
+    """Load any image file (including HEIC) and return OpenCV-compatible format."""
+    file_extension = Path(image_path).suffix.lower()
+    
+    if file_extension in ['.heic', '.heif']:
+        # Convert HEIC to OpenCV format
         try:
-            image = face_recognition.load_image_file(image_path)
-            face_locations = face_recognition.face_locations(image)
-            return len(face_locations)
+            from PIL import Image
+            import numpy as np
+            with Image.open(image_path) as pil_image:
+                if pil_image.mode != 'RGB':
+                    pil_image = pil_image.convert('RGB')
+                # Convert PIL image to OpenCV format (BGR)
+                return cv2.cvtColor(np.array(pil_image), cv2.COLOR_RGB2BGR)
         except Exception as e:
-            logging.warning(f"Error detecting faces in {image_path}: {e}")
-            return 0
+            print(f"Error loading HEIC file {image_path}: {e}")
+            return None
+    else:
+        # Use standard OpenCV loading for other formats
+        return cv2.imread(image_path)
 
-
-
-    def get_image_quality_score(self, image):
-        """Calculate a basic image quality score based on sharpness and contrast."""
+def initialize_models():
+    """Initialize all models once at startup."""
+    global face_cascade, dnn_face_net, east_net
+    
+    print("Initializing models...")
+    
+    # Skip NIMA model for now due to architecture issues
+    print("Skipping NIMA model (architecture mismatch)")
+    
+    # Initialize DNN face detection (preferred)
+    try:
+        dnn_face_net = cv2.dnn.readNetFromTensorflow(dnn_face_model_path, dnn_face_config_path)
+        print("DNN face detection model loaded successfully")
+    except Exception as e:
+        print(f"Warning: Could not load DNN face model: {e}")
+        dnn_face_net = None
+        
+        # Fallback to Haar cascade if DNN fails
         try:
-            # Convert to grayscale
-            gray = image.convert('L')
-            # Calculate sharpness using Laplacian variance
-            laplacian = np.array(gray).astype(np.float32)
-            laplacian = np.abs(np.gradient(laplacian)[0]) + np.abs(np.gradient(laplacian)[1])
-            sharpness = np.var(laplacian)
-            
-            # Calculate contrast
-            contrast = np.std(np.array(gray))
-            
-            # Combine scores with adjusted thresholds
-            quality_score = (sharpness * 0.4 + contrast * 0.6) / 900  # Adjusted divisor
-            return min(quality_score, 1.0)
+            face_cascade = cv2.CascadeClassifier(face_cascade_path)
+            print("Fallback: Face cascade loaded successfully")
         except Exception as e:
-            logging.warning(f"Error calculating image quality: {e}")
-            return 0.35  # Adjusted default score
+            print(f"Warning: Could not load face cascade either: {e}")
+            face_cascade = None
+    
+    # Initialize EAST network
+    try:
+        east_net = cv2.dnn.readNet(east_model_path)
+        print("EAST model loaded successfully")
+    except Exception as e:
+        print(f"Warning: Could not load EAST model: {e}")
+        east_net = None
 
-    def analyze_image(self, image_path):
-        """Analyze an image and return a score and category."""
-        try:
-            # Load and preprocess image
-            image = Image.open(image_path).convert('RGB')
-            input_tensor = self.transform(image)
-            input_batch = input_tensor.unsqueeze(0).to(self.device)
+def is_blurry(image_path, threshold=100):
+    """Detect if image is blurry using Laplacian variance."""
+    try:
+        image = load_image_for_opencv(image_path)
+        if image is None:
+            return True
+        
+        # Check if image is too small
+        h, w = image.shape[:2]
+        if h < min_image_size or w < min_image_size:
+            return True
+            
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        variance = cv2.Laplacian(gray, cv2.CV_64F).var()
+        return variance < threshold
+    except Exception as e:
+        print(f"Error checking blurriness for {image_path}: {e}")
+        return True
 
-            # Get model predictions
-            with torch.no_grad():
-                output = self.model(input_batch)
-                probabilities = torch.nn.functional.softmax(output[0], dim=0)
+def is_screenshot_aspect_ratio(image_path):
+    """Detect common screenshot aspect ratios."""
+    try:
+        with Image.open(image_path) as img:
+            width, height = img.size
+            aspect_ratio = width / height
+            
+            # Common phone screenshot ratios (portrait and landscape)
+            screenshot_ratios = [
+                (9/16, 16/9),   # Common phone ratios
+                (9/18, 18/9),   # Tall phones
+                (2/3, 3/2),     # Some tablets
+                (4/3, 3/4),     # Old tablets
+            ]
+            
+            tolerance = 0.1
+            for portrait, landscape in screenshot_ratios:
+                if (abs(aspect_ratio - portrait) < tolerance or 
+                    abs(aspect_ratio - landscape) < tolerance):
+                    return True
+            return False
+    except Exception as e:
+        return False
+
+def has_exif_data(image_path):
+    """Check if image has camera EXIF data (suggests it's a real photo)."""
+    try:
+        with Image.open(image_path) as img:
+            # Use the newer getexif() method which works better with HEIC
+            exif = img.getexif()
+            if not exif:
+                return False
+            
+            # Look for camera-specific EXIF tags (using tag IDs)
+            camera_tag_ids = [
+                271,  # Make
+                272,  # Model  
+                306,  # DateTime
+                33434, # ExposureTime
+                33437, # FNumber
+                34855, # ISOSpeedRatings
+                37385, # Flash
+                274,  # Orientation (common in phone photos)
+                36867, # DateTimeOriginal
+                36868, # DateTimeDigitized
+            ]
+            
+            # Check if any camera-specific tags exist
+            for tag_id in camera_tag_ids:
+                if tag_id in exif:
+                    return True
+            
+            # Additional check: if we have any EXIF data and it's a HEIC file from iOS,
+            # it's very likely a real photo
+            file_extension = Path(image_path).suffix.lower()
+            if file_extension in ['.heic', '.heif'] and len(exif) > 5:
+                # HEIC files with substantial EXIF are almost certainly real photos
+                return True
                 
-            # Get top 5 predictions
-            top5_prob, top5_catid = torch.topk(probabilities, 5)
-            
-            # Convert predictions to categories
-            categories = [self.categories[catid] for catid in top5_catid]
-            probs = top5_prob.cpu().numpy()
+            return False
+    except Exception as e:
+        print(f"Error reading EXIF from {image_path}: {e}")
+        return False
 
-            # Detect faces first
-            num_faces = self.detect_faces(image_path)
-            
-            # Get image quality score
-            quality_score = self.get_image_quality_score(image)
-
-            # Check for auto-delete conditions first (screenshots/documents) - VERY AGGRESSIVE
-            auto_delete_score = 0
-            screen_keywords = {'web site', 'website', 'internet site', 'site', 'menu', 'screen', 'CRT screen', 'monitor', 'display'}
-            
-            for cat, prob in zip(categories, probs):
-                if cat in self.negative_categories and prob > 0.2:  # Even lower threshold
-                    auto_delete_score += prob
-                    # Extra penalty for obvious screen/website content
-                    if cat in screen_keywords and prob > 0.4:
-                        auto_delete_score += prob * 0.5  # Boost screen detection
-            
-            # Auto-delete for clear screenshots/documents - VERY AGGRESSIVE  
-            if auto_delete_score > 0.25:  # Much lower threshold for auto-delete
-                logging.info(f"AUTO-DELETE triggered: screenshot/document detected (confidence: {auto_delete_score:.2f})")
-                return {
-                    'score': 0.05,  # Even lower score for auto-delete
-                    'categories': categories,
-                    'num_faces': num_faces,
-                    'quality_score': quality_score
-                }
-
-            # Check for human presence (faces OR body parts/clothing) - VERY LENIENT
-            human_presence_score = 0
-            for cat, prob in zip(categories, probs):
-                if cat in self.human_presence_categories and prob > 0.15:  # Lower threshold
-                    human_presence_score += prob
-            
-            # Check for auto-keep conditions (faces OR human presence) - EXTREMELY LENIENT
-            if (num_faces > 0) or (human_presence_score > 0.3):  # No quality requirement for human presence
-                if num_faces > 0:
-                    logging.info(f"AUTO-KEEP triggered: faces detected ({num_faces} faces, quality: {quality_score:.2f})")
-                else:
-                    logging.info(f"AUTO-KEEP triggered: human presence detected (confidence: {human_presence_score:.2f}, quality: {quality_score:.2f})")
-                return {
-                    'score': 0.85,  # High score for auto-keep
-                    'categories': categories,
-                    'num_faces': num_faces,
-                    'quality_score': quality_score
-                }
-
-            # Check for vehicle photos - EXTREMELY LENIENT
-            vehicle_score = 0
-            has_vehicle = False
-            for cat, prob in zip(categories, probs):
-                if cat in self.context_required_categories and prob > 0.2:  # Even lower threshold
-                    vehicle_score += prob
-                    has_vehicle = True
-
-            # MASSIVE BUFF for vehicle images - EXTREMELY LENIENT
-            if has_vehicle and vehicle_score > 0.25:  # Removed quality requirement entirely
-                logging.info(f"VEHICLE-BOOST triggered: vehicle detected (confidence: {vehicle_score:.2f}, quality: {quality_score:.2f})")
-                return {
-                    'score': 0.80,  # Even higher score for vehicles
-                    'categories': categories,
-                    'num_faces': num_faces,
-                    'quality_score': quality_score
-                }
-
-            # Calculate base score from categories with adjusted weights
-            category_score = 0
-            has_human = False
-            has_context_required = False
-            
-            for cat, prob in zip(categories, probs):
-                if cat in self.positive_categories:
-                    category_score += prob * 1.5
-                    if 'person' in cat or 'human' in cat or 'face' in cat:
-                        has_human = True
-                elif cat in self.negative_categories:
-                    category_score -= prob * 1.8  # Adjusted negative weight
-                if cat in self.context_required_categories:
-                    has_context_required = True
-
-            # Face detection score with higher weight
-            face_score = min(num_faces * 0.8, 1.0)
-
-            # Calculate final score with adjusted weights
-            if has_human or num_faces > 0:
-                # Human photos get more lenient scoring
-                final_score = (
-                    category_score * 0.2 +
-                    face_score * 0.7 +
-                    quality_score * 0.1
-                )
-            else:
-                # Non-human photos need better quality and context
-                context_penalty = 0.4 if has_context_required and quality_score < 0.55 else 0  # Adjusted penalty
-                final_score = (
-                    category_score * 0.4 +
-                    quality_score * 0.6
-                ) - context_penalty
-
-            # Normalize score to 0-1 range with balanced scaling
-            if final_score > 0:
-                final_score = 0.35 + (final_score * 0.65)  # Adjusted base score
-            else:
-                final_score = 0.35 * (1 + final_score)    # Adjusted base score
-
-            return {
-                'score': final_score,
-                'categories': categories,
-                'num_faces': num_faces,
-                'quality_score': quality_score
-            }
-
-        except Exception as e:
-            logging.error(f"Error analyzing image {image_path}: {e}")
-            return {
-                'score': 0.45,  # Adjusted default score
-                'categories': [],
-                'num_faces': 0,
-                'quality_score': 0.35
-            }
-
-    def organize_photos(self, source_dir, threshold=0.50):  # Adjusted threshold higher due to new scoring
-        """Organize photos based on their scores."""
-        source_path = Path(source_dir)
-        keep_dir = source_path / "keep"
-        review_dir = source_path / "review"
-        delete_dir = source_path / "delete"
-
-        # Create directories
-        for dir_path in [keep_dir, review_dir, delete_dir]:
-            dir_path.mkdir(exist_ok=True)
-
-        # Process each image
-        for image_path in source_path.glob("**/*"):
-            if image_path.is_file() and image_path.suffix.lower() in {'.jpg', '.jpeg', '.png', '.heic', '.heif'}:
-                try:
-                    # Skip if already in a category directory
-                    if any(cat in str(image_path) for cat in ['/keep/', '/review/', '/delete/']):
+def get_text_area(image_path):
+    """Calculate fraction of image covered by text using EAST model."""
+    global east_net
+    
+    if east_net is None:
+        return 0.0
+        
+    try:
+        image = load_image_for_opencv(image_path)
+        if image is None:
+            return 0.0
+        orig_h, orig_w = image.shape[:2]
+        new_w, new_h = 320, 320
+        rW = orig_w / float(new_w)
+        rH = orig_h / float(new_h)
+        image_resized = cv2.resize(image, (new_w, new_h))
+        
+        blob = cv2.dnn.blobFromImage(image_resized, 1.0, (new_w, new_h),
+                                     (123.68, 116.78, 103.94), swapRB=True, crop=False)
+        east_net.setInput(blob)
+        (scores, geometry) = east_net.forward(["feature_fusion/Conv_7/Sigmoid", "feature_fusion/concat_3"])
+        
+        rectangles = []
+        confidences = []
+        for i in range(scores.shape[2]):
+            for j in range(scores.shape[3]):
+                if scores[0, 0, i, j] > 0.5:
+                    # Geometry: top-left (x1,y1), bottom-right (x2,y2)
+                    data = geometry[0, :, i, j]
+                    if len(data) < 4:
                         continue
+                    x1, y1, x2, y2 = data[:4]
+                    x = int(j * 4.0 * rW)
+                    y = int(i * 4.0 * rH)
+                    w = int(x2 * rW)
+                    h = int(y2 * rH)
+                    rectangles.append((x, y, x + w, y + h))
+                    confidences.append(float(scores[0, 0, i, j]))
+        
+        if not rectangles:
+            return 0.0
+            
+        indices = cv2.dnn.NMSBoxes(rectangles, confidences, 0.5, 0.3)
+        
+        total_text_area = 0
+        if len(indices) > 0:
+            # Handle both old and new OpenCV versions
+            if isinstance(indices, np.ndarray):
+                indices = indices.flatten()
+            else:
+                indices = [indices] if not isinstance(indices, (list, tuple)) else indices
+            
+            for i in indices:
+                (x1, y1, x2, y2) = rectangles[i]
+                area = (x2 - x1) * (y2 - y1)
+                total_text_area += area
+        
+        image_area = orig_w * orig_h
+        text_ratio = total_text_area / image_area if image_area > 0 else 0
+        return text_ratio
+    except Exception as e:
+        print(f"Error detecting text for {image_path}: {e}")
+        return 0.0
 
-                    # Analyze image
-                    result = self.analyze_image(str(image_path))
-                    score = result['score']
+def has_faces(image_path):
+    """Detect if image contains faces using modern DNN face detection."""
+    global face_cascade, dnn_face_net
+    
+    try:
+        image = load_image_for_opencv(image_path)
+        if image is None:
+            return False
+        
+        # Try DNN face detection first (much more accurate)
+        if dnn_face_net is not None:
+            return detect_faces_dnn(image, image_path)
+        
+        # Fallback to Haar cascade if DNN not available
+        elif face_cascade is not None:
+            return detect_faces_haar_cascade(image, image_path)
+        
+        else:
+            print(f"No face detection models available")
+            return False
+            
+    except Exception as e:
+        print(f"Error detecting faces for {image_path}: {e}")
+        return False
 
-                    # Log the analysis
-                    logging.info(f"\nAnalyzing: {image_path.name}")
-                    logging.info(f"Score: {score:.2f}")
-                    logging.info(f"Categories: {', '.join(result['categories'][:3])}")
-                    logging.info(f"Faces detected: {result['num_faces']}")
-                    logging.info(f"Quality score: {result['quality_score']:.2f}")
+def detect_faces_dnn(image, image_path):
+    """Detect faces using OpenCV DNN model (much more accurate)."""
+    global dnn_face_net
+    
+    h, w = image.shape[:2]
+    
+    # Create blob from image
+    blob = cv2.dnn.blobFromImage(image, 1.0, (300, 300), [104, 117, 123])
+    dnn_face_net.setInput(blob)
+    detections = dnn_face_net.forward()
+    
+    faces = []
+    confidence_threshold = 0.5  # Confidence threshold for face detection
+    
+    for i in range(detections.shape[2]):
+        confidence = detections[0, 0, i, 2]
+        
+        if confidence > confidence_threshold:
+            # Get bounding box coordinates
+            x1 = int(detections[0, 0, i, 3] * w)
+            y1 = int(detections[0, 0, i, 4] * h)
+            x2 = int(detections[0, 0, i, 5] * w)
+            y2 = int(detections[0, 0, i, 6] * h)
+            
+            # Convert to width/height format
+            face_w = x2 - x1
+            face_h = y2 - y1
+            
+            # Basic sanity checks
+            if face_w > 10 and face_h > 10:
+                faces.append((x1, y1, face_w, face_h, confidence))
+    
+    # Debug output
+    if len(faces) > 0:
+        print(f"    DEBUG: DNN detected {len(faces)} faces in {Path(image_path).name}")
+        for i, (x, y, w, h, conf) in enumerate(faces):
+            print(f"      Face {i+1}: size={w}x{h}, confidence={conf:.3f}")
+    
+    return len(faces) > 0
 
-                    # Move file based on score with adjusted thresholds
-                    if score >= threshold:
-                        target_dir = keep_dir
-                        logging.info("Decision: KEEP")
-                    elif score >= threshold - 0.20:  # Slightly larger review gap
-                        target_dir = review_dir
-                        logging.info("Decision: REVIEW")
-                    else:
-                        target_dir = delete_dir
-                        logging.info("Decision: DELETE")
+def detect_faces_haar_cascade(image, image_path):
+    """Fallback face detection using Haar cascade."""
+    global face_cascade
+    
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    
+    # Use moderate settings for Haar cascade
+    faces = face_cascade.detectMultiScale(
+        gray,
+        scaleFactor=1.1,
+        minNeighbors=5,
+        minSize=(30, 30),
+        flags=cv2.CASCADE_SCALE_IMAGE
+    )
+    
+    # Debug output
+    if len(faces) > 0:
+        print(f"    DEBUG: Haar cascade detected {len(faces)} faces in {Path(image_path).name}")
+        for i, (x, y, w, h) in enumerate(faces):
+            print(f"      Face {i+1}: size={w}x{h}")
+    
+    return len(faces) > 0
 
-                    # Move the file
-                    target_path = target_dir / image_path.name
-                    if target_path.exists():
-                        # Add timestamp to filename if duplicate
-                        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                        target_path = target_dir / f"{image_path.stem}_{timestamp}{image_path.suffix}"
-                    
-                    shutil.move(str(image_path), str(target_path))
-                    logging.info(f"Moved to: {target_path}\n")
+def classify_image(image_path):
+    """Classify image into keep, delete, or review categories."""
+    
+    # Get all the detection results first
+    has_face = has_faces(str(image_path))
+    text_ratio = get_text_area(str(image_path))
+    is_screenshot = is_screenshot_aspect_ratio(str(image_path))
+    has_camera_exif = has_exif_data(str(image_path))
+    is_image_blurry = is_blurry(str(image_path), blurriness_threshold)
+    
+    # Debug output to see what each detection returns
+    print(f"    DEBUG: faces={has_face}, exif={has_camera_exif}, text={text_ratio:.3f}, blurry={is_image_blurry}")
+    
+    # PRIORITY 1: Faces take precedence over everything
+    # If has faces and camera EXIF -> definitely keep (even if blurry)
+    if has_face and has_camera_exif:
+        if is_image_blurry:
+            return "keep", "faces + camera EXIF (blurry but keeping)"
+        else:
+            return "keep", "faces + camera EXIF"
+    
+    # If has faces but no EXIF -> review (even if blurry)
+    if has_face and not has_camera_exif:
+        if is_image_blurry:
+            return "review", "faces but no camera EXIF (blurry)"
+        else:
+            return "review", "faces but no camera EXIF"
+    
+    # PRIORITY 2: Very high text content = instant delete (even with faces, unless EXIF)
+    if text_ratio > high_text_threshold:
+        if has_face and has_camera_exif:
+            return "keep", f"high text but faces + EXIF ({text_ratio:.3f})"
+        else:
+            return "delete", f"high text content ({text_ratio:.3f})"
+    
+    # PRIORITY 3: No faces - check for blurriness
+    if is_image_blurry:
+        return "delete", "blurry (no faces)"
+    
+    # PRIORITY 4: Screenshots and moderate text content
+    # If moderate text content AND screenshot aspect ratio -> likely screenshot -> review
+    if text_ratio > screenshot_text_threshold and is_screenshot:
+        return "review", f"screenshot (text: {text_ratio:.3f})"
+    
+    # If moderate text content regardless -> review (documents, memes)
+    if text_ratio > text_area_threshold:
+        return "review", f"moderate text ({text_ratio:.3f})"
+    
+    # PRIORITY 5: Camera EXIF data (no faces, not blurry) -> review for manual inspection
+    if has_camera_exif:
+        return "review", "camera EXIF (no faces)"
+    
+    # PRIORITY 6: Everything else goes to review for manual inspection
+    if text_ratio < 0.05:
+        return "review", "no faces/EXIF, minimal text"
+    else:
+        return "review", "default case"
 
-                except Exception as e:
-                    logging.error(f"Error processing {image_path}: {e}")
+# Initialize models once at startup
+initialize_models()
 
-def main():
-    scorer = PhotoScorer()
-    source_directory = "/home/aean/Pictures/Camera Roll"
-    scorer.organize_photos(source_directory)
+# Process only top-level images in the input folder
+processed_count = 0
+for image_path in input_folder.rglob("*.*"):
+    if image_path.suffix.lower() not in [
+        ".jpg",
+        ".jpeg",
+        ".png",
+        ".bmp",
+        ".tif",
+        ".tiff",
+        ".heic",
+        ".heif",
+    ]:
+        continue
+    
+    if any(folder.name in [part.name for part in image_path.parents] for folder in [keep_folder, delete_folder, review_folder]):
+        continue
+    
+    processed_count += 1
+    print(f"Processing ({processed_count}) {image_path.name}")
+    
+    category, reason = classify_image(image_path)
+    
+    if category == "delete":
+        destination = delete_folder
+    elif category == "keep":
+        destination = keep_folder
+    else:  # review
+        destination = review_folder
+    
+    try:
+        shutil.move(str(image_path), str(destination / image_path.name))
+        print(f"  -> {category}: {reason}")
+    except Exception as e:
+        print(f"  -> Error moving file: {e}")
 
-if __name__ == "__main__":
-    main() 
+print(f"\nProcessed {processed_count} images total")

@@ -29,7 +29,6 @@
 
     overlays = [
       (final: prev: {
-        aerothemeplasma = prev.callPackage ./aerotheme/aerothemeplasma.nix {};
         stable = import nixpkgs-stable {
           inherit system;
           config.allowUnfree = true;

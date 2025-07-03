@@ -3,23 +3,20 @@
   pkgs,
   lib,
   ...
-}: let
-  aerothemeplasmaPkgs = pkgs.callPackage ./aerothemeplasma.nix {inherit pkgs;};
-  inherit (aerothemeplasmaPkgs) aerothemeplasma aerothemeplasma-git;
-in {
+}: {
   home.file = {
     # TODO: find a better way to do this than home symlinks.
-    ".local/share/plasma/desktoptheme".source = "${aerothemeplasma-git}/plasma/desktoptheme";
-    ".local/share/plasma/look-and-feel".source = "${aerothemeplasma-git}/plasma/look-and-feel";
-    ".local/share/plasma/plasmoids".source = "${aerothemeplasma-git}/plasma/plasmoids";
-    ".local/share/plasma/layout-templates".source = "${aerothemeplasma-git}/plasma/layout-templates";
-    ".local/share/plasma/shells".source = "${aerothemeplasma-git}/plasma/shells";
-    ".local/share/kwin/effects".source = "${aerothemeplasma-git}/kwin/effects";
-    ".local/share/kwin/tabbox".source = "${aerothemeplasma-git}/kwin/tabbox";
-    ".local/share/kwin/outline".source = "${aerothemeplasma-git}/kwin/outline";
-    # ".config/fontconfig/fonts.conf".source = "${aerothemeplasma-git}/misc/fontconfig/fonts.conf";
-    ".local/share/smod".source = "${aerothemeplasma-git}/plasma/smod";
-    ".local/share/sddm/themes/sddm-theme-mod".source = "${aerothemeplasma-git}/plasma/sddm/sddm-theme-mod";
+    ".local/share/plasma/desktoptheme".source = "${pkgs.aerothemeplasma-git}/plasma/desktoptheme";
+    ".local/share/plasma/look-and-feel".source = "${pkgs.aerothemeplasma-git}/plasma/look-and-feel";
+    ".local/share/plasma/plasmoids".source = "${pkgs.aerothemeplasma-git}/plasma/plasmoids";
+    ".local/share/plasma/layout-templates".source = "${pkgs.aerothemeplasma-git}/plasma/layout-templates";
+    ".local/share/plasma/shells".source = "${pkgs.aerothemeplasma-git}/plasma/shells";
+    ".local/share/kwin/effects".source = "${pkgs.aerothemeplasma-git}/kwin/effects";
+    ".local/share/kwin/tabbox".source = "${pkgs.aerothemeplasma-git}/kwin/tabbox";
+    ".local/share/kwin/outline".source = "${pkgs.aerothemeplasma-git}/kwin/outline";
+    # ".config/fontconfig/fonts.conf".source = "${pkgs.aerothemeplasma-git}/misc/fontconfig/fonts.conf";
+    ".local/share/smod".source = "${pkgs.aerothemeplasma-git}/plasma/smod";
+    ".local/share/sddm/themes/sddm-theme-mod".source = "${pkgs.aerothemeplasma-git}/plasma/sddm/sddm-theme-mod";
   };
   programs.plasma = {
     enable = true;
@@ -41,7 +38,7 @@ in {
         "kwin4_effect_aeroglassblurEnabled" = true;
         "kwin4_effect_aeroglideEnabled" = true;
         "smodsnapEnabled" = true;
-        # "smodglowEnabled" = true;
+        "smodglowEnabled" = true;
         "startupfeedbackEnabled" = true;
         "desaturateUnresponsiveAppsEnabled" = true;
         "fadingPopupsEnabled" = true;

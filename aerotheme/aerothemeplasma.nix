@@ -8,10 +8,11 @@
   pkgs,
   makeWrapper,
   gnutar,
+  originalLibplasma,
 }: let
   themeRepo = fetchzip {
     url = "https://gitgud.io/wackyideas/aerothemeplasma/-/archive/master/aerothemeplasma-master.zip";
-    sha256 = "sha256-vnYi1uV3HUAAyZhPMPazI/1V6x88QoknKNBiMiVBGYA=";
+    sha256 = "sha256-rMwEkfwVgzcVZNYhecXnD6B7nEsofOY7wFWU7GoonU8=";
   };
 
   aerothemeplasma-git = themeRepo;
@@ -87,18 +88,18 @@
     plasma-activities
     plasma-activities-stats
     libplasma
-    libplasma.dev
   ];
 
-  x11Deps = with pkgs; [
+  waylandDeps = with pkgs; [
+    wayland
+    wayland-protocols
     libepoxy
-    xorg.libX11
-    xorg.xcbutil
   ];
 
   commonCmakeFlags = [
     "-DCMAKE_BUILD_TYPE=Release"
     "-DBUILD_KF6=ON"
+    "-DKWIN_BUILD_WAYLAND=ON"
     "-DCMAKE_INSTALL_PREFIX=$out"
     "-DKDE_INSTALL_PLUGINDIR=lib/qt-6/plugins" # it's qt-6 on Nix for some reason
     "-DKDE_INSTALL_QMLDIR=lib/qt-6/qml" # no idea why
@@ -106,13 +107,26 @@
     "-DKPLUGINFACTORY_INCLUDE=${pkgs.kdePackages.kcoreaddons.dev}/include/KF6/KCoreAddons"
     ''-DCMAKE_CXX_FLAGS="-I${pkgs.kdePackages.kwin.dev}/include/kwin -I${pkgs.kdePackages.kcoreaddons.dev}/include/KF6/KCoreAddons -I${pkgs.kdePackages.libplasma.dev}/include/Plasma -I${pkgs.kdePackages.libplasma.dev}/include/PlasmaQuick"''
     "-DKWin_DIR=${pkgs.kdePackages.kwin.dev}/lib/cmake/KWin"
+    "-DKDE_INSTALL_LOCALEDIR=share/locale/aerotheme" # Prevent translation file collisions
   ];
+
+  customLibplasma = originalLibplasma.overrideAttrs (oldAttrs: {
+    postUnpack =
+      oldAttrs.postUnpack or ""
+      + ''
+        cp ${themeRepo}/misc/defaulttooltip/DefaultToolTip.qml $sourceRoot/src/declarativeimports/core/private/DefaultToolTip.qml
+        cp ${themeRepo}/misc/defaulttooltip/tooltiparea.h $sourceRoot/src/declarativeimports/core/tooltiparea.h
+        cp ${themeRepo}/misc/defaulttooltip/tooltiparea.cpp $sourceRoot/src/declarativeimports/core/tooltiparea.cpp
+        cp ${themeRepo}/misc/defaulttooltip/tooltipdialog.cpp $sourceRoot/src/declarativeimports/core/tooltipdialog.cpp
+        cp ${themeRepo}/misc/defaulttooltip/plasmawindow.cpp $sourceRoot/src/plasmaquick/plasmawindow.cpp
+      '';
+  });
 
   decoration = stdenv.mkDerivation {
     name = "aerotheme-decoration";
     src = "${themeRepo}/kwin/decoration";
     nativeBuildInputs = commonNativeBuildInputs ++ [pkgs.pkg-config];
-    buildInputs = qt6Deps ++ kf6Deps ++ kf6DevDeps ++ plasmaDeps ++ x11Deps ++ [pkgs.kdePackages.libplasma];
+    buildInputs = qt6Deps ++ kf6Deps ++ kf6DevDeps ++ plasmaDeps ++ waylandDeps;
     configurePhase = ''
       cmake -B build -G Ninja ${lib.concatStringsSep " " commonCmakeFlags}
     '';
@@ -128,7 +142,7 @@
     name = "aerotheme-smodsnap";
     src = "${themeRepo}/kwin/effects_cpp/kwin-effect-smodsnap-v2";
     nativeBuildInputs = commonNativeBuildInputs ++ [pkgs.pkg-config];
-    buildInputs = qt6Deps ++ kf6Deps ++ kf6DevDeps ++ plasmaDeps ++ x11Deps ++ [decoration];
+    buildInputs = qt6Deps ++ kf6Deps ++ kf6DevDeps ++ plasmaDeps ++ waylandDeps ++ [decoration];
     configurePhase = ''
       cmake -B build -G Ninja ${lib.concatStringsSep " " commonCmakeFlags}
     '';
@@ -144,7 +158,7 @@
     name = "aerotheme-smodglow";
     src = "${themeRepo}/kwin/effects_cpp/smodglow";
     nativeBuildInputs = commonNativeBuildInputs ++ [pkgs.pkg-config];
-    buildInputs = qt6Deps ++ kf6Deps ++ kf6DevDeps ++ plasmaDeps ++ x11Deps ++ [decoration];
+    buildInputs = qt6Deps ++ kf6Deps ++ kf6DevDeps ++ plasmaDeps ++ waylandDeps ++ [decoration];
     configurePhase = ''
       cmake -B build -G Ninja ${lib.concatStringsSep " " commonCmakeFlags}
     '';
@@ -160,7 +174,7 @@
     name = "aerotheme-startupfeedback";
     src = "${themeRepo}/kwin/effects_cpp/startupfeedback";
     nativeBuildInputs = commonNativeBuildInputs;
-    buildInputs = qt6Deps ++ kf6Deps ++ kf6DevDeps ++ plasmaDeps ++ x11Deps ++ [decoration];
+    buildInputs = qt6Deps ++ kf6Deps ++ kf6DevDeps ++ plasmaDeps ++ waylandDeps ++ [decoration];
     configurePhase = ''
       cmake -B build -G Ninja ${lib.concatStringsSep " " commonCmakeFlags}
     '';
@@ -176,7 +190,7 @@
     name = "aerotheme-aeroglassblur";
     src = "${themeRepo}/kwin/effects_cpp/kde-effects-aeroglassblur";
     nativeBuildInputs = commonNativeBuildInputs;
-    buildInputs = qt6Deps ++ kf6Deps ++ kf6DevDeps ++ plasmaDeps ++ x11Deps ++ [decoration];
+    buildInputs = qt6Deps ++ kf6Deps ++ kf6DevDeps ++ plasmaDeps ++ waylandDeps ++ [decoration];
     configurePhase = ''
       cmake -B build -G Ninja ${lib.concatStringsSep " " commonCmakeFlags}
     '';
@@ -192,31 +206,12 @@
     name = "aerotheme-aeroglide";
     src = "${themeRepo}/kwin/effects_cpp/aeroglide";
     nativeBuildInputs = commonNativeBuildInputs;
-    buildInputs = qt6Deps ++ kf6Deps ++ kf6DevDeps ++ plasmaDeps ++ x11Deps ++ [decoration];
+    buildInputs = qt6Deps ++ kf6Deps ++ kf6DevDeps ++ plasmaDeps ++ waylandDeps ++ [decoration];
     configurePhase = ''
       cmake -B build -G Ninja ${lib.concatStringsSep " " commonCmakeFlags}
     '';
     buildPhase = ''
       ninja -C build
-    '';
-    installPhase = ''
-      ninja install -C build
-    '';
-  };
-
-  corebindingsplugin = stdenv.mkDerivation {
-    name = "aerotheme-corebindingsplugin";
-    src = pkgs.kdePackages.libplasma.src;
-    nativeBuildInputs = commonNativeBuildInputs ++ [pkgs.pkg-config];
-    buildInputs = qt6Deps ++ kf6Deps ++ kf6DevDeps ++ plasmaDeps ++ [pkgs.wayland];
-    postunpack = ''
-      cp ${themeRepo}/misc/defaulttooltip/defaulttooltip.qml $sourceroot/src/declarativeimports/core/private/
-    '';
-    configurePhase = ''
-      cmake -B build -G Ninja ${lib.concatStringsSep " " commonCmakeFlags}
-    '';
-    buildPhase = ''
-      ninja -C build corebindingsplugin
     '';
     installPhase = ''
       ninja install -C build
@@ -285,7 +280,7 @@
   aerothemeplasma = stdenv.mkDerivation {
     name = "aerothemeplasma";
     src = themeRepo;
-    nativeBuildInputs = [gnutar];
+    nativeBuildInputs = [gnutar pkgs.gtk3]; # Add gtk3 for gtk-update-icon-cache
     installPhase = ''
       mkdir -p $out/share/plasma/desktoptheme \
         $out/share/plasma/look-and-feel \
@@ -319,8 +314,11 @@
       [ -d "$src/plasma/sddm/sddm-theme-mod" ] && cp -r "$src/plasma/sddm/sddm-theme-mod" $out/share/sddm/themes/
       [ -d "$src/misc/mimetype" ] && cp -r "$src/misc/mimetype"/* $out/share/mime/packages/
       [ -f "$src/misc/cursors/aero-drop.tar.gz" ] && tar -xzf "$src/misc/cursors/aero-drop.tar.gz" -C $out/share/icons
-      [ -f "$src/misc/icons/Windows 7 Aero.tar.gz" ] && tar -xzf "$src/misc/icons/Windows 7 Aero.tar.gz" -C $out/share/icons/Windows\ 7\ Aero
+      [ -f "$src/misc/icons/Windows 7 Aero.tar.gz" ] && tar -xzf "$src/misc/icons/Windows 7 Aero.tar.gz" -C $out/share/icons
       [ -f "$src/misc/sounds/sounds.tar.gz" ] && tar -xzf "$src/misc/sounds/sounds.tar.gz" -C $out/share/sounds
+
+      # Validate and cache the icon theme
+      gtk-update-icon-cache $out/share/icons/Windows\ 7\ Aero
     '';
     meta = {
       description = "Windows 7 theme for KDE Plasma";
@@ -329,5 +327,5 @@
     };
   };
 in {
-  inherit decoration smodsnap smodglow startupfeedback aeroglassblur aeroglide aerothemeplasma aerothemeplasma-git corebindingsplugin seventasks sevenstart desktopcontainment;
+  inherit decoration smodsnap smodglow startupfeedback aeroglassblur aeroglide aerothemeplasma aerothemeplasma-git seventasks sevenstart desktopcontainment customLibplasma;
 }

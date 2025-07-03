@@ -9,9 +9,15 @@ import exifread
 from PIL import Image
 
 def get_media_date(file_path):
-    """Get the creation date of a media file from EXIF data or file metadata."""
+    """Get the creation date of a media file from file modified date first, then EXIF data or other metadata."""
     try:
-        # Try to get date from EXIF data for images
+        # First try to get file modified date
+        return datetime.fromtimestamp(os.path.getmtime(file_path))
+    except:
+        pass
+
+    try:
+        # Fallback to EXIF data for images
         if file_path.suffix.lower() in {'.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.webp', '.dng', '.heic', '.heif'}:
             with open(file_path, 'rb') as f:
                 tags = exifread.process_file(f)
@@ -25,7 +31,7 @@ def get_media_date(file_path):
         pass
 
     try:
-        # Try to get date from file metadata for images
+        # Try to get date from file metadata for images using PIL
         if file_path.suffix.lower() in {'.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.webp', '.dng', '.heic', '.heif'}:
             image = Image.open(file_path)
             if hasattr(image, '_getexif') and image._getexif():
@@ -49,7 +55,7 @@ def get_media_date(file_path):
     except:
         pass
 
-    # Fallback to file creation time
+    # Final fallback to file creation time
     return datetime.fromtimestamp(os.path.getctime(file_path))
 
 def find_media_files(directory):
@@ -104,5 +110,5 @@ def organize_media(source_dir):
             print(f"Error processing {file_path.name}: {str(e)}")
 
 if __name__ == "__main__":
-    source_directory = "/home/aean/Pictures/Camera Roll"
+    source_directory = "/home/aean/Pictures/Samsung Gallery"
     organize_media(source_directory) 

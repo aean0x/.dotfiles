@@ -24,3 +24,9 @@ Thumbs.db
 # Ignore files
 secrets.nix
 dotfiles.code-workspace
+tools/haarcascade_frontalface_default.xml
+tools/mobilenet_weights.h5
+tools/frozen_east_text_detection.pb
+tools/opencv_face_detector.pbtxt
+tools/opencv_face_detector_uint8.pb
+tools/imagenet_classes.txt

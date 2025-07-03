@@ -3,18 +3,31 @@
   pkgs,
   lib,
   ...
-}: let
-  aerothemeplasmaPkgs = pkgs.callPackage ./aerothemeplasma.nix {inherit pkgs;};
-  inherit (aerothemeplasmaPkgs) decoration smodsnap smodglow startupfeedback aeroglassblur aeroglide aerothemeplasma aerothemeplasma-git corebindingsplugin seventasks sevenstart desktopcontainment;
-in {
+}: {
+  nixpkgs.overlays = [
+    (final: prev: let
+      # Build packages using prev (before overlay) to avoid recursion
+      aerothemePkgs = prev.callPackage ./aerothemeplasma.nix {
+        originalLibplasma = prev.kdePackages.libplasma;
+      };
+    in {
+      kdePackages =
+        prev.kdePackages
+        // {
+          libplasma = aerothemePkgs.customLibplasma;
+        };
+      # Make aerotheme packages available in the final package set
+      inherit (aerothemePkgs) decoration smodsnap smodglow startupfeedback aeroglassblur aeroglide aerothemeplasma aerothemeplasma-git seventasks sevenstart desktopcontainment;
+    })
+  ];
+
+  # Rest of your configuration remains unchanged
   environment.sessionVariables = {
-    # TODO: find a better way to do this than system session variables.
-    QT_PLUGIN_PATH = "${aerothemeplasma}/lib/qt-6/plugins:${decoration}/lib/qt-6/plugins:$QT_PLUGIN_PATH";
-    QML2_IMPORT_PATH = "${aerothemeplasma}/lib/qt-6/qml:$QML2_IMPORT_PATH";
+    QT_PLUGIN_PATH = "${pkgs.aerothemeplasma}/lib/qt-6/plugins:${pkgs.decoration}/lib/qt-6/plugins:$QT_PLUGIN_PATH";
+    QML2_IMPORT_PATH = "${pkgs.aerothemeplasma}/lib/qt-6/qml:$QML2_IMPORT_PATH";
     QML_DISABLE_DISTANCEFIELD = "1";
   };
 
-  # System packages
   environment.systemPackages = with pkgs; [
     decoration
     smodsnap
@@ -22,33 +35,18 @@ in {
     startupfeedback
     aeroglassblur
     aeroglide
-    aerothemeplasma
-    corebindingsplugin
+    (lib.hiPrio aerothemeplasma) # High priority to override default KDE files
     seventasks
     sevenstart
     desktopcontainment
+
     kdePackages.qtstyleplugin-kvantum
     kdePackages.plasma5support
-    shared-mime-info
-    kdePackages.kitemmodels
-    kdePackages.kitemviews
-    kdePackages.knewstuff
-    kdePackages.kcmutils
     kdePackages.kdeplasma-addons
     kdePackages.sddm-kcm
-    kdePackages.yakuake
-    kdePackages.skanlite
-    kdePackages.kdenlive
-    kdePackages.okular
-    kdePackages.elisa
-    kdePackages.kcalc
-    kdePackages.ksystemlog
-    kdePackages.kolourpaint
-    kdePackages.isoimagewriter
     kdePackages.plasma-browser-integration
     kdePackages.partitionmanager
     kdePackages.qttools
-    kdePackages.full
     kdePackages.qtvirtualkeyboard
     kdePackages.qt5compat
     kdePackages.plasma-wayland-protocols
@@ -58,21 +56,27 @@ in {
     kdePackages.qtquicktimeline
     kdePackages.qtquick3dphysics
     kdePackages.qtdeclarative
-    kdePackages.appstream-qt
+
+    shared-mime-info
+    kdePackages.kitemmodels
+    kdePackages.kitemviews
+    kdePackages.knewstuff
+    kdePackages.kcmutils
   ];
 
   system.activationScripts.updateMimeDatabase = lib.stringAfter ["etc"] ''
     ${pkgs.shared-mime-info}/bin/update-mime-database /etc/xdg/mime
   '';
 
-  # KDE Plasma and SDDM configuration
-  services.desktopManager.plasma6.enable = true;
+  services.desktopManager.plasma6 = {
+    enable = true;
+    enableQt5Integration = false;
+  };
   services.xserver = {
     enable = true;
   };
   services.displayManager.sddm = {
     enable = true;
-    wayland.enable = true;
     theme = "sddm-theme-mod";
     settings = {
       Theme = {
@@ -81,7 +85,6 @@ in {
     };
   };
 
-  # Fonts
   fonts = {
     packages = with pkgs; [
       corefonts
@@ -96,6 +99,4 @@ in {
       };
     };
   };
-
-  environment.etc."environment".text = "QML_DISABLE_DISTANCEFIELD=1";
 }
