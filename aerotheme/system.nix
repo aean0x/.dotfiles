@@ -17,14 +17,14 @@
           libplasma = aerothemePkgs.customLibplasma;
         };
       # Make aerotheme packages available in the final package set
-      inherit (aerothemePkgs) decoration smodsnap smodglow startupfeedback aeroglassblur aeroglide aerothemeplasma aerothemeplasma-git seventasks sevenstart desktopcontainment;
+      inherit (aerothemePkgs) decoration smodsnap smodglow startupfeedback aeroglassblur aeroglide aerothemeplasma aerothemeplasma-git seventasks sevenstart desktopcontainment volume notifications kcmloader;
     })
   ];
 
   # Rest of your configuration remains unchanged
   environment.sessionVariables = {
-    QT_PLUGIN_PATH = "${pkgs.aerothemeplasma}/lib/qt-6/plugins:${pkgs.decoration}/lib/qt-6/plugins:$QT_PLUGIN_PATH";
-    QML2_IMPORT_PATH = "${pkgs.aerothemeplasma}/lib/qt-6/qml:$QML2_IMPORT_PATH";
+    QT_PLUGIN_PATH = "${pkgs.aerothemeplasma}/lib/qt-6/plugins:${pkgs.decoration}/lib/qt-6/plugins:${pkgs.seventasks}/lib/qt-6/plugins:${pkgs.sevenstart}/lib/qt-6/plugins:${pkgs.volume}/lib/qt-6/plugins:${pkgs.notifications}/lib/qt-6/plugins:$QT_PLUGIN_PATH";
+    QML2_IMPORT_PATH = "${pkgs.aerothemeplasma}/lib/qt-6/qml:${pkgs.desktopcontainment}/lib/qt-6/qml:$QML2_IMPORT_PATH";
     QML_DISABLE_DISTANCEFIELD = "1";
   };
 
@@ -39,6 +39,9 @@
     seventasks
     sevenstart
     desktopcontainment
+    volume
+    notifications
+    kcmloader
 
     kdePackages.qtstyleplugin-kvantum
     kdePackages.plasma5support
@@ -62,6 +65,7 @@
     kdePackages.kitemviews
     kdePackages.knewstuff
     kdePackages.kcmutils
+    kdePackages.plasma-workspace
   ];
 
   system.activationScripts.updateMimeDatabase = lib.stringAfter ["etc"] ''

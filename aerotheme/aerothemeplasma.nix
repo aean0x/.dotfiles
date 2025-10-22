@@ -12,7 +12,7 @@
 }: let
   themeRepo = fetchzip {
     url = "https://gitgud.io/wackyideas/aerothemeplasma/-/archive/master/aerothemeplasma-master.zip";
-    sha256 = "sha256-rMwEkfwVgzcVZNYhecXnD6B7nEsofOY7wFWU7GoonU8=";
+    sha256 = "";
   };
 
   aerothemeplasma-git = themeRepo;
@@ -96,6 +96,11 @@
     libepoxy
   ];
 
+  x11Deps = with pkgs.xorg; [
+    libX11
+    libxcb
+  ];
+
   commonCmakeFlags = [
     "-DCMAKE_BUILD_TYPE=Release"
     "-DBUILD_KF6=ON"
@@ -114,11 +119,12 @@
     postUnpack =
       oldAttrs.postUnpack or ""
       + ''
-        cp ${themeRepo}/misc/defaulttooltip/DefaultToolTip.qml $sourceRoot/src/declarativeimports/core/private/DefaultToolTip.qml
-        cp ${themeRepo}/misc/defaulttooltip/tooltiparea.h $sourceRoot/src/declarativeimports/core/tooltiparea.h
-        cp ${themeRepo}/misc/defaulttooltip/tooltiparea.cpp $sourceRoot/src/declarativeimports/core/tooltiparea.cpp
-        cp ${themeRepo}/misc/defaulttooltip/tooltipdialog.cpp $sourceRoot/src/declarativeimports/core/tooltipdialog.cpp
-        cp ${themeRepo}/misc/defaulttooltip/plasmawindow.cpp $sourceRoot/src/plasmaquick/plasmawindow.cpp
+        cp ${themeRepo}/misc/libplasma/src/declarativeimports/core/private/DefaultToolTip.qml $sourceRoot/src/declarativeimports/core/private/DefaultToolTip.qml
+        cp ${themeRepo}/misc/libplasma/src/declarativeimports/core/tooltiparea.h $sourceRoot/src/declarativeimports/core/tooltiparea.h
+        cp ${themeRepo}/misc/libplasma/src/declarativeimports/core/tooltiparea.cpp $sourceRoot/src/declarativeimports/core/tooltiparea.cpp
+        cp ${themeRepo}/misc/libplasma/src/declarativeimports/core/tooltipdialog.cpp $sourceRoot/src/declarativeimports/core/tooltipdialog.cpp
+        cp ${themeRepo}/misc/libplasma/src/plasmaquick/plasmawindow.cpp $sourceRoot/src/plasmaquick/plasmawindow.cpp
+        cp ${themeRepo}/misc/libplasma/src/plasmaquick/popupplasmawindow.cpp $sourceRoot/src/plasmaquick/popupplasmawindow.cpp
       '';
   });
 
@@ -126,7 +132,7 @@
     name = "aerotheme-decoration";
     src = "${themeRepo}/kwin/decoration";
     nativeBuildInputs = commonNativeBuildInputs ++ [pkgs.pkg-config];
-    buildInputs = qt6Deps ++ kf6Deps ++ kf6DevDeps ++ plasmaDeps ++ waylandDeps;
+    buildInputs = qt6Deps ++ kf6Deps ++ kf6DevDeps ++ plasmaDeps ++ waylandDeps ++ x11Deps;
     configurePhase = ''
       cmake -B build -G Ninja ${lib.concatStringsSep " " commonCmakeFlags}
     '';
@@ -142,7 +148,7 @@
     name = "aerotheme-smodsnap";
     src = "${themeRepo}/kwin/effects_cpp/kwin-effect-smodsnap-v2";
     nativeBuildInputs = commonNativeBuildInputs ++ [pkgs.pkg-config];
-    buildInputs = qt6Deps ++ kf6Deps ++ kf6DevDeps ++ plasmaDeps ++ waylandDeps ++ [decoration];
+    buildInputs = qt6Deps ++ kf6Deps ++ kf6DevDeps ++ plasmaDeps ++ waylandDeps ++ x11Deps ++ [decoration];
     configurePhase = ''
       cmake -B build -G Ninja ${lib.concatStringsSep " " commonCmakeFlags}
     '';
@@ -158,7 +164,7 @@
     name = "aerotheme-smodglow";
     src = "${themeRepo}/kwin/effects_cpp/smodglow";
     nativeBuildInputs = commonNativeBuildInputs ++ [pkgs.pkg-config];
-    buildInputs = qt6Deps ++ kf6Deps ++ kf6DevDeps ++ plasmaDeps ++ waylandDeps ++ [decoration];
+    buildInputs = qt6Deps ++ kf6Deps ++ kf6DevDeps ++ plasmaDeps ++ waylandDeps ++ x11Deps ++ [decoration];
     configurePhase = ''
       cmake -B build -G Ninja ${lib.concatStringsSep " " commonCmakeFlags}
     '';
@@ -174,7 +180,7 @@
     name = "aerotheme-startupfeedback";
     src = "${themeRepo}/kwin/effects_cpp/startupfeedback";
     nativeBuildInputs = commonNativeBuildInputs;
-    buildInputs = qt6Deps ++ kf6Deps ++ kf6DevDeps ++ plasmaDeps ++ waylandDeps ++ [decoration];
+    buildInputs = qt6Deps ++ kf6Deps ++ kf6DevDeps ++ plasmaDeps ++ waylandDeps ++ x11Deps ++ [decoration];
     configurePhase = ''
       cmake -B build -G Ninja ${lib.concatStringsSep " " commonCmakeFlags}
     '';
@@ -190,7 +196,7 @@
     name = "aerotheme-aeroglassblur";
     src = "${themeRepo}/kwin/effects_cpp/kde-effects-aeroglassblur";
     nativeBuildInputs = commonNativeBuildInputs;
-    buildInputs = qt6Deps ++ kf6Deps ++ kf6DevDeps ++ plasmaDeps ++ waylandDeps ++ [decoration];
+    buildInputs = qt6Deps ++ kf6Deps ++ kf6DevDeps ++ plasmaDeps ++ waylandDeps ++ x11Deps ++ [decoration];
     configurePhase = ''
       cmake -B build -G Ninja ${lib.concatStringsSep " " commonCmakeFlags}
     '';
@@ -277,6 +283,54 @@
     '';
   };
 
+  volume = stdenv.mkDerivation {
+    name = "aerotheme-volume";
+    src = "${themeRepo}/plasma/plasmoids/src/volume_src";
+    nativeBuildInputs = commonNativeBuildInputs ++ [pkgs.pkg-config];
+    buildInputs = qt6Deps ++ kf6Deps ++ kf6DevDeps ++ plasmaDeps ++ waylandDeps;
+    configurePhase = ''
+      cmake -B build -G Ninja ${lib.concatStringsSep " " commonCmakeFlags}
+    '';
+    buildPhase = ''
+      ninja -C build
+    '';
+    installPhase = ''
+      ninja install -C build
+    '';
+  };
+
+  notifications = stdenv.mkDerivation {
+    name = "aerotheme-notifications";
+    src = "${themeRepo}/plasma/plasmoids/src/notifications_src";
+    nativeBuildInputs = commonNativeBuildInputs ++ [pkgs.pkg-config];
+    buildInputs = qt6Deps ++ kf6Deps ++ kf6DevDeps ++ plasmaDeps ++ waylandDeps ++ [ pkgs.kdePackages.plasma-workspace ];
+    configurePhase = ''
+      cmake -B build -G Ninja ${lib.concatStringsSep " " commonCmakeFlags}
+    '';
+    buildPhase = ''
+      ninja -C build
+    '';
+    installPhase = ''
+      ninja install -C build
+    '';
+  };
+
+  kcmloader = stdenv.mkDerivation {
+    name = "aerotheme-kcmloader";
+    src = "${themeRepo}/plasma/aerothemeplasma-kcmloader";
+    nativeBuildInputs = commonNativeBuildInputs;
+    buildInputs = qt6Deps ++ kf6Deps ++ kf6DevDeps ++ [ pkgs.kdePackages.kcmutils pkgs.kdePackages.qtbase pkgs.kdePackages.qttools ];
+    configurePhase = ''
+      cmake -B build -G Ninja ${lib.concatStringsSep " " commonCmakeFlags}
+    '';
+    buildPhase = ''
+      ninja -C build
+    '';
+    installPhase = ''
+      ninja install -C build
+    '';
+  };
+
   aerothemeplasma = stdenv.mkDerivation {
     name = "aerothemeplasma";
     src = themeRepo;
@@ -327,5 +381,5 @@
     };
   };
 in {
-  inherit decoration smodsnap smodglow startupfeedback aeroglassblur aeroglide aerothemeplasma aerothemeplasma-git seventasks sevenstart desktopcontainment customLibplasma;
+  inherit decoration smodsnap smodglow startupfeedback aeroglassblur aeroglide aerothemeplasma aerothemeplasma-git seventasks sevenstart desktopcontainment volume notifications kcmloader customLibplasma;
 }
