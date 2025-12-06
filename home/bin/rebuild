@@ -43,12 +43,12 @@ done
 pushd "$REPO_DIR"
 
 # Pull the latest config from rc2nix
-if [ "$SAVE_PLASMA" = true ]; then
-    nix run github:nix-community/plasma-manager > ./home/plasma.nix
-    echo "Plasma config saved to plasma.nix."
-else
-    echo "Skipping plasma configuration save. Use -p to save..."
-fi
+# if [ "$SAVE_PLASMA" = true ]; then
+#     nix run github:nix-community/plasma-manager > ./home/plasma.nix
+#     echo "Plasma config saved to plasma.nix."
+# else
+#     echo "Skipping plasma configuration save. Use -p to save..."
+# fi
 
 # Find and format all files using Alejandra
 find . -type f -exec alejandra {} + &>/dev/null

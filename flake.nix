@@ -1,60 +1,45 @@
 {
   description = "Flake";
-
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-24.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
     home-manager = {
-      url = "github:nix-community/home-manager";
+      url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    plasma-manager = {
-      url = "github:nix-community/plasma-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.home-manager.follows = "home-manager";
-    };
+    nix-flatpak.url = "github:gmodena/nix-flatpak";
   };
-
   outputs = {
     self,
     nixpkgs,
-    nixpkgs-stable,
     home-manager,
-    plasma-manager,
+    nix-flatpak,
     ...
   } @ inputs: let
     inherit (self) outputs;
-    secrets = import ./home/secrets.nix;
+    secrets = import (
+      if builtins.pathExists ./home/secrets.nix
+      then ./home/secrets.nix
+      else ./home/secrets.example.nix
+    );
     system = "x86_64-linux";
-
-    overlays = [
-      (final: prev: {
-        stable = import nixpkgs-stable {
-          inherit system;
-          config.allowUnfree = true;
-        };
-      })
-    ];
+    stateVersion = "25.11";
   in {
     nixosConfigurations.${secrets.hostName} = nixpkgs.lib.nixosSystem {
       inherit system;
-      specialArgs = {inherit inputs;};
+      specialArgs = {inherit inputs stateVersion;};
       modules = [
-        {nixpkgs.overlays = overlays;}
-        ./configuration.nix
-        ./hardware-configuration.nix
-        ./aerotheme/system.nix
+        ./system/configuration.nix
+        ./system/hardware-configuration.nix
         home-manager.nixosModules.home-manager
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
-          home-manager.sharedModules = [plasma-manager.homeManagerModules.plasma-manager];
-          home-manager.extraSpecialArgs = {inherit inputs;};
+          home-manager.extraSpecialArgs = {inherit inputs stateVersion;};
           home-manager.backupFileExtension = "backup";
           home-manager.users."${secrets.username}" = {
             imports = [
               ./home/home.nix
-              ./aerotheme/user.nix
+              inputs.nix-flatpak.homeManagerModules.nix-flatpak
             ];
           };
         }

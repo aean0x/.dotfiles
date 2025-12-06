@@ -23,6 +23,9 @@ Thumbs.db
 
 # Ignore files
 secrets.nix
+home/secrets.nix
+home/secrets.local.nix
+**/.gitconfig.local
 dotfiles.code-workspace
 tools/haarcascade_frontalface_default.xml
 tools/mobilenet_weights.h5
