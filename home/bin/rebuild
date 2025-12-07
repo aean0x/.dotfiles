@@ -10,7 +10,7 @@ LOG_FILE="$HOME/.nixos-rebuild.log"
 
 # Set default values for options
 REBOOT=false
-SAVE_PLASMA=false
+# SAVE_PLASMA=false  # Plasma/KDE no longer used
 UPDATE=false
 DRY_RUN=false
 
@@ -44,9 +44,9 @@ while getopts "rpuUdh" opt; do
         r)
             REBOOT=true
             ;;
-        p)
-            SAVE_PLASMA=true
-            ;;
+        # p)  # Plasma/KDE no longer used
+        #     SAVE_PLASMA=true
+        #     ;;
         u|U)
             UPDATE=true
             ;;
@@ -60,7 +60,7 @@ while getopts "rpuUdh" opt; do
             echo ""
             echo "Options:"
             echo "  -r        Reboot after successful rebuild"
-            echo "  -p        Save Plasma desktop configuration"
+            # echo "  -p        Save Plasma desktop configuration"  # Plasma/KDE no longer used
             echo "  -u, -U    Update flake inputs before rebuild"
             echo "  -d        Perform a dry run (test without applying)"
             echo "  -h        Show this help message"
@@ -86,15 +86,15 @@ cd "$REPO_DIR" || {
 
 log_step "Working in repository: $REPO_DIR"
 
-# Save Plasma config if requested
-if [ "$SAVE_PLASMA" = true ]; then
-    log_step "Saving Plasma configuration..."
-    if nix run github:nix-community/plasma-manager > ./home/plasma.nix 2>/dev/null; then
-        log_info "Plasma config saved to ./home/plasma.nix"
-    else
-        log_warn "Failed to save Plasma config"
-    fi
-fi
+# Save Plasma config if requested (Plasma/KDE no longer used)
+# if [ "$SAVE_PLASMA" = true ]; then
+#     log_step "Saving Plasma configuration..."
+#     if nix run github:nix-community/plasma-manager > ./home/plasma.nix 2>/dev/null; then
+#         log_info "Plasma config saved to ./home/plasma.nix"
+#     else
+#         log_warn "Failed to save Plasma config"
+#     fi
+# fi
 
 # Format all Nix files using Alejandra
 log_step "Formatting Nix files with Alejandra..."
@@ -166,8 +166,8 @@ if sudo nixos-rebuild switch --flake "$NIXOS_DIR" 2>&1 | tee "$LOG_FILE"; then
     echo ""
     log_info "✓ Rebuild completed successfully!"
 
-    # Get the current generation info
-    GENERATION_INFO=$(nixos-rebuild list-generations 2>/dev/null | grep current | head -n1 || echo "")
+    # Get the current generation info using nix-env
+    GENERATION_INFO=$(sudo nix-env --list-generations --profile /nix/var/nix/profiles/system 2>/dev/null | grep current | tail -n1 || echo "")
 
     if [ -n "$GENERATION_INFO" ]; then
         GENERATION_NUM=$(echo "$GENERATION_INFO" | awk '{print $1}')
