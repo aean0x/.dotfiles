@@ -104,25 +104,9 @@ else
     log_warn "Some files could not be formatted"
 fi
 
-# Check if there are changes to commit before rebuild
-if ! git diff --quiet || ! git diff --cached --quiet || [ -n "$(git ls-files --others --exclude-standard)" ]; then
-    log_step "Staging changes in repository..."
-    git add -A
-
-    # Create a pre-rebuild snapshot
-    TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
-    if git commit -m "Pre-rebuild snapshot: $TIMESTAMP" 2>/dev/null; then
-        log_info "Pre-rebuild snapshot committed"
-    else
-        log_warn "Nothing new to commit"
-    fi
-else
-    log_info "No changes detected in repository"
-fi
-
 # Copy files to /etc/nixos (excluding unnecessary files)
 log_step "Syncing configuration files to $NIXOS_DIR..."
-if sudo rsync -av --delete \
+if sudo rsync -av --delete --force \
     --exclude='.git' \
     --exclude='.gitignore' \
     --exclude='tools/' \
@@ -192,29 +176,20 @@ if sudo nixos-rebuild switch --flake "$NIXOS_DIR" 2>&1 | tee "$LOG_FILE"; then
         # Return to repo directory and commit the successful rebuild
         cd "$REPO_DIR"
 
-        # Check if there are changes after the rebuild
-        if ! git diff --quiet || ! git diff --cached --quiet; then
-            git add -A
+        # Stage any changes and commit
+        git add -A
 
-            # Create a detailed commit message
-            COMMIT_MSG="NixOS rebuild: Generation #$GENERATION_NUM
+        # Create a detailed commit message
+        COMMIT_MSG="NixOS generation #$GENERATION_NUM"
 
-Generation info: $GENERATION_INFO
-Timestamp: $(date '+%Y-%m-%d %H:%M:%S')
-Hostname: $(hostname)"
+        if [ "$UPDATE" = true ]; then
+            COMMIT_MSG="$COMMIT_MSG (flake updated)"
+        fi
 
-            if [ "$UPDATE" = true ]; then
-                COMMIT_MSG="$COMMIT_MSG
-Flake inputs: Updated"
-            fi
-
-            if git commit -m "$COMMIT_MSG" 2>/dev/null; then
-                log_info "✓ Changes committed to git repository"
-            else
-                log_warn "Could not commit changes (possibly nothing to commit)"
-            fi
+        if git commit -m "$COMMIT_MSG" 2>/dev/null; then
+            log_info "✓ Changes committed: $COMMIT_MSG"
         else
-            log_info "No new changes to commit after rebuild"
+            log_info "No changes to commit"
         fi
     else
         log_warn "Could not retrieve generation information"
