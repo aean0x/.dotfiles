@@ -18,17 +18,21 @@
           "keyboard@cinnamon.org"
         ];
       };
+
       # Theme and appearance (essential tweaks)
       "org/cinnamon/desktop/theme" = {
         name = "Yaru-dark";
       };
+
       "org/cinnamon/desktop/interface" = {
         icon-theme = "Yaru-dark";
         font-name = "Sans 11";
       };
+
       "org/cinnamon/desktop/wm/preferences" = {
         theme = "Yaru-dark";
       };
+
       # Nemo file manager tweaks (essential for usability)
       "org/nemo/preferences" = {
         show-image-thumbnails = true;
@@ -36,6 +40,7 @@
         always-use-location-entry = true;
       };
     };
+
     # User packages for Cinnamon enhancements
     home.packages = with pkgs; [
       dconf # For manual tweaks if needed

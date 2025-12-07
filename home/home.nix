@@ -1,9 +1,5 @@
 {
-  config,
-  pkgs,
   lib,
-  username,
-  inputs,
   stateVersion,
   ...
 }: let
@@ -19,7 +15,8 @@ in {
 
   # Dotfiles tracking: Add files to be symlinked to the home directory on nixos-rebuild
   home.file =
-    lib.foldl' (
+    lib.foldl'
+    (
       acc: file:
         acc
         // {
@@ -28,7 +25,9 @@ in {
             executable = file.executable;
           };
         }
-    ) {} [
+    )
+    {}
+    [
       {
         source = ./bin/rebuild;
         target = ".local/bin/rebuild";

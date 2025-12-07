@@ -1,12 +1,4 @@
-{
-  config,
-  pkgs,
-  lib,
-  inputs,
-  ...
-}: let
-  secrets = import ../home/secrets.nix;
-in {
+{config, ...}: {
   imports = [
     ./system.nix
     ./packages.nix
@@ -52,8 +44,11 @@ in {
   };
   hardware.nvidia-container-toolkit.enable = true;
   hardware.nvidia-container-toolkit.mount-nvidia-executables = true;
-  services.xserver.videoDrivers = ["amdgpu" "nvidia"];
-  nixpkgs.config.cudaSupport = true;
+  services.xserver.videoDrivers = [
+    "amdgpu"
+    "nvidia"
+  ];
+  # nixpkgs.config.cudaSupport = true;
 
   # udev rules (hardware-specific)
   services.udev.extraRules = ''

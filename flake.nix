@@ -15,7 +15,6 @@
     nix-flatpak,
     ...
   } @ inputs: let
-    inherit (self) outputs;
     secrets = import (
       if builtins.pathExists ./home/secrets.nix
       then ./home/secrets.nix

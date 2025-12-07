@@ -1,8 +1,4 @@
-{
-  pkgs,
-  inputs,
-  ...
-}: {
+{pkgs, ...}: {
   # Packages https://search.nixos.org/packages
   home.packages = with pkgs; [
     # User applications
@@ -10,6 +6,7 @@
     discord
     # code-cursor
     zed-editor
+    firefox
     mailspring
     # zoom-us
     gimp

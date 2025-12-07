@@ -1,7 +1,6 @@
 {
   config,
   pkgs,
-  lib,
   inputs,
   stateVersion,
   ...
@@ -13,37 +12,50 @@ in {
     ./desktop-environments/cinnamon.nix
   ];
 
-  # Desktop environment toggle
+  # ============================================================================
+  # Desktop Environment Configuration
+  # ============================================================================
+
   services.cosmic.enable = true;
   services.cinnamon.enable = false;
 
-  # Programs with options https://search.nixos.org/options
+  xdg.portal = {
+    enable = true;
+    # extraPortals handled in desktop environment modules
+    config.common.default = "*";
+  };
+
+  # ============================================================================
+  # System Programs
+  # ============================================================================
+
   programs = {
     git.enable = true;
     dconf.enable = true;
     #nix-ld.enable = true;
+
     steam = {
       enable = true;
       remotePlay.openFirewall = true;
       protontricks.enable = true;
       extraCompatPackages = with pkgs; [proton-ge-bin];
     };
+
     virt-manager.enable = true;
   };
-  # Services settings
+
+  # ============================================================================
+  # System Services
+  # ============================================================================
+
   services = {
+    # Printing configuration
     printing = {
       enable = true;
       drivers = [pkgs.epson-escpr2];
     };
-    # Cron jobs
-    cron = {
-      enable = true;
-      systemCronJobs = [
-        "0 0 * * * ${pkgs.bash}/bin/bash -c '${config.users.users.${secrets.username}.home}/.local/bin/rebuild'"
-      ];
-    };
-    # Add Avahi for Samba printing discovery
+
+    # Avahi for network service discovery (Samba printing)
     avahi = {
       enable = true;
       nssmdns4 = true;
@@ -53,51 +65,71 @@ in {
         workstation = true;
       };
     };
+
+    # Cron jobs
+    cron = {
+      enable = true;
+      systemCronJobs = [
+        "0 0 * * * ${pkgs.bash}/bin/bash -c '${
+          config.users.users.${secrets.username}.home
+        }/.local/bin/rebuild'"
+      ];
+    };
+
+    # Additional services
     trezord.enable = true;
     samba.enable = true;
     flatpak.enable = true;
   };
-  xdg.portal = {
-    enable = true;
-    # extraPortals handled in modules
-    config.common.default = "*";
-  };
-  # Systemd services and timers
+
+  # ============================================================================
+  # Systemd Timers and Services
+  # ============================================================================
+
   systemd = {
     timers = {
       # weeklyUpdate = {
-      # description = "Weekly NixOS system update";
-      # wantedBy = ["timers.target"];
-      # timerConfig = {
-      # OnCalendar = "weekly";
-      # Persistent = true;
-      # };
+      #   description = "Weekly NixOS system update";
+      #   wantedBy = ["timers.target"];
+      #   timerConfig = {
+      #     OnCalendar = "weekly";
+      #     Persistent = true;
+      #   };
       # };
       # monthlyCleanup = {
-      # description = "Monthly NixOS garbage collection";
-      # wantedBy = ["timers.target"];
-      # timerConfig = {
-      # OnCalendar = "monthly";
-      # Persistent = true;
-      # };
+      #   description = "Monthly NixOS garbage collection";
+      #   wantedBy = ["timers.target"];
+      #   timerConfig = {
+      #     OnCalendar = "monthly";
+      #     Persistent = true;
+      #   };
       # };
     };
+
     services = {
+      # Libvirtd service configuration
+      libvirtd = {
+        enable = true;
+        wantedBy = ["multi-user.target"];
+        path = [pkgs.qemu];
+      };
+
       # weeklyUpdate = {
-      # description = "Update NixOS system";
-      # serviceConfig = {
-      # ExecStart = "${pkgs.bash}/bin/bash -c 'for i in {1..3}; do nix flake update && nixos-rebuild switch --flake /etc/nixos && break || sleep 10; done'";
-      # User = "root";
-      # };
+      #   description = "Update NixOS system";
+      #   serviceConfig = {
+      #     ExecStart = "${pkgs.bash}/bin/bash -c 'for i in {1..3}; do nix flake update && nixos-rebuild switch --flake /etc/nixos && break || sleep 10; done'";
+      #     User = "root";
+      #   };
       # };
       # monthlyCleanup = {
-      # description = "Clean up old NixOS generations";
-      # serviceConfig = {
-      # ExecStart = "${pkgs.nix}/bin/nix-collect-garbage --delete-older-than 7d";
-      # User = "root";
-      # };
+      #   description = "Clean up old NixOS generations";
+      #   serviceConfig = {
+      #     ExecStart = "${pkgs.nix}/bin/nix-collect-garbage --delete-older-than 7d";
+      #     User = "root";
+      #   };
       # };
     };
+
     sleep.extraConfig = ''
       [Sleep]
       AllowHibernation=no
@@ -105,58 +137,97 @@ in {
       AllowSuspendThenHibernate=no
     '';
   };
-  # Boot settings
+
+  # Example: Cloudflared service (commented out)
+  # systemd.services.cloudflared = {
+  #   description = "Cloudflare Tunnel";
+  #   wantedBy = ["multi-user.target"];
+  #   serviceConfig = {
+  #     ExecStart = "${pkgs.cloudflared}/bin/cloudflared tunnel --config /home/${secrets.username}/.cloudflared/config.yml run 97f0877b-9ed5-42ba-999e-d13903c05d52";
+  #     Restart = "always";
+  #     User = "${secrets.username}";
+  #     StateDirectory = "cloudflared";
+  #     ConfigurationDirectory = "cloudflared";
+  #     ConfigurationDirectoryMode = "0755";
+  #   };
+  # };
+
+  # ============================================================================
+  # Boot Configuration
+  # ============================================================================
+
   boot = {
+    # Boot loader configuration
     loader = {
       systemd-boot.enable = true;
       efi.canTouchEfiVariables = true;
       systemd-boot.consoleMode = "auto";
       timeout = 0;
     };
+
+    # Plymouth boot screen
+    plymouth = {
+      enable = true;
+      theme = "rings";
+      themePackages = with pkgs; [
+        (adi1090x-plymouth-themes.override {selected_themes = ["rings"];})
+      ];
+    };
+
+    # Console and logging
     consoleLogLevel = 0;
     initrd.verbose = false;
+
+    # Kernel parameters
+    # kernelPackages = pkgs.linuxPackages_latest; # Uncomment to use latest stable
+    kernelParams = [
+      "nvidia-drm.modeset=1"
+      "quiet"
+      "splash"
+      "boot.shell_on_fail"
+      "loglevel=3"
+      "rd.systemd.show_status=auto"
+      # "rd.udev.log_level=3"
+      "udev.log_priority=3"
+    ];
+
+    # Kernel modules
+    kernelModules = [
+      "xone"
+      "kvm-amd"
+      "vfio"
+      "vfio_iommu_type1"
+      "vfio_pci"
+      "vfio_virqfd"
+      "ch343"
+    ];
+
+    # Extra kernel modules
+    extraModulePackages = [config.boot.kernelPackages.xone];
+
+    # Module configuration
     extraModprobeConfig = ''
       options kvm_amd nested=1
       options kvm ignore_msrs=1 report_ignored_msrs=0
     '';
+
+    # Binary format emulation
+    binfmt.emulatedSystems = ["aarch64-linux"];
   };
-  # Plymouth (boot screen)
-  boot.plymouth = {
-    enable = true;
-    theme = "rings";
-    themePackages = with pkgs; [
-      (adi1090x-plymouth-themes.override {selected_themes = ["rings"];})
-    ];
-  };
-  # Kernel Parameters
-  # boot.kernelPackages = pkgs.linuxPackages_latest; # Uncomment to use latest stable
-  boot.kernelParams = [
-    "nvidia-drm.modeset=1"
-    "quiet"
-    "splash"
-    "boot.shell_on_fail"
-    "loglevel=3"
-    "rd.systemd.show_status=auto"
-    # "rd.udev.log_level=3"
-    "udev.log_priority=3"
-  ];
-  # Enable Xbox One driver
-  boot.extraModulePackages = [config.boot.kernelPackages.xone];
-  boot.kernelModules = [
-    "xone"
-    "kvm-amd"
-    "vfio"
-    "vfio_iommu_type1"
-    "vfio_pci"
-    "vfio_virqfd"
-    "ch343"
-  ];
-  # User customizations
+
+  # ============================================================================
+  # Input and Display Configuration
+  # ============================================================================
+
   services.xserver.xkb = {
     layout = "us";
     variant = "colemak";
   };
-  # Sound settings
+
+  # ============================================================================
+  # Audio Configuration
+  # ============================================================================
+
   services.pipewire = {
     enable = true;
     alsa = {
@@ -165,7 +236,11 @@ in {
     };
     pulse.enable = true;
   };
-  # Networking settings
+
+  # ============================================================================
+  # Network Configuration
+  # ============================================================================
+
   networking = {
     networkmanager.enable = true;
     hostName = "${secrets.hostName}";
@@ -174,77 +249,84 @@ in {
       allowedUDPPorts = [];
     };
   };
-  # Virtualization settings
+
+  # ============================================================================
+  # Virtualization Configuration (Optional)
+  # ============================================================================
+
   # virtualisation = {
-  # docker = {
-  # enable = true;
-  # enableOnBoot = true;
-  # rootless.enable = true;
-  # rootless.setSocketVariable = true;
-  # daemon.settings.features.cdi = true;
-  # extraPackages = with pkgs; [nvidia-container-toolkit nvidia-docker];
+  #   docker = {
+  #     enable = true;
+  #     enableOnBoot = true;
+  #     rootless.enable = true;
+  #     rootless.setSocketVariable = true;
+  #     daemon.settings.features.cdi = true;
+  #     extraPackages = with pkgs; [nvidia-container-toolkit nvidia-docker];
+  #   };
+  #   libvirtd = {
+  #     enable = true;
+  #     qemu = {
+  #       package = pkgs.qemu_kvm;
+  #       ovmf = {
+  #         enable = true;
+  #         packages = [
+  #           (pkgs.OVMF.override {
+  #             secureBoot = true;
+  #             tpmSupport = true;
+  #           })
+  #         ];
+  #       };
+  #       swtpm.enable = true;
+  #       runAsRoot = true;
+  #     };
+  #   };
+  #   spiceUSBRedirection.enable = true;
   # };
-  # libvirtd = {
-  # enable = true;
-  # qemu = {
-  # package = pkgs.qemu_kvm;
-  # ovmf = {
-  # enable = true;
-  # packages = [
-  # (pkgs.OVMF.override {
-  # secureBoot = true;
-  # tpmSupport = true;
-  # })
-  # ];
-  # };
-  # swtpm.enable = true;
-  # runAsRoot = true;
-  # };
-  # };
-  # spiceUSBRedirection.enable = true;
-  # };
-  boot.binfmt.emulatedSystems = ["aarch64-linux"];
-  # Nix settings
-  nix.settings = {
-    sandbox = true;
-    experimental-features = "nix-command flakes";
-    nix-path = ["nixpkgs=${pkgs.path}"];
-  };
-  system.autoUpgrade = {
-    enable = true;
-    flake = inputs.self.outPath;
-    flags = ["--update-input" "nixpkgs" "-L"];
-    dates = "02:00";
-    randomizedDelaySec = "45min";
-  };
+
+  # ============================================================================
+  # Nix Configuration
+  # ============================================================================
+
   nix = {
+    settings = {
+      sandbox = true;
+      experimental-features = "nix-command flakes";
+      nix-path = ["nixpkgs=${pkgs.path}"];
+    };
+
+    # Automatic optimization
     optimise = {
       automatic = true;
       dates = ["weekly"];
     };
+
+    # Garbage collection
     gc = {
       automatic = true;
       dates = "weekly";
     };
+
+    # Disable legacy channels
+    channel.enable = false;
   };
-  systemd.services.libvirtd = {
+
+  # Automatic system updates
+  system.autoUpgrade = {
     enable = true;
-    wantedBy = ["multi-user.target"];
-    path = [pkgs.qemu];
+    flake = inputs.self.outPath;
+    flags = [
+      "--update-input"
+      "nixpkgs"
+      "-L"
+    ];
+    dates = "02:00";
+    randomizedDelaySec = "45min";
   };
-  # systemd.services.cloudflared = {
-  # description = "Cloudflare Tunnel";
-  # wantedBy = ["multi-user.target"];
-  # serviceConfig = {
-  # ExecStart = "${pkgs.cloudflared}/bin/cloudflared tunnel --config /home/${secrets.username}/.cloudflared/config.yml run 97f0877b-9ed5-42ba-999e-d13903c05d52";
-  # Restart = "always";
-  # User = "${secrets.username}";
-  # StateDirectory = "cloudflared";
-  # ConfigurationDirectory = "cloudflared";
-  # ConfigurationDirectoryMode = "0755";
-  # };
-  # };
-  # User settings
+
+  # ============================================================================
+  # User Configuration
+  # ============================================================================
+
   users = {
     mutableUsers = false;
     groups.${secrets.username} = {};
@@ -276,8 +358,13 @@ in {
         else {initialPassword = "changeme";}
       );
   };
-  # Locale and timezone settings
+
+  # ============================================================================
+  # Locale and Timezone Configuration
+  # ============================================================================
+
   time.timeZone = "Europe/Berlin";
+
   i18n = {
     defaultLocale = "en_US.UTF-8";
     extraLocaleSettings = {
@@ -292,8 +379,16 @@ in {
       LC_TIME = "de_DE.UTF-8";
     };
   };
-  # Other settings
+
+  # ============================================================================
+  # System State Version
+  # ============================================================================
+
   system.stateVersion = stateVersion;
+
+  # ============================================================================
+  # Nixpkgs Configuration
+  # ============================================================================
+
   nixpkgs.config.allowUnfree = true;
-  nix.channel.enable = false;
 }

@@ -2,9 +2,12 @@
   environment.systemPackages = with pkgs; [
     # Tools
     curl
+    gh
+    github-copilot-cli
     wget
     usbutils
     alejandra
+    nixpkgs-fmt
     ltunify
     ffmpeg
     kubectl
@@ -30,8 +33,10 @@
     desktop-file-utils
 
     # Development
-    # nixd
+    nil
+    nixd
     androidenv.androidPkgs.platform-tools
+    package-version-server
 
     # Flatpak management
     # gnome-software
